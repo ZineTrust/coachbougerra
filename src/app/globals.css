@@ -1,0 +1,153 @@
+@import "tailwindcss";
+
+/*
+  Coach Bougerra design tokens
+  -------------------------
+  ink    -> deep navy, used for the "stage" (hero, live room, sidebar) and body text
+  ivory  -> warm off-white, the page background (beauty / wellness feel)
+  jade   -> primary brand colour (health, actions, "join")
+  gold   -> premium content, the "#1 consultant" credibility mark
+  live   -> the red "LIVE" dot, nothing else
+*/
+@theme {
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+
+  --color-ink-950: #08101d;
+  --color-ink-900: #0d1a2d;
+  --color-ink-800: #14243b;
+  --color-ink-700: #1f3350;
+  --color-ink-600: #3a4f6d;
+  --color-ink-500: #5b6f8a;
+  --color-ink-400: #8797ad;
+  --color-ink-300: #b4bfce;
+  --color-ink-200: #d7dde6;
+  --color-ink-100: #eaeef3;
+
+  --color-ivory-50: #fdfbf7;
+  --color-ivory-100: #f7f2ea;
+  --color-ivory-200: #ece4d6;
+  --color-ivory-300: #ddd1bd;
+
+  --color-jade-50: #e9f8f2;
+  --color-jade-100: #c9eedf;
+  --color-jade-300: #7fdcbc;
+  --color-jade-400: #2fc196;
+  --color-jade-500: #12a37f;
+  --color-jade-600: #0c8467;
+  --color-jade-700: #0a6a54;
+  --color-jade-900: #063d31;
+
+  --color-gold-100: #faefd3;
+  --color-gold-300: #eccb7f;
+  --color-gold-400: #e0b455;
+  --color-gold-500: #cf9a35;
+  --color-gold-600: #a97a22;
+
+  --color-live: #f0435a;
+
+  --shadow-card: 0 1px 2px rgb(13 26 45 / 0.05), 0 8px 24px -8px rgb(13 26 45 / 0.12);
+  --shadow-lift: 0 2px 4px rgb(13 26 45 / 0.06), 0 24px 48px -16px rgb(13 26 45 / 0.28);
+  --shadow-stage: 0 40px 80px -24px rgb(0 0 0 / 0.55);
+
+  --animate-pulse-live: pulse-live 1.8s ease-in-out infinite;
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-progress: progress 30s linear forwards;
+  --animate-watermark: watermark 26s ease-in-out infinite;
+
+  @keyframes pulse-live {
+    0%, 100% { box-shadow: 0 0 0 0 rgb(240 67 90 / 0.55); }
+    50% { box-shadow: 0 0 0 7px rgb(240 67 90 / 0); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  @keyframes progress {
+    from { width: 0%; }
+    to { width: 100%; }
+  }
+  /* the viewer's name drifts over a protected video, so a recording can be traced back */
+  @keyframes watermark {
+    0%, 100% { left: 5%; top: 10%; }
+    25% { left: 52%; top: 72%; }
+    50% { left: 58%; top: 24%; }
+    75% { left: 10%; top: 80%; }
+  }
+}
+
+@layer base {
+  /*
+    A bare `grid` gets one column that may shrink below its content. Without
+    this, a long non-wrapping title (a `truncate`d live name, say) stretches the
+    implicit column past the screen on phones. `grid-cols-*` utilities still win.
+  */
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-ivory-50);
+  color: var(--color-ink-900);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-jade-500);
+  color: white;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-jade-500);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Reusable "stage" backdrop: dark navy with soft jade + gold glows */
+.stage {
+  background:
+    radial-gradient(60% 50% at 85% 10%, rgb(18 163 127 / 0.28), transparent 70%),
+    radial-gradient(45% 40% at 5% 95%, rgb(224 180 85 / 0.16), transparent 70%),
+    var(--color-ink-950);
+}
+
+/* Fine dotted texture used on dark surfaces */
+.dots {
+  background-image: radial-gradient(rgb(255 255 255 / 0.07) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+
+/*
+  Arabic (right-to-left) adjustments. These are unlayered on purpose so they
+  win over the utility classes written for the French layout.
+*/
+html[lang="ar"] {
+  --font-sans: var(--font-cairo), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-el-messiri), var(--font-cairo), ui-serif, serif;
+}
+/* Arabic has no italics, and spaced-out letters break its connected script */
+html[lang="ar"] em { font-style: normal; }
+html[lang="ar"] [class*="tracking-"] { letter-spacing: 0; }
+/* Arabic letters carry tall marks: give headlines more room */
+html[lang="ar"] :is(h1, h2, h3) { line-height: 1.35; }
+html[lang="ar"] body { line-height: 1.7; }
+/* Mirror direction-bearing icons (arrows) in right-to-left */
+[dir="rtl"] .flip-rtl { transform: scaleX(-1); }

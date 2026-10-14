@@ -1,0 +1,51 @@
+# Render Blueprint: creates the website and its database together.
+# Dashboard -> New -> Blueprint -> pick this repository. Render then asks for the
+# values marked "sync: false" below (they are secrets, so they are NOT written here).
+#
+# "free" plans are for testing: the website falls asleep after ~15 minutes without
+# visitors (the next visit takes about a minute to wake it) and the free database is
+# deleted after a limited period. Switch both to a paid plan before the real launch
+# (Dashboard -> the service -> Settings -> Instance Type / Plan).
+
+databases:
+  - name: coach-bougerra-db
+    region: frankfurt
+    plan: free
+    databaseName: coach_bougerra
+    user: coach_bougerra
+    # nothing outside Render can connect: the website uses the private (internal) address
+    ipAllowList: []
+
+services:
+  - type: web
+    name: coach-bougerra
+    runtime: node
+    region: frankfurt
+    plan: free
+    # devDependencies are needed to build (Tailwind, TypeScript)
+    buildCommand: npm install --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: coach-bougerra-db
+          property: connectionString
+      # The owner account is created from these the very first time the site starts.
+      - key: OWNER_NAME
+        value: Coach Bougerra
+      - key: OWNER_EMAIL
+        sync: false
+      - key: OWNER_PASSWORD
+        sync: false
+      # Phone notifications (keep the same pair for ever, see .env.example).
+      # NEXT_PUBLIC_* is baked in when the site is built.
+      - key: VAPID_SUBJECT
+        sync: false
+      - key: NEXT_PUBLIC_VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
