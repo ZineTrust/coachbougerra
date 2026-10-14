@@ -124,7 +124,8 @@ Please have a native speaker read through the Arabic before launch.
 
 ## Deploy on Render
 
-`render.yaml` describes the website and its Postgres database, so Render creates both from the repository.
+`render.yaml` describes the website (and the first, temporary Render database). The site's database is the one
+named by `DATABASE_URL`, which is set by hand in the dashboard: **Supabase** (see "Database on Supabase" below).
 
 1. Push this folder to a **private** GitHub repository.
 2. Render dashboard → **New → Blueprint** → pick the repository → Render lists the website and the database.
@@ -143,6 +144,21 @@ Notes:
 - Custom domain: service → Settings → Custom Domains, then add the DNS record Render shows; HTTPS is automatic.
 - The `pg` code path was tested against a Postgres-protocol server before the first deploy (sign-up, unlock
   requests, approvals, reservations, owner bootstrap).
+
+### Database on Supabase
+
+The site only needs a plain Postgres: it uses none of Supabase's own login, storage or API.
+
+1. supabase.com → **New project**: name `coach-bougerra`, region **Central EU (Frankfurt)**, a database password
+   (letters and digits only, so it can be pasted into an address without escaping). Keep that password.
+2. Project → **Connect** → **Session pooler** → copy the connection string (it ends in `:5432/postgres`) and put
+   the password in place of `[YOUR-PASSWORD]`. Use the *pooler* address, not "Direct connection": Render only has IPv4.
+3. Render → the service → **Environment** → set `DATABASE_URL` to that string → **Save, rebuild and deploy**.
+4. The tables are created on the first start. Every table has row-level security switched on with no policy
+   (`src/server/schema.ts`), so Supabase's public data API cannot read member data; the site itself connects as the
+   table owner and is not affected. If the dashboard offers it, also turn the **Data API** off (Project Settings).
+5. Free Supabase has no downloadable backups: before real members arrive, either move to a plan with backups or
+   export the members regularly.
 
 ## What is still sample / not built
 

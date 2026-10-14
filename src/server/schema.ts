@@ -172,4 +172,16 @@ create table if not exists push_subscriptions (
   created_at  timestamptz not null default now()
 );
 create index if not exists push_subscriptions_member_idx on push_subscriptions (member_code);
+
+-- Row-level security on every table, with no policies. The website connects as the
+-- table owner (which is not affected), but a host that exposes the database through
+-- a public data API (Supabase does for the "public" schema) can then read nothing.
+do $$
+declare t record;
+begin
+  for t in select tablename from pg_tables where schemaname = 'public' loop
+    execute format('alter table public.%I enable row level security', t.tablename);
+  end loop;
+end
+$$;
 `;
