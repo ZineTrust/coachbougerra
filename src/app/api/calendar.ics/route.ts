@@ -21,7 +21,11 @@ export function GET(request: NextRequest) {
   const lives = LIVES.filter((l) => l.access !== "team" && (!only || l.id === only));
   if (only && lives.length === 0) return new NextResponse("Not found", { status: 404 });
 
-  const origin = request.nextUrl.origin;
+  // behind the host's proxy the request URL says "localhost:10000": the real address is in the forwarded headers
+  const first = (value: string | null) => value?.split(",")[0]?.trim() || null;
+  const proto = first(request.headers.get("x-forwarded-proto")) ?? request.nextUrl.protocol.replace(":", "");
+  const host = first(request.headers.get("x-forwarded-host")) ?? first(request.headers.get("host")) ?? request.nextUrl.host;
+  const origin = `${proto}://${host}`;
   const events: IcsEvent[] = lives.map((l) => ({
     uid: `${l.id}@coach-bougerra`,
     title: `${l.title[lang]} — Coach Bougerra`,

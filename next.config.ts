@@ -11,6 +11,7 @@ import type { NextConfig } from "next";
 const I18N_REQUEST_CONFIG = "./src/i18n/request.ts";
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
   // Database drivers are loaded on the server only and must not be bundled.
   serverExternalPackages: ["@electric-sql/pglite", "pg", "sharp", "web-push"],
   images: {
