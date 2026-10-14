@@ -122,6 +122,28 @@ Please have a native speaker read through the Arabic before launch.
 - `next.config.ts` sets the `next-intl` alias by hand instead of using its plugin, because the plugin
   loads a native compiler add-on that fails on some Windows machines. Same effect, nothing lost.
 
+## Deploy on Render
+
+`render.yaml` describes the website and its Postgres database, so Render creates both from the repository.
+
+1. Push this folder to a **private** GitHub repository.
+2. Render dashboard → **New → Blueprint** → pick the repository → Render lists the website and the database.
+3. Fill in the secret values it asks for (they are never stored in the repo): `OWNER_EMAIL`, `OWNER_PASSWORD`
+   (a **new** strong password, not the local one), `VAPID_SUBJECT` (`mailto:…`), `NEXT_PUBLIC_VAPID_PUBLIC_KEY` and
+   `VAPID_PRIVATE_KEY` (the pair from `.env.local`: keep the same pair for ever).
+4. **Apply**. The first build takes a few minutes. Open `https://<name>.onrender.com/fr`, then sign in at
+   `/fr/espace/connexion`.
+
+Notes:
+- The tables are created and the owner account is made automatically on the first start (a fresh database: the
+  first member is 101). `/api/health` is the health check.
+- **Free plans are for testing**: the site sleeps after ~15 minutes without visitors (the next visit takes about a
+  minute) and the free database is deleted after a limited period. Move both to a paid plan before the real launch.
+- Changing a `NEXT_PUBLIC_*` value needs a new deploy (it is baked in at build time).
+- Custom domain: service → Settings → Custom Domains, then add the DNS record Render shows; HTTPS is automatic.
+- The `pg` code path was tested against a Postgres-protocol server before the first deploy (sign-up, unlock
+  requests, approvals, reservations, owner bootstrap).
+
 ## What is still sample / not built
 
 Formations and lives listings, the publish / schedule forms, and the pricing are placeholders;
