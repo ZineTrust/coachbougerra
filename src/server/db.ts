@@ -34,6 +34,14 @@ export function db(): Promise<Db> {
 }
 
 async function connect(): Promise<Db> {
+  // On a host the built-in database would live on a disk that is wiped at every deploy, so a
+  // missing address must be an error, not a silent fallback. Locally (dev), or when a folder is
+  // named on purpose with PGLITE_DIR, the built-in database is what we want.
+  if (!process.env.DATABASE_URL && process.env.NODE_ENV === "production" && !process.env.PGLITE_DIR) {
+    throw new Error(
+      "DATABASE_URL is not set: refusing to use the temporary built-in database in production.",
+    );
+  }
   const database = process.env.DATABASE_URL ? await openPostgres() : await openEmbedded();
   await database.exec(SCHEMA);
   await bootstrapOwner(database);
