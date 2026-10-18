@@ -263,7 +263,6 @@ export const fr = {
     eyebrow: "Mes groupes",
     title: "Discutez en <em>petits groupes</em>.",
     lead: "Créez un groupe, invitez vos amis avec leur code membre et échangez entre vous. Coach Bougerra crée aussi des groupes officiels, par exemple pour tous les Managers.",
-    teamCanRead: "L'équipe de Coach Bougerra peut lire les groupes. Ne partagez rien de confidentiel.",
     invitationsTitle: "Invitations",
     invitedBy: "Invité par {name}",
     invitedByCode: "Invité par le membre n°{code}",
@@ -1038,7 +1037,7 @@ export const fr = {
       title: "Groupes",
       subtitle: "Tous les groupes de la plateforme et ce qui s'y dit.",
       privacyNote:
-        "Les membres sont prévenus que l'équipe peut lire les groupes. Utilisez ce droit avec discrétion : lire pour animer et modérer.",
+        "Vous pouvez lire tous les groupes et ce qui s'y écrit. Utilisez ce droit avec discrétion : lire pour animer et modérer.",
       allGroups: "Tous les groupes",
       none: "Aucun groupe pour l'instant.",
       kindOfficial: "Officiel",

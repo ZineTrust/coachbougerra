@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Eye, Megaphone, UsersRound } from "lucide-react";
+import { Megaphone, UsersRound } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { CreateGroupForm, InvitationList } from "@/components/groups/GroupForms";
 import { PageHeader } from "@/components/site/PageHeader";
@@ -117,10 +117,6 @@ export default async function GroupsPage({ params }: PageProps<"/[locale]/groupe
               <CreateGroupForm />
             </div>
           </div>
-          <p className="flex items-start gap-2.5 rounded-2xl bg-ivory-100 p-4 text-[13px] leading-relaxed text-ink-600">
-            <Eye className="mt-0.5 size-4 shrink-0 text-ink-500" aria-hidden />
-            {t("teamCanRead")}
-          </p>
         </aside>
       </section>
     </>

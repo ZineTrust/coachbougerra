@@ -80,7 +80,7 @@ No database to install: locally an embedded Postgres runs and stores its files i
   **Official groups** are made by the team (Workspace → Groupes, permission *manage groups*): tick ranks (e.g. Manager)
   and every member of that rank is in automatically, including people who register later; add specific members by code;
   untick "members can write" for an announcements-only group. **The team can read every group** (and sees messages
-  removed by members); members are told so on the page. Staff write as "Équipe". Group data is in `groups`,
+  removed by members). Members are NOT told on the pages (the owner chose not to show a notice). Staff write as "Équipe". Group data is in `groups`,
   `group_members`, `group_messages`, `group_reads` (`src/server/groups.ts`).
 - **Contact button and messages**: signed-in members get one floating button on every public page that
   opens a chat with the team (visitors are invited to sign in). Staff with the *messages* permission read

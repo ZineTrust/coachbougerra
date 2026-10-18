@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Eye } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { GroupChat } from "@/components/groups/GroupChat";
 import { GroupPanel } from "@/components/groups/GroupPanel";
@@ -62,9 +62,6 @@ export default async function GroupPage({ params }: Props) {
             canPostInitially={group.membersCanPost || isAdmin}
             isAdminInitially={isAdmin}
           />
-          <p className="flex items-start gap-2 text-[13px] leading-snug text-ink-500">
-            <Eye className="mt-0.5 size-4 shrink-0" aria-hidden /> {t("teamCanRead")}
-          </p>
         </div>
         <GroupPanel
           groupId={group.id}
