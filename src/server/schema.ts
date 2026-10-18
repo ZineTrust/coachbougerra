@@ -138,6 +138,15 @@ create table if not exists video_pv (
   updated_at timestamptz not null default now()
 );
 
+-- Where each formation's video is hosted (YouTube / Vimeo), set by staff.
+create table if not exists video_sources (
+  slug       text primary key,
+  provider   text not null check (provider in ('youtube','vimeo')),
+  ref        text not null,
+  updated_by integer references staff(id) on delete set null,
+  updated_at timestamptz not null default now()
+);
+
 -- A member asking to unlock a formation because they earned enough PV on Ultimate
 -- this month. Staff check the PV on the member's Ultimate account, then approve.
 -- An approval counts only during its month ("month" is "YYYY-MM", Algiers time).
@@ -172,6 +181,51 @@ create table if not exists push_subscriptions (
   created_at  timestamptz not null default now()
 );
 create index if not exists push_subscriptions_member_idx on push_subscriptions (member_code);
+
+-- Groups: small chats between members ("friends", made by a member who invites others by
+-- code) and "official" ones made by the team, where a rank (e.g. every Manager) is in
+-- automatically. Who is in an official group by rank is worked out from the member's
+-- current rank, so a member who registers later as a Manager is in at once.
+create table if not exists groups (
+  id                serial primary key,
+  name              text not null,
+  description       text,
+  kind              text not null default 'friends' check (kind in ('friends','official')),
+  created_by_member integer references members(code) on delete set null,
+  created_by_staff  integer references staff(id) on delete set null,
+  titles            jsonb not null default '[]'::jsonb,
+  members_can_post  boolean not null default true,
+  created_at        timestamptz not null default now()
+);
+
+create table if not exists group_members (
+  group_id    integer not null references groups(id) on delete cascade,
+  member_code integer not null references members(code) on delete cascade,
+  status      text not null default 'member' check (status in ('invited','member')),
+  is_admin    boolean not null default false,
+  invited_by  integer references members(code) on delete set null,
+  created_at  timestamptz not null default now(),
+  primary key (group_id, member_code)
+);
+create index if not exists group_members_member_idx on group_members (member_code);
+
+create table if not exists group_messages (
+  id          serial primary key,
+  group_id    integer not null references groups(id) on delete cascade,
+  member_code integer references members(code) on delete set null,
+  staff_id    integer references staff(id) on delete set null,
+  body        text not null,
+  removed     boolean not null default false,
+  created_at  timestamptz not null default now()
+);
+create index if not exists group_messages_group_idx on group_messages (group_id, id);
+
+create table if not exists group_reads (
+  group_id     integer not null references groups(id) on delete cascade,
+  member_code  integer not null references members(code) on delete cascade,
+  last_read_id integer not null default 0,
+  primary key (group_id, member_code)
+);
 
 -- Row-level security on every table, with no policies. The website connects as the
 -- table owner (which is not affected), but a host that exposes the database through

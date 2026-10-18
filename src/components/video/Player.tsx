@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Lock, Pause, Play, ShieldCheck, Volume2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Clapperboard, Lock, Maximize2, Minimize2, ShieldCheck } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import type { Locale } from "@/i18n/routing";
 import type { Video } from "@/lib/data";
-import { cn, formatDuration } from "@/lib/utils";
+import { embedUrl, type VideoSource } from "@/lib/video-source";
+import { cn } from "@/lib/utils";
 import { Thumb } from "./Thumb";
 
 /** Who is watching, for the moving name over a protected video. */
@@ -15,44 +16,62 @@ export interface Viewer {
 }
 
 /**
- * Demo player. It shows the real states (locked / ready / playing) so the
- * interface can be judged; the actual video stream is wired in later.
- * `locked` is decided on the server from the member's access rights.
+ * The formation's video. The video is hosted elsewhere (YouTube / Vimeo) and shown
+ * through its player; `source` is only given to the page when the member may watch,
+ * so a locked page never contains the video's address. `locked` is decided on the
+ * server from the member's access rights.
  *
  * `protect` is on for formations that needed PV. A web page cannot truly stop a
  * screen recorder, so this is a deterrent, not a guarantee:
  *  - the viewer's number and name drift across the picture (a leak can be traced),
- *  - the picture goes black and playback pauses whenever the window loses focus or
+ *  - the picture goes black and the video pauses whenever the window loses focus or
  *    the tab is hidden (what happens when a recorder or screenshot tool takes over)
  *    and when a screenshot key is pressed,
- *  - right-click, drag and selection are off.
+ *  - fullscreen is our own (the host's button is hidden), so the moving name stays on screen.
  * Only the video host's DRM can make recordings come out black on every device:
  * that is chosen together with the video hosting.
  */
 export function Player({
   video,
   locked,
+  source = null,
   protect = false,
   viewer = null,
 }: {
   video: Video;
   locked: boolean;
+  source?: VideoSource | null;
   protect?: boolean;
   viewer?: Viewer | null;
 }) {
   const t = useTranslations();
   const locale = useLocale() as Locale;
-  const [playing, setPlaying] = useState(false);
   const [blackout, setBlackout] = useState(false);
-  const guard = protect && !locked;
+  const [fullscreen, setFullscreen] = useState(false);
+  const [canFullscreen, setCanFullscreen] = useState(false);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const frameRef = useRef<HTMLIFrameElement>(null);
+  const guard = protect && !locked && Boolean(source);
+  const provider = source?.provider;
 
   useEffect(() => {
     if (!guard) return;
     let timer: ReturnType<typeof setTimeout> | undefined;
 
+    // ask the host's player to pause (their documented message API)
+    const pauseVideo = () => {
+      const target = frameRef.current?.contentWindow;
+      if (!target) return;
+      target.postMessage(
+        provider === "youtube"
+          ? JSON.stringify({ event: "command", func: "pauseVideo", args: [] })
+          : JSON.stringify({ method: "pause" }),
+        "*",
+      );
+    };
     const cover = () => {
       setBlackout(true);
-      setPlaying(false);
+      pauseVideo();
     };
     // the picture only comes back when the window is in front and focused again
     const uncover = () => {
@@ -84,7 +103,23 @@ export function Player({
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("keyup", onKey);
     };
-  }, [guard]);
+  }, [guard, provider]);
+
+  // our own fullscreen: only offered where the browser can fullscreen a page element (not iPhone)
+  useEffect(() => {
+    const sync = () => setFullscreen(document.fullscreenElement === stageRef.current);
+    const frame = window.setTimeout(() => setCanFullscreen(Boolean(document.fullscreenEnabled)), 0);
+    document.addEventListener("fullscreenchange", sync);
+    return () => {
+      window.clearTimeout(frame);
+      document.removeEventListener("fullscreenchange", sync);
+    };
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (document.fullscreenElement) void document.exitFullscreen();
+    else void stageRef.current?.requestFullscreen?.();
+  };
 
   if (locked) {
     return (
@@ -109,51 +144,46 @@ export function Player({
     );
   }
 
+  // open to this viewer, but staff have not linked the video yet
+  if (!source) {
+    return (
+      <div className="relative aspect-video overflow-hidden rounded-2xl bg-ink-900 shadow-lift">
+        <Thumb video={video} unlocked fill showPlay={false} showBadges={false} />
+        <div className="absolute inset-0 grid place-items-center bg-ink-950/55 p-4 text-center">
+          <div>
+            <span className="mx-auto grid size-14 place-items-center rounded-full bg-white/90 text-ink-900 shadow-lg sm:size-16">
+              <Clapperboard className="size-6 sm:size-7" aria-hidden />
+            </span>
+            <p className="mt-3 font-display text-xl font-semibold text-white sm:mt-4 sm:text-3xl">
+              {t("video.comingSoon")}
+            </p>
+            <p className="mx-auto mt-1 hidden max-w-xs text-sm text-ink-200 sm:block">
+              {t("video.comingSoonText")}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
+      ref={stageRef}
       className={cn(
-        "relative aspect-video overflow-hidden rounded-2xl bg-ink-900 shadow-lift",
+        "relative overflow-hidden bg-black shadow-lift",
+        fullscreen ? "size-full rounded-none" : "aspect-video rounded-2xl",
         guard && "select-none",
       )}
       onContextMenu={guard ? (e) => e.preventDefault() : undefined}
-      onDragStart={guard ? (e) => e.preventDefault() : undefined}
     >
-      <Thumb video={video} unlocked fill showPlay={false} showBadges={false} />
-
-      {!playing && (
-        <button
-          type="button"
-          onClick={() => setPlaying(true)}
-          className="absolute inset-0 grid place-items-center bg-ink-950/20 transition-colors hover:bg-ink-950/10"
-          aria-label={t("video.play", { title: video.title[locale] })}
-        >
-          <span className="grid size-16 place-items-center rounded-full bg-white/95 text-ink-900 shadow-xl transition-transform hover:scale-105 sm:size-20">
-            <Play className="ms-1 size-7 fill-current sm:size-8" aria-hidden />
-          </span>
-        </button>
-      )}
-
-      {playing && (
-        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink-950/90 to-transparent px-4 pb-3 pt-10" dir="ltr">
-          <div className="h-1 overflow-hidden rounded-full bg-white/25">
-            <div className="h-full animate-progress rounded-full bg-jade-400" />
-          </div>
-          <div className="mt-3 flex items-center gap-3 text-white">
-            <button
-              type="button"
-              onClick={() => setPlaying(false)}
-              className="grid size-9 place-items-center rounded-full hover:bg-white/15"
-              aria-label={t("video.pause")}
-            >
-              <Pause className="size-5 fill-current" aria-hidden />
-            </button>
-            <Volume2 className="size-5 text-white/80" aria-hidden />
-            <span className="text-xs font-semibold tabular-nums text-white/80">
-              0:00 / {formatDuration(video.duration)}
-            </span>
-          </div>
-        </div>
-      )}
+      <iframe
+        ref={frameRef}
+        src={embedUrl(source)}
+        title={video.title[locale]}
+        className="absolute inset-0 size-full border-0"
+        allow="autoplay; encrypted-media; picture-in-picture; clipboard-write"
+        referrerPolicy="strict-origin-when-cross-origin"
+      />
 
       {/* the viewer's name, drifting: two copies at opposite points of the loop */}
       {guard && viewer && (
@@ -173,13 +203,21 @@ export function Player({
         </>
       )}
 
-      <span className="absolute end-3 top-3 z-10 rounded-full bg-ink-950/70 px-2.5 py-1 text-[11px] font-semibold text-ink-200 backdrop-blur">
-        {t("common.demoPlayer")}
-      </span>
       {guard && (
-        <span className="absolute start-3 top-3 z-10 inline-flex items-center gap-1 rounded-full bg-ink-950/70 px-2.5 py-1 text-[11px] font-semibold text-jade-300 backdrop-blur">
+        <span className="pointer-events-none absolute start-3 top-3 z-10 inline-flex items-center gap-1 rounded-full bg-ink-950/70 px-2.5 py-1 text-[11px] font-semibold text-jade-300 backdrop-blur">
           <ShieldCheck className="size-3.5" aria-hidden /> {t("video.protected")}
         </span>
+      )}
+
+      {canFullscreen && (
+        <button
+          type="button"
+          onClick={toggleFullscreen}
+          className="absolute bottom-3 end-3 z-20 grid size-10 place-items-center rounded-full bg-ink-950/70 text-white backdrop-blur hover:bg-ink-950/90"
+          aria-label={fullscreen ? t("video.exitFullscreen") : t("video.fullscreen")}
+        >
+          {fullscreen ? <Minimize2 className="size-[18px]" aria-hidden /> : <Maximize2 className="size-[18px]" aria-hidden />}
+        </button>
       )}
 
       {/* the black screen */}

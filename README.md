@@ -54,11 +54,25 @@ No database to install: locally an embedded Postgres runs and stores its files i
   an unanswered request cannot be approved the month after, so on the 1st everything is locked again and members ask
   again: there is no job to run. Gifts (the grants above) are not affected. Staff with the *manage formations*
   permission change a formation's PV in Workspace → Formations (saved at once, applies to everyone).
+- **Videos**: each formation's video lives on YouTube or Vimeo; staff paste its link under the formation in
+  Workspace → Formations (needs the *manage formations* permission; an empty field = "Vidéo bientôt disponible").
+  Put the video on YouTube as **"Non répertoriée"** (unlisted). The link is only sent to members who may watch the
+  formation (a locked page does not contain it). This is not a lock: a member who has access could still share the
+  YouTube link; a host with signed links and DRM (Bunny Stream, Mux, VdoCipher…) is the next step if that matters.
 - **Protected playback** (formations that need PV): the viewer's number and name drift over the picture, the picture
-  goes black and pauses when the window loses focus, the tab is hidden or a screenshot key is pressed, and right-click is
-  off. **This deters, it cannot stop** a phone camera or every recorder: a web page has no control over the screen.
+  goes black and the video pauses when the window loses focus, the tab is hidden or a screenshot key is pressed, and
+  fullscreen is our own button (the host's is hidden) so the name stays on screen.
+  **This deters, it cannot stop** a phone camera or every recorder: a web page has no control over the screen.
   Recordings that come out black on all devices need the **video host's DRM** (Widevine/FairPlay), to be chosen
   together with the video hosting.
+- **Groups** (`/groupes`, members): a member creates a group (up to 5), invites friends **by member code** (they get a
+  push and accept or decline; up to 50 per group) and chats with them. The creator is the admin: invites, renames,
+  removes people, deletes the group. Chats refresh every few seconds while the page is open (no websocket).
+  **Official groups** are made by the team (Workspace → Groupes, permission *manage groups*): tick ranks (e.g. Manager)
+  and every member of that rank is in automatically, including people who register later; add specific members by code;
+  untick "members can write" for an announcements-only group. **The team can read every group** (and sees messages
+  removed by members); members are told so on the page. Staff write as "Équipe". Group data is in `groups`,
+  `group_members`, `group_messages`, `group_reads` (`src/server/groups.ts`).
 - **Contact button and messages**: signed-in members get one floating button on every public page that
   opens a chat with the team (visitors are invited to sign in). Staff with the *messages* permission read
   and answer from Workspace → Messages, with an unread badge in the sidebar. Replies appear on the member's

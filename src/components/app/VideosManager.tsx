@@ -1,9 +1,9 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { Check, ExternalLink, Eye } from "lucide-react";
+import { Check, ExternalLink, Eye, Link2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { setVideoPvAction } from "@/actions/unlocks";
+import { setVideoPvAction, setVideoSourceAction } from "@/actions/unlocks";
 import { initialState } from "@/actions/types";
 import { Badge } from "@/components/ui/Badge";
 import { useErrorText } from "@/components/ui/form";
@@ -65,7 +65,55 @@ function PvEditor({ slug, pv }: { slug: string; pv: number }) {
   );
 }
 
-export function VideosManager({ videos }: { videos: Video[] }) {
+/** Where the video is hosted: staff paste a YouTube or Vimeo link. Empty = no video yet. */
+function LinkEditor({ slug, link }: { slug: string; link: string }) {
+  const t = useTranslations("space.videos");
+  const err = useErrorText();
+  const [state, action, pending] = useActionState(setVideoSourceAction, initialState);
+  const shown = state.values?.link ?? link;
+
+  return (
+    <form action={action} className="flex flex-wrap items-center gap-2">
+      <input type="hidden" name="slug" value={slug} />
+      <label className="flex min-w-0 flex-1 basis-72 items-center gap-2">
+        <Link2 className="size-4 shrink-0 text-ink-400" aria-hidden />
+        <input
+          key={shown}
+          dir="ltr"
+          name="link"
+          type="text"
+          inputMode="url"
+          autoComplete="off"
+          maxLength={300}
+          defaultValue={shown}
+          placeholder={t("linkPlaceholder")}
+          aria-label={t("linkLabel")}
+          aria-invalid={state.errors?.link ? true : undefined}
+          className="h-9 min-w-0 flex-1 rounded-lg bg-white px-3 text-start text-sm ring-1 ring-ink-200 placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-jade-500"
+        />
+      </label>
+      <button
+        type="submit"
+        disabled={pending}
+        className="h-9 rounded-lg bg-jade-50 px-3 text-sm font-semibold text-jade-700 hover:bg-jade-100 disabled:opacity-50"
+      >
+        {t("linkSave")}
+      </button>
+      {state.ok && !pending && (
+        <span className="inline-flex items-center gap-1 text-xs font-semibold text-jade-700" role="status">
+          <Check className="size-3.5" strokeWidth={3} aria-hidden /> {shown ? t("linkSaved") : t("linkRemoved")}
+        </span>
+      )}
+      {(state.errors?.link || state.errors?.form) && (
+        <span role="alert" className="text-xs font-semibold text-live">
+          {err(state.errors?.link ?? state.errors?.form)}
+        </span>
+      )}
+    </form>
+  );
+}
+
+export function VideosManager({ videos, links }: { videos: Video[]; /** slug -> the video link already saved */ links: Record<string, string> }) {
   const t = useTranslations();
   const locale = useLocale() as Locale;
   const [filter, setFilter] = useState<Filter>("all");
@@ -104,7 +152,8 @@ export function VideosManager({ videos }: { videos: Video[] }) {
 
       <ul className="divide-y divide-ink-100">
         {shown.map((v) => (
-          <li key={v.slug} className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:p-5">
+          <li key={v.slug} className="flex flex-col gap-4 p-4 sm:p-5">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
             <div className="flex min-w-0 flex-1 items-center gap-4">
               <div className="w-28 shrink-0 overflow-hidden rounded-xl sm:w-32">
                 <Thumb video={v} showBadges={false} showPlay={false} />
@@ -138,6 +187,8 @@ export function VideosManager({ videos }: { videos: Video[] }) {
                 <span className="w-10" aria-hidden />
               )}
             </div>
+            </div>
+            <LinkEditor slug={v.slug} link={links[v.slug] ?? ""} />
           </li>
         ))}
       </ul>

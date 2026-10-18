@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { CalendarDays, ChevronDown, LogOut, Route, UserRound, Wrench } from "lucide-react";
+import { CalendarDays, ChevronDown, LogOut, Route, UserRound, UsersRound, Wrench } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { logoutMemberAction } from "@/actions/auth";
 import { MemberAvatar } from "@/components/ui/Avatar";
@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 /** Member links shared by the drop-down and the mobile menu. */
 export const MEMBER_LINKS = [
   { href: "/mon-parcours", key: "myPath", icon: Route },
+  { href: "/groupes", key: "groups", icon: UsersRound },
   { href: "/boite-a-outils", key: "toolbox", icon: Wrench },
   { href: "/calendrier", key: "calendar", icon: CalendarDays },
   { href: "/compte", key: "myAccount", icon: UserRound },
@@ -21,10 +22,13 @@ export function AccountMenu({
   code,
   name,
   photoVersion,
+  groups,
 }: {
   code: number;
   name: string;
   photoVersion: number | null;
+  /** invitations waiting + unread group messages */
+  groups: number;
 }) {
   const t = useTranslations("nav");
   const c = useTranslations("common");
@@ -59,6 +63,7 @@ export function AccountMenu({
       >
         <MemberAvatar code={code} name={name} photoVersion={photoVersion} className="size-7 text-[10px]" />
         <span className="hidden xl:inline">{t("myAccount")}</span>
+        {groups > 0 && <span className="size-2 rounded-full bg-live" aria-hidden />}
         <span dir="ltr" className="rounded-full bg-jade-600 px-2 py-0.5 text-xs tabular-nums">
           #{code}
         </span>
@@ -79,6 +84,11 @@ export function AccountMenu({
               className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold hover:bg-ivory-100"
             >
               <Icon className="size-[18px] text-jade-600" aria-hidden /> {t(key)}
+              {key === "groups" && groups > 0 && (
+                <span className="ms-auto grid min-w-[20px] place-items-center rounded-full bg-live px-1.5 text-[11px] font-bold leading-5 text-white">
+                  {groups > 99 ? "99+" : groups}
+                </span>
+              )}
             </Link>
           ))}
           <form action={logoutMemberAction} className="mt-1 border-t border-ink-100 pt-1">

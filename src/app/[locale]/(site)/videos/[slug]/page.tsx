@@ -25,7 +25,7 @@ import { formatDate, formatDaysAgo } from "@/lib/utils";
 import { currentMember } from "@/server/current";
 import { doneKeys } from "@/server/engagement";
 import { requestsThisMonth, videoAccessFor } from "@/server/unlocks";
-import { getPublicVideoWithPv, listPublicVideos } from "@/server/videos";
+import { getPublicVideoWithPv, getVideoSource, listPublicVideos } from "@/server/videos";
 
 type Props = PageProps<"/[locale]/videos/[slug]">;
 
@@ -64,6 +64,8 @@ export default async function VideoPage({ params }: Props) {
   const needsPv = video.pv > 0;
   const open = !needsPv || Boolean(canWatch?.(video.slug));
   const locked = !open;
+  // the video's address is only handed to someone who may watch it
+  const source = open ? await getVideoSource(video.slug) : null;
 
   // this month's latest request for this formation (newest first)
   const mine = requests.find((r) => r.videoSlug === video.slug);
@@ -90,6 +92,7 @@ export default async function VideoPage({ params }: Props) {
           <Player
             video={video}
             locked={locked}
+            source={source}
             protect={needsPv}
             viewer={member ? { code: member.code, name: member.fullName ?? "" } : null}
           />

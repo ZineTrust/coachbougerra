@@ -9,6 +9,7 @@ import {
   LogOut,
   Menu,
   MessageSquare,
+  MessagesSquare,
   PlayCircle,
   Radio,
   ShieldCheck,
@@ -34,7 +35,7 @@ export interface ShellStaff {
   permissions: StaffPermission[];
 }
 
-type NavKey = "home" | "members" | "requests" | "messages" | "notifications" | "lives" | "videos" | "team";
+type NavKey = "home" | "members" | "requests" | "messages" | "groups" | "notifications" | "lives" | "videos" | "team";
 
 const NAV: {
   href: string;
@@ -48,6 +49,7 @@ const NAV: {
   { href: "/espace/membres", key: "members", icon: Users, needs: "members_view" },
   { href: "/espace/demandes", key: "requests", icon: KeyRound, needs: "members_manage" },
   { href: "/espace/messages", key: "messages", icon: MessageSquare, needs: "messages_manage" },
+  { href: "/espace/groupes", key: "groups", icon: MessagesSquare, needs: "groups_manage" },
   { href: "/espace/notifications", key: "notifications", icon: Bell, needs: "notifications_send" },
   { href: "/espace/lives", key: "lives", icon: Radio, needs: "lives_manage" },
   { href: "/espace/videos", key: "videos", icon: PlayCircle, needs: "videos_manage" },

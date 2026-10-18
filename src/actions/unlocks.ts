@@ -5,12 +5,13 @@ import { after } from "next/server";
 import { getTranslations } from "next-intl/server";
 import { VIDEOS } from "@/lib/data";
 import { MAX_PV, UNLOCK_NOTE_MAX, lastDayOfMonth } from "@/lib/unlock";
+import { parseVideoLink, sourceToLink } from "@/lib/video-source";
 import { formatDate } from "@/lib/utils";
 import { currentMember, staffFor } from "@/server/current";
 import { sendNotification } from "@/server/notifications";
 import { sendPush } from "@/server/push";
 import { createRequest, decideRequest, getRequest, revokeRequest, videoAccessFor } from "@/server/unlocks";
-import { getPublicVideoWithPv, setVideoPv } from "@/server/videos";
+import { getPublicVideoWithPv, setVideoPv, setVideoSource } from "@/server/videos";
 import type { FormState } from "./types";
 
 /** Whole numbers only: "200", not "200,5" or "2e2". */
@@ -116,6 +117,26 @@ export async function revokeRequestAction(_prev: FormState, fd: FormData): Promi
   }
   revalidatePath("/", "layout");
   return { ok: true };
+}
+
+/** Staff: set (or clear, with an empty field) the YouTube / Vimeo link of a formation's video. */
+export async function setVideoSourceAction(_prev: FormState, fd: FormData): Promise<FormState> {
+  const staff = await staffFor("videos_manage");
+  if (!staff) return { errors: { form: "forbidden" } };
+
+  const slug = String(fd.get("slug") ?? "");
+  const link = String(fd.get("link") ?? "").trim();
+  const values = { link };
+
+  if (!VIDEOS.some((v) => v.slug === slug)) return { errors: { form: "unknown_video" } };
+  if (link.length > 300) return { errors: { link: "too_long" }, values };
+
+  const source = link ? parseVideoLink(link) : null;
+  if (link && !source) return { errors: { link: "invalid_video_link" }, values };
+
+  await setVideoSource(slug, source, staff.id);
+  revalidatePath("/", "layout");
+  return { ok: true, values: { link: source ? sourceToLink(source) : "" } };
 }
 
 /** Staff: change how much PV a formation needs (0 makes it free for everyone). */

@@ -11,6 +11,7 @@ export const STAFF_PERMISSIONS = [
   "notifications_send", // send notifications to members
   "videos_manage", // publish and edit formations
   "lives_manage", // plan and run lives
+  "groups_manage", // see every group and its chat, create groups by rank, moderate
 ] as const;
 export type StaffPermission = (typeof STAFF_PERMISSIONS)[number];
 

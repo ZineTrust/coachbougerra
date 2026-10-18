@@ -1,5 +1,6 @@
 import "server-only";
 import { VIDEOS, type Video } from "@/lib/data";
+import type { VideoSource } from "@/lib/video-source";
 import { db } from "./db";
 
 /*
@@ -29,6 +30,41 @@ export async function listPublicVideos(): Promise<Video[]> {
 
 export async function getPublicVideoWithPv(slug: string): Promise<Video | undefined> {
   return (await listPublicVideos()).find((v) => v.slug === slug);
+}
+
+/* ------------------------------ where the video is ------------------------------ */
+
+type SourceRow = { slug: string; provider: "youtube" | "vimeo"; ref: string };
+
+export async function getVideoSource(slug: string): Promise<VideoSource | null> {
+  const database = await db();
+  const [row] = await database.query<SourceRow>(
+    "select slug, provider, ref from video_sources where slug = $1",
+    [slug],
+  );
+  return row ? { provider: row.provider, ref: row.ref } : null;
+}
+
+export async function listVideoSources(): Promise<Map<string, VideoSource>> {
+  const database = await db();
+  const rows = await database.query<SourceRow>("select slug, provider, ref from video_sources");
+  return new Map(rows.map((r) => [r.slug, { provider: r.provider, ref: r.ref }]));
+}
+
+/** source = null removes the video from this formation. */
+export async function setVideoSource(slug: string, source: VideoSource | null, staffId: number) {
+  const database = await db();
+  if (!source) {
+    await database.query("delete from video_sources where slug = $1", [slug]);
+    return;
+  }
+  await database.query(
+    `insert into video_sources (slug, provider, ref, updated_by) values ($1, $2, $3, $4)
+     on conflict (slug) do update
+       set provider = excluded.provider, ref = excluded.ref,
+           updated_by = excluded.updated_by, updated_at = now()`,
+    [slug, source.provider, source.ref, staffId],
+  );
 }
 
 export async function setVideoPv(slug: string, pv: number, staffId: number) {

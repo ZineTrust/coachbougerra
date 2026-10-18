@@ -20,7 +20,7 @@ const LINKS = [
 
 export interface NavbarProps {
   /** the signed-in member, if any */
-  member: { code: number; unread: number; name: string; photoVersion: number | null } | null;
+  member: { code: number; unread: number; name: string; photoVersion: number | null; groups: number } | null;
   /** true only for a signed-in staff account (the link is never shown to others) */
   isStaff: boolean;
 }
@@ -70,7 +70,7 @@ export function Navbar({ member, isStaff }: NavbarProps) {
           {member ? (
             <>
               <NotificationBell initial={member.unread} />
-              <AccountMenu code={member.code} name={member.name} photoVersion={member.photoVersion} />
+              <AccountMenu code={member.code} name={member.name} photoVersion={member.photoVersion} groups={member.groups} />
             </>
           ) : (
             <>
@@ -130,6 +130,11 @@ export function Navbar({ member, isStaff }: NavbarProps) {
                   >
                     <Icon className="size-5" aria-hidden />
                     {t(key)}
+                    {key === "groups" && member.groups > 0 && (
+                      <span className="ms-auto rounded-full bg-live px-2 py-0.5 text-xs tabular-nums text-white">
+                        {member.groups > 99 ? "99+" : member.groups}
+                      </span>
+                    )}
                     {key === "myAccount" && (
                       <span dir="ltr" className="ms-auto rounded-full bg-jade-600 px-2 py-0.5 text-xs tabular-nums text-white">
                         #{member.code}
