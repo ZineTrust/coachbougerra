@@ -23,7 +23,6 @@ import { Button } from "@/components/ui/Button";
 import { PasswordChangeForm } from "@/components/ui/PasswordChangeForm";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
-import { VIDEOS } from "@/lib/data";
 import { POINTS } from "@/lib/gamification";
 import { GRANT_ALL_LIVES, GRANT_ALL_VIDEOS } from "@/lib/permissions";
 import { lastDayOfMonth } from "@/lib/unlock";
@@ -33,6 +32,7 @@ import { avatarVersion } from "@/server/engagement";
 import { getGrants, isProfileComplete } from "@/server/members";
 import { notificationsForMember } from "@/server/notifications";
 import { requestsThisMonth } from "@/server/unlocks";
+import { videoTitles } from "@/server/videos";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/compte">): Promise<Metadata> {
   const { locale } = await params;
@@ -79,7 +79,7 @@ export default async function AccountPage({
 
   const member = await requireMember();
   const { bienvenue } = await searchParams;
-  const [t, tt, tp, tn, tu, grants, notifications, photoVersion, unlockRequests] = await Promise.all([
+  const [t, tt, tp, tn, tu, grants, notifications, photoVersion, unlockRequests, titles] = await Promise.all([
     getTranslations("account"),
     getTranslations("titles"),
     getTranslations("profile"),
@@ -89,6 +89,7 @@ export default async function AccountPage({
     notificationsForMember(member.code),
     avatarVersion(member.code),
     requestsThisMonth(member.code),
+    videoTitles(),
   ]);
   const unread = notifications.filter((n) => !n.read).length;
   const firstName = member.fullName?.trim().split(/\s+/)[0] ?? null;
@@ -98,8 +99,8 @@ export default async function AccountPage({
   if (grants.includes(GRANT_ALL_LIVES)) accessLines.push(t("accessAllLives"));
   if (!grants.includes(GRANT_ALL_VIDEOS)) {
     for (const g of grants.filter((k) => k.startsWith("video:"))) {
-      const video = VIDEOS.find((v) => `video:${v.slug}` === g);
-      if (video) accessLines.push(t("accessVideo", { title: video.title[locale] }));
+      const title = titles.get(g.slice("video:".length));
+      if (title) accessLines.push(t("accessVideo", { title: title[locale] }));
     }
   }
 
@@ -193,7 +194,7 @@ export default async function AccountPage({
             ) : (
               <ul className="divide-y divide-ink-100">
                 {unlockRequests.map((r) => {
-                  const video = VIDEOS.find((v) => v.slug === r.videoSlug);
+                  const video = titles.get(r.videoSlug);
                   return (
                     <li key={r.id} className="py-3.5 first:pt-0 last:pb-0">
                       <div className="flex flex-wrap items-start justify-between gap-2">
@@ -202,7 +203,7 @@ export default async function AccountPage({
                           dir="auto"
                           className="min-w-0 flex-1 font-semibold text-ink-900 hover:text-jade-700"
                         >
-                          {video?.title[locale] ?? r.videoSlug}
+                          {video?.[locale] ?? r.videoSlug}
                         </Link>
                         <Badge
                           tone={

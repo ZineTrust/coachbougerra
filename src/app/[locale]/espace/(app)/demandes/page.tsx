@@ -3,10 +3,10 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AppPageHeader } from "@/components/app/Card";
 import { RequestsInbox, type RequestItem } from "@/components/app/RequestsInbox";
 import type { Locale } from "@/i18n/routing";
-import { VIDEOS } from "@/lib/data";
 import { monthKey } from "@/lib/unlock";
 import { requireStaff } from "@/server/current";
 import { listDecided, listPending, type RequestWithMember } from "@/server/unlocks";
+import { videoTitles } from "@/server/videos";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/espace/demandes">): Promise<Metadata> {
   const { locale } = await params;
@@ -22,7 +22,7 @@ export default async function RequestsPage({ params }: PageProps<"/[locale]/espa
   await requireStaff("members_manage");
 
   const t = await getTranslations("space.requests");
-  const [pending, decided] = await Promise.all([listPending(), listDecided(60)]);
+  const [pending, decided, titles] = await Promise.all([listPending(), listDecided(60), videoTitles()]);
   const current = monthKey();
 
   const toItem = (r: RequestWithMember): RequestItem => ({
@@ -32,7 +32,7 @@ export default async function RequestsPage({ params }: PageProps<"/[locale]/espa
     city: r.member.city,
     title: r.member.title,
     ultimateCode: r.member.ultimateCode,
-    videoTitle: VIDEOS.find((v) => v.slug === r.videoSlug)?.title[locale] ?? r.videoSlug,
+    videoTitle: titles.get(r.videoSlug)?.[locale] ?? r.videoSlug,
     pvRequired: r.pvRequired,
     pvClaimed: r.pvClaimed,
     verifiedPv: r.verifiedPv,

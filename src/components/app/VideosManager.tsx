@@ -1,14 +1,14 @@
 "use client";
 
-import { useActionState, useState } from "react";
-import { Check, ExternalLink, Eye, Link2 } from "lucide-react";
+import { useActionState, useState, useTransition } from "react";
+import { ArrowDown, ArrowUp, Check, Eye, Pencil, Video as VideoIcon, VideoOff } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { setVideoPvAction, setVideoSourceAction } from "@/actions/unlocks";
+import { moveVideoAction, setVideoPvAction, setVideoStatusAction } from "@/actions/videos";
 import { initialState } from "@/actions/types";
 import { Badge } from "@/components/ui/Badge";
 import { useErrorText } from "@/components/ui/form";
 import { Thumb } from "@/components/video/Thumb";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import type { Video } from "@/lib/data";
 import { MAX_PV } from "@/lib/unlock";
@@ -65,58 +65,13 @@ function PvEditor({ slug, pv }: { slug: string; pv: number }) {
   );
 }
 
-/** Where the video is hosted: staff paste a YouTube or Vimeo link. Empty = no video yet. */
-function LinkEditor({ slug, link }: { slug: string; link: string }) {
-  const t = useTranslations("space.videos");
-  const err = useErrorText();
-  const [state, action, pending] = useActionState(setVideoSourceAction, initialState);
-  const shown = state.values?.link ?? link;
-
-  return (
-    <form action={action} className="flex flex-wrap items-center gap-2">
-      <input type="hidden" name="slug" value={slug} />
-      <label className="flex min-w-0 flex-1 basis-72 items-center gap-2">
-        <Link2 className="size-4 shrink-0 text-ink-400" aria-hidden />
-        <input
-          key={shown}
-          dir="ltr"
-          name="link"
-          type="text"
-          inputMode="url"
-          autoComplete="off"
-          maxLength={300}
-          defaultValue={shown}
-          placeholder={t("linkPlaceholder")}
-          aria-label={t("linkLabel")}
-          aria-invalid={state.errors?.link ? true : undefined}
-          className="h-9 min-w-0 flex-1 rounded-lg bg-white px-3 text-start text-sm ring-1 ring-ink-200 placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-jade-500"
-        />
-      </label>
-      <button
-        type="submit"
-        disabled={pending}
-        className="h-9 rounded-lg bg-jade-50 px-3 text-sm font-semibold text-jade-700 hover:bg-jade-100 disabled:opacity-50"
-      >
-        {t("linkSave")}
-      </button>
-      {state.ok && !pending && (
-        <span className="inline-flex items-center gap-1 text-xs font-semibold text-jade-700" role="status">
-          <Check className="size-3.5" strokeWidth={3} aria-hidden /> {shown ? t("linkSaved") : t("linkRemoved")}
-        </span>
-      )}
-      {(state.errors?.link || state.errors?.form) && (
-        <span role="alert" className="text-xs font-semibold text-live">
-          {err(state.errors?.link ?? state.errors?.form)}
-        </span>
-      )}
-    </form>
-  );
-}
-
-export function VideosManager({ videos, links }: { videos: Video[]; /** slug -> the video link already saved */ links: Record<string, string> }) {
+/** The list of formations: publish, reorder, change PV, open one to edit it. */
+export function VideosManager({ videos }: { videos: Video[] }) {
   const t = useTranslations();
   const locale = useLocale() as Locale;
+  const router = useRouter();
   const [filter, setFilter] = useState<Filter>("all");
+  const [pending, startTransition] = useTransition();
 
   const counts = {
     all: videos.length,
@@ -130,6 +85,23 @@ export function VideosManager({ videos, links }: { videos: Video[]; /** slug -> 
     { id: "published", label: t("space.videos.tabPublished") },
     { id: "draft", label: t("space.videos.tabDrafts") },
   ];
+
+  const run = (action: () => Promise<unknown>) =>
+    startTransition(async () => {
+      await action();
+      router.refresh();
+    });
+
+  if (videos.length === 0) {
+    return (
+      <p className="rounded-2xl bg-white px-6 py-16 text-center text-ink-500 shadow-card ring-1 ring-ink-900/5">
+        {t("space.videos.empty")}
+      </p>
+    );
+  }
+
+  const arrow =
+    "grid size-8 place-items-center rounded-lg text-ink-500 hover:bg-ivory-100 hover:text-ink-900 disabled:opacity-30 disabled:hover:bg-transparent";
 
   return (
     <div className="rounded-2xl bg-white shadow-card ring-1 ring-ink-900/5">
@@ -151,47 +123,108 @@ export function VideosManager({ videos, links }: { videos: Video[]; /** slug -> 
       </div>
 
       <ul className="divide-y divide-ink-100">
-        {shown.map((v) => (
+        {shown.map((v, i) => (
           <li key={v.slug} className="flex flex-col gap-4 p-4 sm:p-5">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-            <div className="flex min-w-0 flex-1 items-center gap-4">
-              <div className="w-28 shrink-0 overflow-hidden rounded-xl sm:w-32">
-                <Thumb video={v} showBadges={false} showPlay={false} />
+              <div className="flex min-w-0 flex-1 items-center gap-4">
+                {filter === "all" && (
+                  <div className="flex shrink-0 flex-col">
+                    <button
+                      type="button"
+                      className={arrow}
+                      disabled={pending || i === 0}
+                      onClick={() => run(() => moveVideoAction(v.slug, "up"))}
+                      aria-label={t("space.videos.moveUp")}
+                      title={t("space.videos.moveUp")}
+                    >
+                      <ArrowUp className="size-4" aria-hidden />
+                    </button>
+                    <button
+                      type="button"
+                      className={arrow}
+                      disabled={pending || i === shown.length - 1}
+                      onClick={() => run(() => moveVideoAction(v.slug, "down"))}
+                      aria-label={t("space.videos.moveDown")}
+                      title={t("space.videos.moveDown")}
+                    >
+                      <ArrowDown className="size-4" aria-hidden />
+                    </button>
+                  </div>
+                )}
+                <div className="w-28 shrink-0 overflow-hidden rounded-xl sm:w-32">
+                  <Thumb video={v} showBadges={false} showPlay={false} />
+                </div>
+                <div className="min-w-0">
+                  <p dir="auto" className="line-clamp-2 text-[15px] font-bold leading-snug">
+                    {v.title[locale]}
+                  </p>
+                  <p className="mt-1 text-sm text-ink-500">
+                    {t(`categories.${v.category}`)}
+                    {v.duration > 0 && (
+                      <>
+                        {" · "}
+                        <bdi>{formatDuration(v.duration)}</bdi>
+                      </>
+                    )}
+                    {v.status === "published" && ` · ${formatDaysAgo(v.daysAgo, locale)}`}
+                  </p>
+                  <p
+                    className={cn(
+                      "mt-1 inline-flex items-center gap-1.5 text-xs font-semibold",
+                      v.hasVideo ? "text-jade-700" : "text-gold-600",
+                    )}
+                  >
+                    {v.hasVideo ? (
+                      <VideoIcon className="size-3.5" aria-hidden />
+                    ) : (
+                      <VideoOff className="size-3.5" aria-hidden />
+                    )}
+                    {v.hasVideo ? t("space.videos.hasVideo") : t("space.videos.noVideo")}
+                  </p>
+                </div>
               </div>
-              <div className="min-w-0">
-                <p className="line-clamp-2 text-[15px] font-bold leading-snug">{v.title[locale]}</p>
-                <p className="mt-1 text-sm text-ink-500">
-                  {t(`categories.${v.category}`)} · <bdi>{formatDuration(v.duration)}</bdi>
-                  {v.status === "published" && ` · ${formatDaysAgo(v.daysAgo, locale)}`}
-                </p>
+
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:justify-end">
+                <PvEditor slug={v.slug} pv={v.pv} />
+                <Badge tone={v.status === "published" ? "free" : "neutral"}>
+                  {v.status === "published" ? t("space.videos.published") : t("space.videos.draft")}
+                </Badge>
+                <span className="inline-flex min-w-16 items-center gap-1.5 text-sm text-ink-500">
+                  <Eye className="size-4" aria-hidden />
+                  {formatNumber(v.views)}
+                </span>
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:justify-end">
-              <PvEditor slug={v.slug} pv={v.pv} />
-              <Badge tone={v.status === "published" ? "free" : "neutral"}>
-                {v.status === "published" ? t("space.videos.published") : t("space.videos.draft")}
-              </Badge>
-              <span className="inline-flex min-w-16 items-center gap-1.5 text-sm text-ink-500">
-                <Eye className="size-4" aria-hidden />
-                {formatNumber(v.views)}
-              </span>
-              {v.status === "published" ? (
-                <Link
-                  href={`/videos/${v.slug}`}
-                  className="inline-flex items-center gap-1.5 text-sm font-bold text-jade-700 hover:text-jade-600"
-                >
-                  {t("space.videos.view")} <ExternalLink className="size-3.5" aria-hidden />
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-bold">
+              <Link
+                href={`/espace/videos/${v.slug}`}
+                className="inline-flex items-center gap-1.5 text-jade-700 hover:text-jade-600"
+              >
+                <Pencil className="size-3.5" aria-hidden /> {t("space.videos.edit")}
+              </Link>
+              <button
+                type="button"
+                disabled={pending}
+                onClick={() =>
+                  run(() => setVideoStatusAction(v.slug, v.status === "published" ? "draft" : "published"))
+                }
+                className="text-ink-600 hover:text-ink-900 disabled:opacity-50"
+              >
+                {v.status === "published" ? t("space.videos.unpublish") : t("space.videos.publishNow")}
+              </button>
+              {v.status === "published" && (
+                <Link href={`/videos/${v.slug}`} className="text-ink-500 hover:text-ink-900">
+                  {t("space.videos.view")}
                 </Link>
-              ) : (
-                <span className="w-10" aria-hidden />
               )}
             </div>
-            </div>
-            <LinkEditor slug={v.slug} link={links[v.slug] ?? ""} />
           </li>
         ))}
       </ul>
+      {filter === "all" && (
+        <p className="border-t border-ink-100 px-5 py-3 text-[13px] text-ink-500">{t("space.videos.orderHelp")}</p>
+      )}
     </div>
   );
 }

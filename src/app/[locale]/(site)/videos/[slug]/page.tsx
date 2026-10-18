@@ -18,26 +18,19 @@ import { Player } from "@/components/video/Player";
 import { RequestUnlockForm } from "@/components/video/RequestUnlockForm";
 import { VideoRow } from "@/components/video/VideoRow";
 import { Link } from "@/i18n/navigation";
-import { routing, type Locale } from "@/i18n/routing";
-import { PUBLIC_VIDEOS, getPublicVideo } from "@/lib/data";
+import type { Locale } from "@/i18n/routing";
 import { lastDayOfMonth } from "@/lib/unlock";
 import { formatDate, formatDaysAgo } from "@/lib/utils";
 import { currentMember } from "@/server/current";
 import { doneKeys } from "@/server/engagement";
 import { requestsThisMonth, videoAccessFor } from "@/server/unlocks";
-import { getPublicVideoWithPv, getVideoSource, listPublicVideos } from "@/server/videos";
+import { getPublicVideoWithPv, getVideoSource, listPublicVideos, recordView } from "@/server/videos";
 
 type Props = PageProps<"/[locale]/videos/[slug]">;
 
-export function generateStaticParams() {
-  return routing.locales.flatMap((locale) =>
-    PUBLIC_VIDEOS.map((v) => ({ locale, slug: v.slug })),
-  );
-}
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, slug } = await params;
-  const video = getPublicVideo(slug);
+  const video = await getPublicVideoWithPv(slug);
   if (!video) return {};
   return { title: video.title[locale as Locale], description: video.description[locale as Locale] };
 }
@@ -66,6 +59,8 @@ export default async function VideoPage({ params }: Props) {
   const locked = !open;
   // the video's address is only handed to someone who may watch it
   const source = open ? await getVideoSource(video.slug) : null;
+  // counted once per member who opens a formation they may watch
+  if (member && open) await recordView(video.slug, member.code);
 
   // this month's latest request for this formation (newest first)
   const mine = requests.find((r) => r.videoSlug === video.slug);
@@ -109,15 +104,17 @@ export default async function VideoPage({ params }: Props) {
               </span>
             )}
           </div>
-          <h1 className="mt-3 font-display text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
+          <h1 dir="auto" className="mt-3 font-display text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
             {video.title[locale]}
           </h1>
           <dl className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-ink-500">
-            <div className="flex items-center gap-1.5">
-              <Clock className="size-4" aria-hidden />
-              <dt className="sr-only">{t("video.duration")}</dt>
-              <dd>{t("common.min", { count: Math.round(video.duration / 60) })}</dd>
-            </div>
+            {video.duration > 0 && (
+              <div className="flex items-center gap-1.5">
+                <Clock className="size-4" aria-hidden />
+                <dt className="sr-only">{t("video.duration")}</dt>
+                <dd>{t("common.min", { count: Math.round(video.duration / 60) })}</dd>
+              </div>
+            )}
             <div className="flex items-center gap-1.5">
               <Eye className="size-4" aria-hidden />
               <dt className="sr-only">{t("video.viewsLabel")}</dt>
@@ -126,7 +123,7 @@ export default async function VideoPage({ params }: Props) {
             <div>{t("video.ago", { when: formatDaysAgo(video.daysAgo, locale) })}</div>
           </dl>
 
-          <p className="mt-6 max-w-3xl text-[17px] leading-relaxed text-ink-600">
+          <p dir="auto" className="mt-6 max-w-3xl whitespace-pre-line text-[17px] leading-relaxed text-ink-600">
             {video.description[locale]}
           </p>
 

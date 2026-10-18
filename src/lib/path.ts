@@ -2,18 +2,17 @@ import type { MemberTitle } from "./permissions";
 
 /*
   "Mon parcours": the steps suggested to a member, depending on the rank they
-  chose at sign-up. Titles come from the formations / scripts themselves, so a
-  step is just a kind and an optional reference.
-
-  SAMPLE: built on the sample formations in data.ts. When real formations are
-  published, these lists move into the workspace.
+  chose at sign-up. A "video" step takes the next published formation, in the
+  order the team set in the workspace (so the first formations are the "start
+  here" ones); if there are fewer formations than video steps, the extra steps
+  simply don't appear. Scripts are the toolbox ones (src/lib/toolbox.ts).
 */
 
 export type StepKind = "profile" | "video" | "toolbox" | "live";
 
 export interface PathStep {
   kind: StepKind;
-  /** video slug or toolbox script id */
+  /** formation slug (filled in by resolvePath) or toolbox script id */
   ref?: string;
 }
 
@@ -21,47 +20,65 @@ export interface PathStep {
 export const stepKey = (s: PathStep) =>
   s.kind === "video" ? `video:${s.ref}` : s.kind === "toolbox" ? `toolbox:${s.ref}` : s.kind;
 
-export const PATHS: Record<MemberTitle, PathStep[]> = {
+const TEMPLATES: Record<MemberTitle, PathStep[]> = {
   consultant: [
     { kind: "profile" },
-    { kind: "video", ref: "bienvenue-par-ou-commencer" },
-    { kind: "video", ref: "sept-erreurs-du-debutant" },
+    { kind: "video" },
+    { kind: "video" },
     { kind: "toolbox", ref: "reprendre-contact" },
-    { kind: "video", ref: "demarrer-une-conversation" },
+    { kind: "video" },
     { kind: "live" },
-    { kind: "video", ref: "rester-constant" },
-    { kind: "video", ref: "connaitre-les-produits" },
-    { kind: "video", ref: "programme-30-premiers-jours" },
+    { kind: "video" },
+    { kind: "video" },
+    { kind: "video" },
   ],
   manager: [
     { kind: "profile" },
-    { kind: "video", ref: "presenter-lopportunite" },
+    { kind: "video" },
     { kind: "toolbox", ref: "presenter-simplement" },
-    { kind: "video", ref: "gerer-les-objections" },
+    { kind: "video" },
     { kind: "toolbox", ref: "trop-cher" },
     { kind: "live" },
-    { kind: "video", ref: "masterclass-batir-une-equipe" },
+    { kind: "video" },
     { kind: "toolbox", ref: "bienvenue-equipe" },
   ],
   senior_manager: [
     { kind: "profile" },
-    { kind: "video", ref: "masterclass-batir-une-equipe" },
+    { kind: "video" },
     { kind: "toolbox", ref: "point-hebdo" },
-    { kind: "video", ref: "reseaux-sociaux-bons-contacts" },
+    { kind: "video" },
     { kind: "toolbox", ref: "encourager" },
     { kind: "live" },
-    { kind: "video", ref: "rester-constant" },
+    { kind: "video" },
   ],
   director: [
     { kind: "profile" },
-    { kind: "video", ref: "masterclass-batir-une-equipe" },
+    { kind: "video" },
     { kind: "toolbox", ref: "encourager" },
     { kind: "toolbox", ref: "point-hebdo" },
-    { kind: "video", ref: "reseaux-sociaux-bons-contacts" },
+    { kind: "video" },
     { kind: "live" },
-    { kind: "video", ref: "rester-constant" },
+    { kind: "video" },
   ],
 };
+
+/**
+ * The member's path with each video step tied to a real formation: the published
+ * formations in the team's order, one per video step. `slugs` must already be in that order.
+ */
+export function resolvePath(title: MemberTitle, slugs: readonly string[]): PathStep[] {
+  let next = 0;
+  const steps: PathStep[] = [];
+  for (const step of TEMPLATES[title]) {
+    if (step.kind !== "video") {
+      steps.push(step);
+      continue;
+    }
+    const slug = slugs[next++];
+    if (slug !== undefined) steps.push({ kind: "video", ref: slug });
+  }
+  return steps;
+}
 
 export interface PathContext {
   profileComplete: boolean;

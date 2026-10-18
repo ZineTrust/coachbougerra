@@ -18,7 +18,7 @@ export function VideoRow({ video, unlocked = false }: { video: Video; unlocked?:
         <Thumb video={video} unlocked={unlocked} showBadges={false} showPlay={false} />
       </div>
       <div className="min-w-0 py-1">
-        <h3 className="line-clamp-2 text-sm font-bold leading-snug text-ink-900 group-hover:text-jade-700">
+        <h3 dir="auto" className="line-clamp-2 text-sm font-bold leading-snug text-ink-900 group-hover:text-jade-700">
           {video.title[locale]}
         </h3>
         <p className="mt-1.5 text-xs text-ink-500">{t(`categories.${video.category}`)}</p>

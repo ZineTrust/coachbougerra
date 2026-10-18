@@ -18,13 +18,6 @@ import { reserveInfos } from "@/server/reserve";
 import { videoAccessFor } from "@/server/unlocks";
 import { listPublicVideos } from "@/server/videos";
 
-const FEATURED_SLUGS = [
-  "bienvenue-par-ou-commencer",
-  "sept-erreurs-du-debutant",
-  "programme-30-premiers-jours",
-  "masterclass-batir-une-equipe",
-];
-
 export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
   setRequestLocale(locale as Locale);
@@ -33,7 +26,8 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const lives = upcomingLives();
   const [infos, videos, member] = await Promise.all([reserveInfos(lives), listPublicVideos(), currentMember()]);
   const canWatch = member ? await videoAccessFor(member.code) : null;
-  const featured = FEATURED_SLUGS.map((s) => videos.find((v) => v.slug === s)!);
+  // the first four, in the order the team set in the workspace
+  const featured = videos.slice(0, 4);
 
   const seeAll = "inline-flex items-center gap-2 text-sm font-bold text-jade-700 hover:text-jade-600";
 
@@ -72,11 +66,17 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
               </Link>
             }
           />
-          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {featured.map((v) => (
-              <VideoCard key={v.slug} video={v} unlocked={Boolean(canWatch?.(v.slug))} />
-            ))}
-          </div>
+          {featured.length > 0 ? (
+            <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {featured.map((v) => (
+                <VideoCard key={v.slug} video={v} unlocked={Boolean(canWatch?.(v.slug))} />
+              ))}
+            </div>
+          ) : (
+            <p className="mt-10 rounded-2xl bg-white px-6 py-14 text-center text-ink-500 shadow-card ring-1 ring-ink-900/5">
+              {t("courses.soon")}
+            </p>
+          )}
         </div>
       </section>
 

@@ -8,9 +8,8 @@ import { MemberUnlocks, type UnlockLine } from "@/components/app/MemberUnlocks";
 import { Button } from "@/components/ui/Button";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
-import { VIDEOS } from "@/lib/data";
 import { levelOf, pointsOf } from "@/lib/gamification";
-import { PATHS, isStepDone } from "@/lib/path";
+import { isStepDone, resolvePath } from "@/lib/path";
 import { lastDayOfMonth } from "@/lib/unlock";
 import { formatDate, formatDateTime } from "@/lib/utils";
 import { requireStaff } from "@/server/current";
@@ -18,7 +17,7 @@ import { doneKeys, statsFor } from "@/server/engagement";
 import { getGrants, getMember, isProfileComplete } from "@/server/members";
 import { can } from "@/server/staff";
 import { requestsThisMonth } from "@/server/unlocks";
-import { listPublicVideos } from "@/server/videos";
+import { listPublicVideos, videoTitles } from "@/server/videos";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/espace/membres/[code]">): Promise<Metadata> {
   const { locale, code } = await params;
@@ -39,15 +38,16 @@ export default async function MemberPage({ params }: PageProps<"/[locale]/espace
   const t = await getTranslations("space.members");
   const tt = await getTranslations("titles");
   const tp = await getTranslations("path");
-  const [grants, done, requests, publicVideos] = await Promise.all([
+  const [grants, done, requests, publicVideos, titles] = await Promise.all([
     getGrants(member.code),
     doneKeys(member.code),
     requestsThisMonth(member.code),
     listPublicVideos(),
+    videoTitles(),
   ]);
   const unlockLines: UnlockLine[] = requests.map((r) => ({
     id: r.id,
-    videoTitle: VIDEOS.find((v) => v.slug === r.videoSlug)?.title[locale] ?? r.videoSlug,
+    videoTitle: titles.get(r.videoSlug)?.[locale] ?? r.videoSlug,
     status: r.status,
     pvClaimed: r.pvClaimed,
     pvRequired: r.pvRequired,
@@ -59,7 +59,10 @@ export default async function MemberPage({ params }: PageProps<"/[locale]/espace
   const stats = await statsFor(member.code, profileComplete);
   const points = pointsOf(stats);
   const level = levelOf(points);
-  const steps = PATHS[member.title];
+  const steps = resolvePath(
+    member.title,
+    publicVideos.map((v) => v.slug),
+  );
   const stepsDone = steps.filter((s) =>
     isStepDone(s, { profileComplete, doneKeys: done, reservations: stats.reservations }),
   ).length;

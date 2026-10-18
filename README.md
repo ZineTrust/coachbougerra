@@ -3,9 +3,9 @@
 Live-streaming, formations and community platform for Coach Bougerra (Ultimate Health & Beauty),
 in **French and Arabic** (right-to-left).
 
-**Status: phase 2 — accounts, permissions, notifications and PV unlocks are real.** There is **no payment
-at all**: formations are unlocked with PV (see below). The live room is not built yet, and the formations /
-lives shown are still sample content.
+**Status: accounts, permissions, notifications, groups, formations and PV unlocks are real.** There is **no
+payment at all**: formations are unlocked with PV (see below). The live room is not built yet, and the lives
+shown are still sample content.
 
 ## Run it
 
@@ -54,11 +54,20 @@ No database to install: locally an embedded Postgres runs and stores its files i
   an unanswered request cannot be approved the month after, so on the 1st everything is locked again and members ask
   again: there is no job to run. Gifts (the grants above) are not affected. Staff with the *manage formations*
   permission change a formation's PV in Workspace → Formations (saved at once, applies to everyone).
-- **Videos**: each formation's video lives on YouTube or Vimeo; staff paste its link under the formation in
-  Workspace → Formations (needs the *manage formations* permission; an empty field = "Vidéo bientôt disponible").
-  Put the video on YouTube as **"Non répertoriée"** (unlisted). The link is only sent to members who may watch the
-  formation (a locked page does not contain it). This is not a lock: a member who has access could still share the
-  YouTube link; a host with signed links and DRM (Bunny Stream, Mux, VdoCipher…) is the next step if that matters.
+- **Formations** (Workspace → Formations, permission *manage formations*): "Nouvelle formation" creates one:
+  title and description in French and Arabic (at least one title; the other language shows the one written),
+  category, duration (optional), **PV required** (0 = free), the video link, and **draft / published**. A new
+  formation can announce itself to every member (notification + push). Each formation then has its own page with a
+  16:9 **cover image** (optional; without one a colour is used), a preview of the video and a delete button. The
+  **order of the list is the order members see**, and "Mon parcours" follows it (its video steps take the formations
+  one after the other; the home page shows the first four). Drafts and their covers are only visible to the team.
+  A formation's address (slug) comes from its title when it is created and never changes afterwards. Views are
+  counted once per member who opens a formation they may watch.
+- **Videos**: each formation's video lives on YouTube or Vimeo; staff paste its link in the formation (an empty
+  field = "Vidéo bientôt disponible"). Put the video on YouTube as **"Non répertoriée"** (unlisted). The link is
+  only sent to members who may watch the formation (a locked page does not contain it). This is not a lock: a member
+  who has access could still share the YouTube link; a host with signed links and DRM (Bunny Stream, Mux,
+  VdoCipher…) is the next step if that matters.
 - **Protected playback** (formations that need PV): the viewer's number and name drift over the picture, the picture
   goes black and the video pauses when the window loses focus, the tab is hidden or a screenshot key is pressed, and
   fullscreen is our own button (the host's is hidden) so the name stays on screen.
@@ -119,9 +128,9 @@ Please have a native speaker read through the Arabic before launch.
 - **Coach Bougerra's story** (`story.*` in both message files) is a **draft written without any personal
   details**. Replace it with his real story. Photos are in `public/images/`, referenced in
   `src/lib/data.ts` (`BRAND.photos`); captions are also in `story.*`.
-- **Sample content** (formations, lives): `src/lib/data.ts`. The default PV of each formation is `pv` there; staff
-  override it in the workspace (table `video_pv`). The home page section explaining the PV steps is
-  `src/components/site/UnlockSteps.tsx`.
+- **Sample content** (the lives only): `src/lib/data.ts`. Formations are created in the workspace (table `videos`,
+  `src/server/videos.ts`). The home page section explaining the PV steps is `src/components/site/UnlockSteps.tsx`;
+  the steps of "Mon parcours" per rank are in `src/lib/path.ts`.
 - **Colours & fonts**: design tokens at the top of `src/app/globals.css`.
 
 ## Database & going live
@@ -176,8 +185,7 @@ The site only needs a plain Postgres: it uses none of Supabase's own login, stor
 
 ## What is still sample / not built
 
-Formations and lives listings, the publish / schedule forms, and the pricing are placeholders;
-the demo player plays nothing. The member path (`src/lib/path.ts`) is built on the sample formations. **Next:**
-the live room (video calls, chat, hand-raise, screen share — LiveKit is the leading candidate), real video storage
-and publishing, e-mail notifications, password reset by e-mail. The "EN DIRECT" banner is
-already wired: the live room will plug into the same on-air switch.
+The lives listing and the "plan a live" form are placeholders (nothing is saved). **Next:**
+the live room (video calls, chat, hand-raise, screen share — LiveKit is the leading candidate), a video host with
+signed links / DRM if sharing of links becomes a problem, e-mail notifications, password reset by e-mail. The
+"EN DIRECT" banner is already wired: the live room will plug into the same on-air switch.

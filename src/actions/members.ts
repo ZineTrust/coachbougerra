@@ -1,11 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { VIDEOS } from "@/lib/data";
 import { GRANT_ALL_LIVES, GRANT_ALL_VIDEOS, videoGrant } from "@/lib/permissions";
 import { staffFor } from "@/server/current";
 import { generatePassword, hashPassword } from "@/server/password";
 import { destroyAllSessions } from "@/server/session";
+import { listVideos } from "@/server/videos";
 import {
   addGrants,
   getMember,
@@ -17,11 +17,14 @@ import type { FormState } from "./types";
 
 const memberCode = (fd: FormData) => Number(fd.get("code"));
 
-const ALLOWED_GRANTS = new Set<string>([
-  GRANT_ALL_VIDEOS,
-  GRANT_ALL_LIVES,
-  ...VIDEOS.map((v) => videoGrant(v.slug)),
-]);
+/** What can be granted: everything, or one formation (any formation the team has created). */
+async function allowedGrants() {
+  return new Set<string>([
+    GRANT_ALL_VIDEOS,
+    GRANT_ALL_LIVES,
+    ...(await listVideos()).map((v) => videoGrant(v.slug)),
+  ]);
+}
 
 /** Ticks on the member page: which videos / lives this member may access. */
 export async function setGrantsAction(_prev: FormState, fd: FormData): Promise<FormState> {
@@ -33,7 +36,8 @@ export async function setGrantsAction(_prev: FormState, fd: FormData): Promise<F
     return { errors: { form: "unknown_member" } };
   }
 
-  const keys = [...new Set(fd.getAll("grant").map(String))].filter((k) => ALLOWED_GRANTS.has(k));
+  const allowed = await allowedGrants();
+  const keys = [...new Set(fd.getAll("grant").map(String))].filter((k) => allowed.has(k));
   await replaceGrants(code, keys, staff.id);
 
   revalidatePath("/", "layout");
@@ -53,7 +57,8 @@ export async function addGrantsAction(_prev: FormState, fd: FormData): Promise<F
   if (codes.length === 0) return { errors: { form: "unknown_member" } };
   if (codes.length > 500) return { errors: { form: "too_many_codes" } };
 
-  const keys = [...new Set(fd.getAll("grant").map(String))].filter((k) => ALLOWED_GRANTS.has(k));
+  const allowed = await allowedGrants();
+  const keys = [...new Set(fd.getAll("grant").map(String))].filter((k) => allowed.has(k));
   if (keys.length === 0) return { errors: { form: "no_grants" } };
 
   const count = await addGrants(codes, keys, staff.id);

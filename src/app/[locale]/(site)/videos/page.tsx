@@ -27,7 +27,13 @@ export default async function VideosPage({ params }: PageProps<"/[locale]/videos
     <>
       <PageHeader eyebrow={t("eyebrow")} title={t.rich("title", emDark)} lead={t("lead")} />
       <section className="mx-auto max-w-7xl px-5 py-12 sm:px-8 lg:py-16">
-        <VideoLibrary videos={videos} unlockedSlugs={unlockedSlugs} />
+        {videos.length > 0 ? (
+          <VideoLibrary videos={videos} unlockedSlugs={unlockedSlugs} />
+        ) : (
+          <p className="rounded-2xl bg-white px-6 py-20 text-center text-lg text-ink-500 shadow-card ring-1 ring-ink-900/5">
+            {t("noneYet")}
+          </p>
+        )}
       </section>
     </>
   );

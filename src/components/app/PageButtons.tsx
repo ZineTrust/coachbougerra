@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { CalendarPlus, Upload, Video } from "lucide-react";
+import { CalendarPlus, Video } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button, type ButtonSize, type ButtonVariant } from "@/components/ui/Button";
-import { ComingSoonModal, PublishVideoModal, ScheduleLiveModal } from "./WorkspaceModals";
+import { ComingSoonModal, ScheduleLiveModal } from "./WorkspaceModals";
 
 /* Each button owns its modal so server pages can drop them in as plain elements. */
 
@@ -17,19 +17,6 @@ export function ScheduleLiveButton() {
         <CalendarPlus className="size-[18px]" aria-hidden /> {t("plan")}
       </Button>
       <ScheduleLiveModal open={open} onClose={() => setOpen(false)} />
-    </>
-  );
-}
-
-export function PublishVideoButton() {
-  const t = useTranslations("space.videos");
-  const [open, setOpen] = useState(false);
-  return (
-    <>
-      <Button onClick={() => setOpen(true)}>
-        <Upload className="size-[18px]" aria-hidden /> {t("publish")}
-      </Button>
-      <PublishVideoModal open={open} onClose={() => setOpen(false)} />
     </>
   );
 }

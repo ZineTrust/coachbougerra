@@ -129,23 +129,49 @@ create table if not exists live_status (
 );
 insert into live_status (id) values (1) on conflict (id) do nothing;
 
--- PV needed to unlock a formation, as set by staff. A formation without a row
--- here uses the default written in lib/data.ts.
-create table if not exists video_pv (
-  slug       text primary key,
-  pv         integer not null check (pv >= 0),
-  updated_by integer references staff(id) on delete set null,
+-- The formations. Title and description in both languages (at least one title is required;
+-- a missing language is filled from the other when shown). pv = PV needed to unlock, 0 = free.
+-- The video itself is hosted on YouTube / Vimeo: provider + ref say which one.
+create table if not exists videos (
+  id               serial primary key,
+  slug             text not null unique,
+  title_fr         text not null default '',
+  title_ar         text not null default '',
+  description_fr   text not null default '',
+  description_ar   text not null default '',
+  category         text not null
+                   check (category in ('network','leadership','prospecting','mindset','products')),
+  duration_seconds integer not null default 0 check (duration_seconds >= 0),
+  pv               integer not null default 0 check (pv >= 0),
+  provider         text check (provider in ('youtube','vimeo')),
+  ref              text,
+  status           text not null default 'draft' check (status in ('draft','published')),
+  position         integer not null default 0,
+  published_at     timestamptz,
+  created_by       integer references staff(id) on delete set null,
+  created_at       timestamptz not null default now(),
+  updated_at       timestamptz not null default now(),
+  constraint videos_has_title check (title_fr <> '' or title_ar <> '')
+);
+
+-- Optional cover image of a formation, already shrunk to a small JPEG (base64 text).
+create table if not exists video_covers (
+  slug       text primary key references videos(slug) on delete cascade,
+  data_b64   text not null,
   updated_at timestamptz not null default now()
 );
 
--- Where each formation's video is hosted (YouTube / Vimeo), set by staff.
-create table if not exists video_sources (
-  slug       text primary key,
-  provider   text not null check (provider in ('youtube','vimeo')),
-  ref        text not null,
-  updated_by integer references staff(id) on delete set null,
-  updated_at timestamptz not null default now()
+-- Which members opened which formation (one row each, so a view count is per member).
+create table if not exists video_views (
+  slug        text not null references videos(slug) on delete cascade,
+  member_code integer not null references members(code) on delete cascade,
+  first_at    timestamptz not null default now(),
+  primary key (slug, member_code)
 );
+
+-- From the first version, where PV and the link were kept apart (sample data only).
+drop table if exists video_pv;
+drop table if exists video_sources;
 
 -- A member asking to unlock a formation because they earned enough PV on Ultimate
 -- this month. Staff check the PV on the member's Ultimate account, then approve.

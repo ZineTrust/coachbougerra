@@ -21,7 +21,7 @@ import { emDark } from "@/components/ui/rich";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { BADGES, POINTS, badgesOf, levelOf, pointsOf, type BadgeId } from "@/lib/gamification";
-import { PATHS, isStepDone, stepKey, type PathStep } from "@/lib/path";
+import { isStepDone, resolvePath, stepKey, type PathStep } from "@/lib/path";
 import { getScript } from "@/lib/toolbox";
 import { cn } from "@/lib/utils";
 import { requireMember } from "@/server/current";
@@ -70,7 +70,10 @@ export default async function PathPage({ params }: PageProps<"/[locale]/mon-parc
   const badges = badgesOf(stats);
   const earnedCount = badges.filter((b) => b.earned).length;
 
-  const steps = PATHS[member.title].map((step) => ({
+  const steps = resolvePath(
+    member.title,
+    videos.map((v) => v.slug),
+  ).map((step) => ({
     step,
     done: isStepDone(step, { profileComplete, doneKeys: done, reservations: stats.reservations }),
   }));

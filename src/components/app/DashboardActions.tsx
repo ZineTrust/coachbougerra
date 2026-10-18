@@ -4,9 +4,9 @@ import { useState } from "react";
 import { Bell, CalendarPlus, KeyRound, LogIn, MessageSquare, Upload, Users, Video } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ActionTile } from "./ActionTile";
-import { ComingSoonModal, PublishVideoModal, ScheduleLiveModal } from "./WorkspaceModals";
+import { ComingSoonModal, ScheduleLiveModal } from "./WorkspaceModals";
 
-type Modal = "start" | "join" | "schedule" | "publish" | null;
+type Modal = "start" | "join" | "schedule" | null;
 
 /** Zoom-style home tiles. Each one only appears if this staff account may use it. */
 export function DashboardActions({
@@ -37,7 +37,7 @@ export function DashboardActions({
           </>
         )}
         {can.videos && (
-          <ActionTile icon={Upload} label={d("publishVideo")} tone="ink" onClick={() => setModal("publish")} />
+          <ActionTile icon={Upload} label={d("publishVideo")} tone="ink" href="/espace/videos/nouvelle" />
         )}
         {can.messages && (
           <ActionTile icon={MessageSquare} label={d("readMessages")} href="/espace/messages" />
@@ -60,7 +60,6 @@ export function DashboardActions({
           <ScheduleLiveModal open={modal === "schedule"} onClose={close} />
         </>
       )}
-      {can.videos && <PublishVideoModal open={modal === "publish"} onClose={close} />}
     </>
   );
 }

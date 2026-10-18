@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
+import { Plus } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AppPageHeader } from "@/components/app/Card";
-import { PublishVideoButton } from "@/components/app/PageButtons";
 import { VideosManager } from "@/components/app/VideosManager";
+import { Button } from "@/components/ui/Button";
 import type { Locale } from "@/i18n/routing";
 import { requireStaff } from "@/server/current";
-import { sourceToLink } from "@/lib/video-source";
-import { listVideoSources, listVideos } from "@/server/videos";
+import { listVideos } from "@/server/videos";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/espace/videos">): Promise<Metadata> {
   const { locale } = await params;
@@ -20,18 +20,23 @@ export default async function WorkspaceVideos({ params }: PageProps<"/[locale]/e
   await requireStaff("videos_manage");
 
   const t = await getTranslations("space.videos");
-  const common = await getTranslations("common");
-  const [videos, sources] = await Promise.all([listVideos(), listVideoSources()]);
-  const links = Object.fromEntries([...sources].map(([slug, source]) => [slug, sourceToLink(source)]));
+  const videos = await listVideos();
 
   return (
     <>
-      <AppPageHeader title={t("title")} subtitle={t("subtitle")} action={<PublishVideoButton />} />
+      <AppPageHeader
+        title={t("title")}
+        subtitle={t("subtitle")}
+        action={
+          <Button href="/espace/videos/nouvelle">
+            <Plus className="size-[18px]" aria-hidden /> {t("newVideo")}
+          </Button>
+        }
+      />
       <p className="mt-4 max-w-3xl text-sm leading-relaxed text-ink-500">{t("linkHelp")}</p>
       <div className="mt-6">
-        <VideosManager videos={videos} links={links} />
+        <VideosManager videos={videos} />
       </div>
-      <p className="mt-4 text-xs text-ink-400">{common("sampleNote")}</p>
     </>
   );
 }
