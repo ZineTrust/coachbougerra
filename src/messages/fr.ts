@@ -262,7 +262,7 @@ export const fr = {
     metaTitle: "Mes groupes",
     eyebrow: "Mes groupes",
     title: "Discutez en <em>petits groupes</em>.",
-    lead: "Créez un groupe, invitez vos amis avec leur code membre et échangez entre vous. Coach Bougerra crée aussi des groupes officiels, par exemple pour tous les Managers.",
+    lead: "Créez un groupe, invitez vos amis avec leur code membre et échangez entre vous.",
     invitationsTitle: "Invitations",
     invitedBy: "Invité par {name}",
     invitedByCode: "Invité par le membre n°{code}",
