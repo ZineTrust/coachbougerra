@@ -7,8 +7,6 @@
 # deleted after a limited period. Switch both to a paid plan before the real launch
 # (Dashboard -> the service -> Settings -> Instance Type / Plan).
 
-# NOT used by the site any more (DATABASE_URL points to Supabase). Kept until the move is
-# confirmed, then delete this block and the database in the dashboard.
 databases:
   - name: coach-bougerra-db
     region: frankfurt
@@ -32,11 +30,13 @@ services:
     envVars:
       - key: NODE_VERSION
         value: "22"
-      # The Postgres address. Set it yourself in the dashboard (Environment): the Supabase
-      # "Session pooler" connection string (see README). Not taken from the Render database
-      # above any more, which only stays until the move is done and can then be deleted.
+      # The Postgres address: for now the Render database above. To move to Supabase (see
+      # README, "Database on Supabase"), replace this entry with `- key: DATABASE_URL` +
+      # `sync: false` and set the Supabase "Session pooler" string in the dashboard.
       - key: DATABASE_URL
-        sync: false
+        fromDatabase:
+          name: coach-bougerra-db
+          property: connectionString
       # The owner account is created from these the very first time the site starts.
       - key: OWNER_NAME
         value: Coach Bougerra
