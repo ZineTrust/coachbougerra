@@ -1076,6 +1076,8 @@ export const fr = {
       tipIphone:
         "iPhone : Réglages → Appareil photo → Formats → « Le plus compatible », pour que la vidéo se lise partout.",
       linkInstead: "Ou utiliser un lien YouTube / Vimeo à la place",
+      createNext:
+        "Après avoir cliqué sur « Créer la formation », vous arrivez sur la page de la formation : c'est là que vous envoyez la vidéo depuis votre téléphone.",
     },
     groups: {
       metaTitle: "Groupes",

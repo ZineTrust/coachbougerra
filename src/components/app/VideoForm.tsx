@@ -167,6 +167,8 @@ export function VideoForm({ initial }: { initial: VideoFormInitial | null }) {
       {errors.form && <Notice tone="error">{err(errors.form)}</Notice>}
       {state.ok && initial && <Notice tone="success">{t("saved")}</Notice>}
 
+      {!initial && <p className="text-[13px] leading-snug text-ink-500">{t("createNext")}</p>}
+
       <Button type="submit" size="lg" disabled={pending} className="w-full sm:w-auto">
         {initial ? (
           t("save")
