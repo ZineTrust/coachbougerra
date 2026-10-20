@@ -6,6 +6,7 @@ import { VideoForm } from "@/components/app/VideoForm";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { requireStaff } from "@/server/current";
+import { MAX_VIDEO_BYTES, storageConfigured } from "@/server/storage";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/espace/videos/nouvelle">): Promise<Metadata> {
   const { locale } = await params;
@@ -31,7 +32,7 @@ export default async function NewVideoPage({ params }: PageProps<"/[locale]/espa
         <AppPageHeader title={t("formTitleCreate")} subtitle={t("createSubtitle")} />
       </div>
       <Card className="mt-8">
-        <VideoForm initial={null} />
+        <VideoForm initial={null} storageReady={storageConfigured()} maxBytes={MAX_VIDEO_BYTES} />
       </Card>
     </>
   );

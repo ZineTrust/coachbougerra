@@ -117,6 +117,9 @@ export async function saveVideoAction(_prev: FormState, fd: FormData): Promise<F
       await announce(created, input.titleFr, input.titleAr, staff.id);
     }
     revalidatePath("/", "layout");
+    // the new-formation form sends the video right after creating it, so it needs the address back
+    // instead of being redirected (it goes to the formation's page itself once the video is sent)
+    if (text(fd, "stay") === "1") return { ok: true, info: { slug: created } };
     redirect({ href: `/espace/videos/${created}?cree=1`, locale: await getLocale() });
     return { ok: true };
   }

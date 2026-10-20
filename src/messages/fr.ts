@@ -987,7 +987,7 @@ export const fr = {
       formTitleCreate: "Nouvelle formation",
       formTitleEdit: "Modifier la formation",
       createSubtitle:
-        "Donnez un titre, choisissez les PV demandés et enregistrez. Vous enverrez ensuite la vidéo depuis votre téléphone, avec une image de couverture.",
+        "Donnez un titre, choisissez les PV demandés et la vidéo dans la galerie de votre téléphone, puis créez la formation. Vous pourrez ensuite ajouter une image de couverture.",
       back: "Toutes les formations",
       fieldTitleFr: "Titre (français)",
       titleFrPlaceholder: "Ex. : Présenter l'opportunité sans forcer",
@@ -1077,7 +1077,14 @@ export const fr = {
         "iPhone : Réglages → Appareil photo → Formats → « Le plus compatible », pour que la vidéo se lise partout.",
       linkInstead: "Ou utiliser un lien YouTube / Vimeo à la place",
       createNext:
-        "Après avoir cliqué sur « Créer la formation », vous arrivez sur la page de la formation : c'est là que vous envoyez la vidéo depuis votre téléphone.",
+        "Un seul clic : la formation est créée, puis la vidéo est envoyée. Gardez cette page ouverte jusqu'à la fin.",
+      videoPick: "Choisir la vidéo dans la galerie",
+      videoChange: "Choisir une autre vidéo",
+      videoUnpick: "Ne pas envoyer cette vidéo",
+      creating: "Création de la formation…",
+      createAndSend: "Créer et envoyer la vidéo",
+      createdWithVideo:
+        "Formation créée et vidéo envoyée. Vérifiez-la dans l'aperçu, puis ajoutez une image de couverture.",
     },
     groups: {
       metaTitle: "Groupes",

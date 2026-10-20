@@ -56,15 +56,17 @@ No database to install: locally an embedded Postgres runs and stores its files i
   permission change a formation's PV in Workspace → Formations (saved at once, applies to everyone).
 - **Formations** (Workspace → Formations, permission *manage formations*): "Nouvelle formation" creates one:
   title and description in French and Arabic (at least one title; the other language shows the one written),
-  category, duration (optional), **PV required** (0 = free), and **draft / published**. A new
+  category, duration (optional), **PV required** (0 = free), the **video picked in the phone's gallery** (see
+  "Videos" below; one tap creates the formation and sends the video) and **draft / published**. A new
   formation can announce itself to every member (notification + push). Each formation then has its own page, where
-  the **video is sent from the phone** (see "Videos" below), with a 16:9 **cover image** (optional; without one a
+  the video can be replaced or removed, with a 16:9 **cover image** (optional; without one a
   colour is used), a preview of the video and a delete button. The
   **order of the list is the order members see**, and "Mon parcours" follows it (its video steps take the formations
   one after the other; the home page shows the first four). Drafts and their covers are only visible to the team.
   A formation's address (slug) comes from its title when it is created and never changes afterwards. Views are
   counted once per member who opens a formation they may watch.
-- **Videos**: on the formation's page the team picks the video in the phone's gallery (or films it) and it is sent
+- **Videos**: in the new-formation form (or later on the formation's page) the team picks the video in the phone's
+  gallery (or films it) and it is sent
   **straight to the storage** (Backblaze B2, see "Videos on Backblaze B2" below) in pieces of 16 MB, three at a time,
   with a progress bar. The page must stay open; a dropped connection only costs one piece, and picking the same file
   again carries on from where it stopped (the unfinished upload is remembered in `video_uploads`). MP4, MOV (iPhone)

@@ -33,10 +33,20 @@ export default async function EditVideoPage({ params, searchParams }: Props) {
 
   const record = await getVideoRecord(slug);
   if (!record) notFound();
-  const { cree } = await searchParams;
+  const { cree, envoi } = await searchParams;
 
   const t = await getTranslations("space.videos");
+  const te = await getTranslations("errors");
   const { video } = record;
+
+  // the new-formation form sends people here with the reason its video did not get through
+  const known = ["video_too_big", "unsupported_video", "upload_failed", "upload_incomplete", "unknown_upload", "storage_off", "forbidden"] as const;
+  const code = typeof envoi === "string" ? envoi : "";
+  const sendProblem = !code
+    ? null
+    : (known as readonly string[]).includes(code)
+      ? te(code as (typeof known)[number])
+      : t("uploadStopped");
 
   const storageReady = storageConfigured();
   const [pending, used] = storageReady ? await Promise.all([getPendingUpload(slug), storageUsedBytes()]) : [null, 0];
@@ -72,7 +82,7 @@ export default async function EditVideoPage({ params, searchParams }: Props) {
       </div>
       {cree !== undefined && (
         <div className="mt-4">
-          <Notice tone="success">{t("created")}</Notice>
+          <Notice tone="success">{cree === "video" ? t("createdWithVideo") : t("created")}</Notice>
         </div>
       )}
 
@@ -86,6 +96,7 @@ export default async function EditVideoPage({ params, searchParams }: Props) {
                 pending={pending ? { fileName: pending.fileName, bytes: pending.bytes } : null}
                 storageReady={storageReady}
                 maxBytes={MAX_VIDEO_BYTES}
+                notice={sendProblem ? { tone: "error", text: sendProblem } : null}
               />
               {storageReady && (
                 <p className="mt-4 text-[13px] text-ink-500">
