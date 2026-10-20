@@ -72,12 +72,13 @@ async function putRules(classic) {
     requestChecksumCalculation: "WHEN_REQUIRED",
     responseChecksumValidation: "WHEN_REQUIRED",
   });
-  plain.middlewareStack.add(
+  // must run just before the request is signed, otherwise the header would be signed and then missing
+  plain.middlewareStack.addRelativeTo(
     (next) => async (args) => {
       delete args.request.headers["x-amz-sdk-checksum-algorithm"];
       return next(args);
     },
-    { step: "finalizeRequest", priority: "high", name: "dropSdkChecksumMarker" },
+    { step: "finalizeRequest", relation: "before", toMiddleware: "httpSigningMiddleware", name: "dropSdkChecksumMarker" },
   );
   return plain.send(new PutBucketCorsCommand({ Bucket: bucket, ChecksumAlgorithm: "MD5", CORSConfiguration: rules }));
 }
