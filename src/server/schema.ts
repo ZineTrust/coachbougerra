@@ -283,6 +283,9 @@ create table if not exists group_messages (
   created_at  timestamptz not null default now()
 );
 create index if not exists group_messages_group_idx on group_messages (group_id, id);
+-- A voice note: the MP3 lives in the object storage (key below), body stays empty.
+alter table group_messages add column if not exists voice_key text;
+alter table group_messages add column if not exists voice_seconds integer;
 
 create table if not exists group_reads (
   group_id     integer not null references groups(id) on delete cascade,

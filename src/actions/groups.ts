@@ -34,6 +34,7 @@ import {
 } from "@/server/groups";
 import { sendPush } from "@/server/push";
 import { allow } from "@/server/rate-limit";
+import { deleteFiles } from "@/server/storage";
 import type { FormState } from "./types";
 
 const text = (fd: FormData, key: string) => String(fd.get(key) ?? "").trim();
@@ -166,7 +167,9 @@ export async function leaveGroupAction(groupId: number): Promise<FormState> {
   const access = Number.isInteger(groupId) ? await groupFor(groupId, member.code) : null;
   if (!access || access.group.kind !== "friends") return { errors: { form: "forbidden" } };
 
-  await leaveGroup(groupId, member.code);
+  // when the last member leaves, the group goes and so do its voice notes
+  const orphaned = await leaveGroup(groupId, member.code);
+  if (orphaned.length > 0) after(() => deleteFiles(orphaned));
   revalidatePath("/", "layout");
   redirect({ href: "/groupes", locale: await getLocale() });
   return { ok: true };
@@ -209,7 +212,8 @@ export async function deleteGroupAction(groupId: number): Promise<FormState> {
   const access = Number.isInteger(groupId) ? await groupFor(groupId, member.code) : null;
   if (!access?.isAdmin || access.group.kind !== "friends") return { errors: { form: "forbidden" } };
 
-  await deleteGroup(groupId);
+  const voiceFiles = await deleteGroup(groupId);
+  if (voiceFiles.length > 0) after(() => deleteFiles(voiceFiles));
   revalidatePath("/", "layout");
   redirect({ href: "/groupes", locale: await getLocale() });
   return { ok: true };
@@ -366,7 +370,8 @@ export async function staffDeleteGroupAction(groupId: number): Promise<FormState
   const staff = await staffFor("groups_manage");
   if (!staff) return { errors: { form: "forbidden" } };
   if (!Number.isInteger(groupId) || !(await getGroup(groupId))) return { errors: { form: "unknown_group" } };
-  await deleteGroup(groupId);
+  const voiceFiles = await deleteGroup(groupId);
+  if (voiceFiles.length > 0) after(() => deleteFiles(voiceFiles));
   revalidatePath("/", "layout");
   redirect({ href: "/espace/groupes", locale: await getLocale() });
   return { ok: true };

@@ -88,7 +88,7 @@ export default async function GroupsPage({ params }: PageProps<"/[locale]/groupe
                         </span>
                         <span dir="auto" className="mt-1 line-clamp-1 block text-sm text-ink-500">
                           {g.last
-                            ? `${g.last.author.fromStaff ? t("team") : (g.last.author.name ?? t("memberN", { code: g.last.author.code ?? 0 }))} : ${g.last.body}`
+                            ? `${g.last.author.fromStaff ? t("team") : (g.last.author.name ?? t("memberN", { code: g.last.author.code ?? 0 }))} : ${g.last.voice ? t("voiceNote") : g.last.body}`
                             : t("noMessages")}
                         </span>
                       </span>

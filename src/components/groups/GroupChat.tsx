@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
-import { Send, Trash2 } from "lucide-react";
+import { Mic, Send, Trash2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import {
   removeGroupMessageAction,
@@ -9,10 +9,12 @@ import {
   staffRemoveGroupMessageAction,
   staffSendGroupMessageAction,
 } from "@/actions/groups";
+import { VoiceBubble } from "@/components/groups/VoiceBubble";
 import { useErrorText } from "@/components/ui/form";
 import type { Locale } from "@/i18n/routing";
-import { GROUP_MESSAGE_MAX, GROUP_POLL_MS } from "@/lib/groups";
-import { cn, formatDateTime } from "@/lib/utils";
+import { GROUP_MESSAGE_MAX, GROUP_POLL_MS, VOICE_MAX_SECONDS } from "@/lib/groups";
+import { cn, formatDateTime, formatDuration } from "@/lib/utils";
+import { canRecordVoice, MicDenied, VoiceRecorder } from "@/lib/voice-recorder";
 
 interface Msg {
   id: number;
@@ -21,6 +23,8 @@ interface Msg {
   name: string | null;
   mine: boolean;
   body: string;
+  /** a voice note: its length in seconds */
+  voice: { seconds: number } | null;
   removed: boolean;
   createdAt: string;
 }
@@ -38,11 +42,14 @@ export function GroupChat({
   mode,
   canPostInitially,
   isAdminInitially,
+  voiceReady = false,
 }: {
   groupId: number;
   mode: "member" | "team";
   canPostInitially: boolean;
   isAdminInitially: boolean;
+  /** the storage for voice notes is set up */
+  voiceReady?: boolean;
 }) {
   const t = useTranslations("groups");
   const err = useErrorText();
@@ -55,6 +62,11 @@ export function GroupChat({
   const [text, setText] = useState("");
   const [formError, setFormError] = useState<string | undefined>();
   const [pending, startTransition] = useTransition();
+  // voice notes: the recording in progress, how long it is, and whether one is being sent
+  const [recorder, setRecorder] = useState<VoiceRecorder | null>(null);
+  const [elapsed, setElapsed] = useState(0);
+  const [sendingVoice, setSendingVoice] = useState(false);
+  const [voiceSupported, setVoiceSupported] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const stickToBottom = useRef(true);
   const lastId = useRef(0);
@@ -168,6 +180,82 @@ export function GroupChat({
     });
   };
 
+  // the microphone is only known in the browser
+  useEffect(() => {
+    const check = window.setTimeout(() => setVoiceSupported(voiceReady && canRecordVoice()), 0);
+    return () => window.clearTimeout(check);
+  }, [voiceReady]);
+
+  const startRecording = async () => {
+    setFormError(undefined);
+    try {
+      setRecorder(await VoiceRecorder.start());
+      setElapsed(0);
+    } catch (error) {
+      setFormError(error instanceof MicDenied ? "voice_denied" : "voice_unsupported");
+    }
+  };
+
+  const cancelRecording = () => {
+    recorder?.cancel();
+    setRecorder(null);
+  };
+
+  const sendRecording = async () => {
+    if (!recorder || sendingVoice) return;
+    const current = recorder;
+    setRecorder(null);
+    setSendingVoice(true);
+    try {
+      const { blob, seconds } = await current.stop();
+      if (seconds < 1 || blob.size === 0) {
+        setFormError("voice_short");
+        return;
+      }
+      const query = new URLSearchParams({ seconds: String(Math.min(seconds, VOICE_MAX_SECONDS)) });
+      if (mode === "team") query.set("as", "team");
+      const res = await fetch(`/api/groups/${groupId}/voice?${query}`, {
+        method: "POST",
+        headers: { "Content-Type": "audio/mpeg" },
+        body: blob,
+      });
+      if (res.ok) {
+        setFormError(undefined);
+        stickToBottom.current = true;
+        await load(false);
+      } else {
+        const data = (await res.json().catch(() => ({}))) as { error?: string };
+        const known = ["cannot_post", "too_many_attempts", "storage_off", "voice_invalid"];
+        setFormError(known.includes(data.error ?? "") ? data.error : "voice_failed");
+      }
+    } catch {
+      setFormError("voice_failed");
+    } finally {
+      setSendingVoice(false);
+    }
+  };
+
+  // while recording: show the time, and stop by itself at the limit
+  useEffect(() => {
+    if (!recorder) return;
+    const tick = window.setInterval(() => {
+      const seconds = recorder.seconds;
+      setElapsed(seconds);
+      if (seconds >= VOICE_MAX_SECONDS) void sendRecording();
+    }, 250);
+    return () => window.clearInterval(tick);
+    // sendRecording reads the current recorder, which is exactly what this effect depends on
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recorder]);
+
+  // leaving the page throws an unfinished recording away and frees the microphone
+  useEffect(
+    () => () => {
+      recorder?.cancel();
+    },
+    [recorder],
+  );
+
   const author = (m: Msg) =>
     m.fromStaff ? (m.name ?? t("team")) : (m.name ?? t("memberN", { code: m.code ?? 0 }));
 
@@ -221,14 +309,20 @@ export function GroupChat({
                     )}
                   </p>
                 )}
-                {m.removed && !m.body ? (
+                {m.removed && !m.body && !m.voice ? (
                   <p className="italic opacity-80">{t("deleted")}</p>
+                ) : m.voice ? (
+                  <VoiceBubble
+                    src={`/api/groups/${groupId}/voice/${m.id}${mode === "team" ? "?as=team" : ""}`}
+                    seconds={m.voice.seconds}
+                    mine={mine}
+                  />
                 ) : (
                   <p dir="auto" className={cn("whitespace-pre-line break-words", m.removed && "line-through")}>
                     {m.body}
                   </p>
                 )}
-                {m.removed && m.body && (
+                {m.removed && (m.body || m.voice) && (
                   <p className="mt-1 text-[10px] font-bold uppercase tracking-wide text-live">{t("deleted")}</p>
                 )}
                 <p className={cn("mt-1 text-[10px]", mine ? "text-white/70" : "text-ink-400")}>
@@ -254,6 +348,47 @@ export function GroupChat({
               {err(formError)}
             </p>
           )}
+          {recorder || sendingVoice ? (
+            <div className="flex items-center gap-2">
+              {recorder && (
+                <button
+                  type="button"
+                  onClick={cancelRecording}
+                  aria-label={t("voiceCancel")}
+                  title={t("voiceCancel")}
+                  className="grid size-11 shrink-0 place-items-center rounded-full text-ink-500 hover:bg-ivory-100 hover:text-live"
+                >
+                  <Trash2 className="size-[18px]" aria-hidden />
+                </button>
+              )}
+              <div
+                role="status"
+                className="flex h-11 min-w-0 flex-1 items-center gap-3 rounded-2xl bg-ivory-50 px-4 text-sm font-semibold ring-1 ring-ink-200"
+              >
+                {recorder ? (
+                  <>
+                    <span className="size-2.5 shrink-0 animate-pulse rounded-full bg-live" aria-hidden />
+                    <span dir="ltr" className="tabular-nums">
+                      {formatDuration(Math.floor(elapsed))}
+                    </span>
+                    <span className="truncate text-xs font-medium text-ink-500">{t("voiceRecording")}</span>
+                  </>
+                ) : (
+                  <span className="text-ink-500">{t("voiceSending")}</span>
+                )}
+              </div>
+              {recorder && (
+                <button
+                  type="button"
+                  onClick={() => void sendRecording()}
+                  aria-label={t("voiceSend")}
+                  className="grid size-11 shrink-0 place-items-center rounded-full bg-jade-600 text-white transition-colors hover:bg-jade-700"
+                >
+                  <Send className="flip-rtl size-[18px]" aria-hidden />
+                </button>
+              )}
+            </div>
+          ) : (
           <div className="flex items-end gap-2">
             <textarea
               value={text}
@@ -271,15 +406,28 @@ export function GroupChat({
               maxLength={GROUP_MESSAGE_MAX}
               className="max-h-28 min-h-11 flex-1 resize-none rounded-2xl bg-ivory-50 px-4 py-2.5 text-[15px] ring-1 ring-ink-200 placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-jade-500"
             />
-            <button
-              type="submit"
-              disabled={pending || !text.trim()}
-              aria-label={pending ? t("sending") : t("send")}
-              className="grid size-11 shrink-0 place-items-center rounded-full bg-jade-600 text-white transition-colors hover:bg-jade-700 disabled:opacity-40"
-            >
-              <Send className="flip-rtl size-[18px]" aria-hidden />
-            </button>
+            {voiceSupported && !text.trim() ? (
+              <button
+                type="button"
+                onClick={() => void startRecording()}
+                aria-label={t("voiceRecord")}
+                title={t("voiceRecord")}
+                className="grid size-11 shrink-0 place-items-center rounded-full bg-jade-600 text-white transition-colors hover:bg-jade-700"
+              >
+                <Mic className="size-[18px]" aria-hidden />
+              </button>
+            ) : (
+              <button
+                type="submit"
+                disabled={pending || !text.trim()}
+                aria-label={pending ? t("sending") : t("send")}
+                className="grid size-11 shrink-0 place-items-center rounded-full bg-jade-600 text-white transition-colors hover:bg-jade-700 disabled:opacity-40"
+              >
+                <Send className="flip-rtl size-[18px]" aria-hidden />
+              </button>
+            )}
           </div>
+          )}
         </form>
       ) : (
         <p className="border-t border-ink-100 bg-ivory-100 px-4 py-3 text-center text-sm text-ink-600">

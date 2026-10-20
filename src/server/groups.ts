@@ -30,7 +30,7 @@ export interface GroupSummary extends GroupRow {
   isAdmin: boolean;
   memberCount: number;
   unread: number;
-  last: { body: string; createdAt: Date; author: Author } | null;
+  last: { body: string; voice: boolean; createdAt: Date; author: Author } | null;
 }
 
 export interface Author {
@@ -45,6 +45,8 @@ export interface GroupMessage {
   id: number;
   author: Author;
   body: string;
+  /** a voice note (the text is empty); its audio is fetched from /api/groups/<id>/voice/<message> */
+  voice: { seconds: number } | null;
   removed: boolean;
   createdAt: Date;
 }
@@ -139,13 +141,15 @@ async function attachLast(groups: GroupSummary[]): Promise<GroupSummary[]> {
   const rows = await database.query<{
     group_id: number;
     body: string;
+    is_voice: boolean;
     created_at: Date;
     member_code: number | null;
     staff_id: number | null;
     full_name: string | null;
     staff_name: string | null;
   }>(
-    `select distinct on (gm.group_id) gm.group_id, gm.body, gm.created_at, gm.member_code, gm.staff_id,
+    `select distinct on (gm.group_id) gm.group_id, gm.body, gm.voice_key is not null as is_voice,
+            gm.created_at, gm.member_code, gm.staff_id,
             m.full_name, s.name as staff_name
        from group_messages gm
        left join members m on m.code = gm.member_code
@@ -163,6 +167,7 @@ async function attachLast(groups: GroupSummary[]): Promise<GroupSummary[]> {
         last: r
           ? {
               body: r.body,
+              voice: r.is_voice,
               createdAt: r.created_at,
               author: {
                 fromStaff: r.staff_id !== null,
@@ -303,7 +308,7 @@ export async function listMessages(
 ): Promise<GroupMessage[]> {
   const database = await db();
   const base = `select gm.id, gm.member_code, gm.staff_id, gm.body, gm.removed, gm.created_at,
-                       m.full_name, s.name as staff_name
+                       gm.voice_key, gm.voice_seconds, m.full_name, s.name as staff_name
                   from group_messages gm
                   left join members m on m.code = gm.member_code
                   left join staff s on s.id = gm.staff_id
@@ -315,6 +320,8 @@ export async function listMessages(
     body: string;
     removed: boolean;
     created_at: Date;
+    voice_key: string | null;
+    voice_seconds: number | null;
     full_name: string | null;
     staff_name: string | null;
   };
@@ -334,6 +341,7 @@ export async function listMessages(
       name: r.staff_id !== null ? r.staff_name : r.full_name,
     },
     body: r.removed && !opts.showRemoved ? "" : r.body,
+    voice: r.voice_key && (!r.removed || opts.showRemoved) ? { seconds: r.voice_seconds ?? 0 } : null,
     removed: r.removed,
     createdAt: r.created_at,
   }));
@@ -358,6 +366,47 @@ export async function addMessage(
     ],
   );
   return row.id;
+}
+
+/** A voice note: the MP3 is already stored under `key`. */
+export async function addVoiceMessage(
+  groupId: number,
+  from: { memberCode: number } | { staffId: number },
+  key: string,
+  seconds: number,
+): Promise<number> {
+  const database = await db();
+  const [row] = await database.query<{ id: number }>(
+    `insert into group_messages (group_id, member_code, staff_id, body, voice_key, voice_seconds)
+     values ($1::int, $2, $3, '', $4, $5::int) returning id`,
+    [
+      groupId,
+      "memberCode" in from ? from.memberCode : null,
+      "staffId" in from ? from.staffId : null,
+      key,
+      seconds,
+    ],
+  );
+  return row.id;
+}
+
+/** The stored file of a voice note (a removed one only for the team). */
+export async function voiceKeyFor(groupId: number, messageId: number, showRemoved: boolean): Promise<string | null> {
+  const database = await db();
+  const [row] = await database.query<{ voice_key: string | null; removed: boolean }>(
+    "select voice_key, removed from group_messages where id = $1::int and group_id = $2::int",
+    [messageId, groupId],
+  );
+  return row?.voice_key && (!row.removed || showRemoved) ? row.voice_key : null;
+}
+
+/** Every voice file of a group (to delete from the storage when the group goes). */
+async function voiceKeysOf(tx: { query: <T>(sql: string, params?: unknown[]) => Promise<T[]> }, groupId: number) {
+  const rows = await tx.query<{ voice_key: string }>(
+    "select voice_key from group_messages where group_id = $1::int and voice_key is not null",
+    [groupId],
+  );
+  return rows.map((r) => r.voice_key);
 }
 
 export async function markRead(groupId: number, code: number, upTo: number) {
@@ -491,9 +540,10 @@ export async function answerInvitation(groupId: number, code: number, accept: bo
  * A member leaves a group of friends. If they were the only admin, the longest-standing member
  * takes over; if nobody is left, the group is deleted.
  */
-export async function leaveGroup(groupId: number, code: number) {
+/** Returns the voice files to delete from the storage when the group disappeared because the last member left. */
+export async function leaveGroup(groupId: number, code: number): Promise<string[]> {
   const database = await db();
-  await database.transaction(async (tx) => {
+  return database.transaction(async (tx) => {
     await tx.query("delete from group_members where group_id = $1::int and member_code = $2::int", [
       groupId,
       code,
@@ -503,8 +553,9 @@ export async function leaveGroup(groupId: number, code: number) {
       [groupId],
     );
     if (n === 0) {
+      const keys = await voiceKeysOf(tx, groupId);
       await tx.query("delete from groups where id = $1::int", [groupId]);
-      return;
+      return keys;
     }
     const [{ admins }] = await tx.query<{ admins: number }>(
       `select count(*)::int as admins from group_members
@@ -521,6 +572,7 @@ export async function leaveGroup(groupId: number, code: number) {
         [groupId],
       );
     }
+    return [];
   });
 }
 
@@ -541,9 +593,14 @@ export async function renameGroup(groupId: number, name: string, description: st
   ]);
 }
 
-export async function deleteGroup(groupId: number) {
+/** Returns the voice files to delete from the storage. */
+export async function deleteGroup(groupId: number): Promise<string[]> {
   const database = await db();
-  await database.query("delete from groups where id = $1::int", [groupId]);
+  return database.transaction(async (tx) => {
+    const keys = await voiceKeysOf(tx, groupId);
+    await tx.query("delete from groups where id = $1::int", [groupId]);
+    return keys;
+  });
 }
 
 /* ---------------------------------- the team ---------------------------------- */

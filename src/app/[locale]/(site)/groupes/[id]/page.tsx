@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { GroupChat } from "@/components/groups/GroupChat";
+import { storageConfigured } from "@/server/storage";
 import { GroupPanel } from "@/components/groups/GroupPanel";
 import { Badge } from "@/components/ui/Badge";
 import { Link } from "@/i18n/navigation";
@@ -61,6 +62,7 @@ export default async function GroupPage({ params }: Props) {
             mode="member"
             canPostInitially={group.membersCanPost || isAdmin}
             isAdminInitially={isAdmin}
+            voiceReady={storageConfigured()}
           />
         </div>
         <GroupPanel

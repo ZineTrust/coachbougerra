@@ -4,6 +4,7 @@ import { ArrowLeft, Eye } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Card } from "@/components/app/Card";
 import { GroupChat } from "@/components/groups/GroupChat";
+import { storageConfigured } from "@/server/storage";
 import { OfficialGroupForm } from "@/components/groups/GroupForms";
 import { GroupPanel } from "@/components/groups/GroupPanel";
 import { Badge } from "@/components/ui/Badge";
@@ -57,7 +58,7 @@ export default async function WorkspaceGroup({ params }: Props) {
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[1fr_22rem]">
         <div className="min-w-0 space-y-3">
-          <GroupChat groupId={group.id} mode="team" canPostInitially isAdminInitially />
+          <GroupChat groupId={group.id} mode="team" canPostInitially isAdminInitially voiceReady={storageConfigured()} />
           <p className="flex items-start gap-2 text-[13px] leading-snug text-ink-500">
             <Eye className="mt-0.5 size-4 shrink-0" aria-hidden /> {t("readingAsTeam")}
           </p>

@@ -62,6 +62,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         name: m.author.name,
         mine: memberCode !== null && m.author.code === memberCode,
         body: m.body,
+        voice: m.voice,
         removed: m.removed,
         createdAt: m.createdAt.toISOString(),
       })),

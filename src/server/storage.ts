@@ -7,6 +7,7 @@ import {
   GetObjectCommand,
   HeadObjectCommand,
   ListPartsCommand,
+  PutObjectCommand,
   S3Client,
   UploadPartCommand,
 } from "@aws-sdk/client-s3";
@@ -173,6 +174,17 @@ export async function fileSize(key: string): Promise<number | null> {
   } catch {
     return null;
   }
+}
+
+/** Stores a small file (a voice note) in one go. */
+export async function putFile(key: string, body: Buffer, contentType: string) {
+  const { client, bucket } = connect();
+  await client.send(new PutObjectCommand({ Bucket: bucket, Key: key, Body: body, ContentType: contentType }));
+}
+
+/** Deletes several files (never fails: it is only clean-up). */
+export async function deleteFiles(keys: string[]) {
+  for (const key of keys) await deleteFile(key);
 }
 
 export async function deleteFile(key: string) {
