@@ -15,6 +15,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { changeMemberPasswordAction, logoutMemberAction } from "@/actions/auth";
 import { markAllReadAction } from "@/actions/notifications";
 import { CopyCode } from "@/components/account/CopyCode";
+import { GoalCard } from "@/components/account/GoalCard";
 import { ProfileForm } from "@/components/account/ProfileForm";
 import { PwaCard } from "@/components/account/PwaCard";
 import { MemberAvatar } from "@/components/ui/Avatar";
@@ -29,6 +30,7 @@ import { lastDayOfMonth } from "@/lib/unlock";
 import { formatDate, formatDateTime } from "@/lib/utils";
 import { requireMember } from "@/server/current";
 import { avatarVersion } from "@/server/engagement";
+import { goalCardProps } from "@/server/goal-card";
 import { getGrants, isProfileComplete } from "@/server/members";
 import { notificationsForMember } from "@/server/notifications";
 import { requestsThisMonth } from "@/server/unlocks";
@@ -79,7 +81,7 @@ export default async function AccountPage({
 
   const member = await requireMember();
   const { bienvenue } = await searchParams;
-  const [t, tt, tp, tn, tu, grants, notifications, photoVersion, unlockRequests, titles] = await Promise.all([
+  const [t, tt, tp, tn, tu, grants, notifications, photoVersion, unlockRequests, titles, goal] = await Promise.all([
     getTranslations("account"),
     getTranslations("titles"),
     getTranslations("profile"),
@@ -90,6 +92,7 @@ export default async function AccountPage({
     avatarVersion(member.code),
     requestsThisMonth(member.code),
     videoTitles(),
+    goalCardProps(member.code, locale),
   ]);
   const unread = notifications.filter((n) => !n.read).length;
   const firstName = member.fullName?.trim().split(/\s+/)[0] ?? null;
@@ -164,6 +167,8 @@ export default async function AccountPage({
 
       <section className="mx-auto grid max-w-7xl gap-6 px-5 py-10 sm:px-8 lg:grid-cols-[1.3fr_1fr] lg:py-14">
         <div className="space-y-6">
+          <GoalCard {...goal} />
+
           <Card id="profil" icon={UserRound} title={tp("title")}>
             {!isProfileComplete(member) && (
               <p className="mb-5 rounded-xl bg-gold-100 px-4 py-3 text-sm font-semibold text-ink-800">

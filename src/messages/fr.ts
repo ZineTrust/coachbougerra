@@ -264,6 +264,25 @@ export const fr = {
     pushError: "Impossible d'activer les notifications. Réessayez.",
   },
 
+  goal: {
+    title: "Mon objectif du mois",
+    lead: "Combien de PV visez-vous ce mois-ci ? Fixez un objectif et suivez votre avancée jour après jour.",
+    editLead: "Changez l'objectif de ce mois-ci.",
+    targetLabel: "Objectif (PV)",
+    setGoal: "Fixer mon objectif",
+    save: "Enregistrer",
+    cancel: "Annuler",
+    editGoal: "Modifier",
+    progressLabel: "Mes PV faits ce mois-ci",
+    remaining: "Il vous reste {remaining} PV.",
+    reached: "Objectif atteint, bravo !",
+    daysLeft: "{count, plural, one {# jour restant} other {# jours restants}}",
+    nextUnlock: "Encore {missing} PV pour pouvoir demander « {title} » ({pv} PV).",
+    previous: "{month} : {current} sur {target} PV",
+    selfNote:
+      "Ces chiffres sont les vôtres : ils ne débloquent rien tout seuls. Pour une formation, faites votre demande sur sa page : l'équipe vérifie vos PV sur Ultimate.",
+  },
+
   groups: {
     metaTitle: "Mes groupes",
     eyebrow: "Mes groupes",

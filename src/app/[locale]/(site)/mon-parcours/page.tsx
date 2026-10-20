@@ -13,6 +13,7 @@ import {
   Wrench,
 } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { GoalCard } from "@/components/account/GoalCard";
 import { ProgressRing } from "@/components/account/ProgressRing";
 import { PageHeader } from "@/components/site/PageHeader";
 import { MemberAvatar } from "@/components/ui/Avatar";
@@ -26,6 +27,7 @@ import { getScript } from "@/lib/toolbox";
 import { cn } from "@/lib/utils";
 import { requireMember } from "@/server/current";
 import { doneKeys, ranking, statsFor } from "@/server/engagement";
+import { goalCardProps } from "@/server/goal-card";
 import { isProfileComplete } from "@/server/members";
 import { videoAccessFor } from "@/server/unlocks";
 import { listPublicVideos } from "@/server/videos";
@@ -54,13 +56,14 @@ export default async function PathPage({ params }: PageProps<"/[locale]/mon-parc
   setRequestLocale(locale);
 
   const member = await requireMember();
-  const [t, tt, canWatch, videos, done, entries] = await Promise.all([
+  const [t, tt, canWatch, videos, done, entries, goal] = await Promise.all([
     getTranslations("path"),
     getTranslations("titles"),
     videoAccessFor(member.code),
     listPublicVideos(),
     doneKeys(member.code),
     ranking(100),
+    goalCardProps(member.code, locale),
   ]);
 
   const profileComplete = isProfileComplete(member);
@@ -160,6 +163,9 @@ export default async function PathPage({ params }: PageProps<"/[locale]/mon-parc
 
       <section className="mx-auto grid max-w-7xl gap-8 px-5 py-12 sm:px-8 lg:grid-cols-[1.4fr_1fr] lg:py-16">
         <div className="space-y-8">
+          {/* this month's PV goal */}
+          <GoalCard {...goal} />
+
           {/* what to do next */}
           {next && nextStep ? (
             <div className="rounded-2xl bg-jade-600 p-6 text-white shadow-lift sm:p-7">

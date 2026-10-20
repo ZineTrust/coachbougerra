@@ -284,6 +284,18 @@ create table if not exists group_reads (
   primary key (group_id, member_code)
 );
 
+-- A member's own PV goal for a month ("2026-10", Algiers time) and the PV they say they have made so
+-- far. It is their personal tracking: nothing is unlocked by it (unlocks go through unlock_requests,
+-- which the team checks on Ultimate). A new month simply has no row yet, so it starts empty.
+create table if not exists member_goals (
+  member_code integer not null references members(code) on delete cascade,
+  month       text not null,
+  target_pv   integer not null check (target_pv > 0),
+  current_pv  integer not null default 0 check (current_pv >= 0),
+  updated_at  timestamptz not null default now(),
+  primary key (member_code, month)
+);
+
 -- Row-level security on every table, with no policies. The website connects as the
 -- table owner (which is not affected), but a host that exposes the database through
 -- a public data API (Supabase does for the "public" schema) can then read nothing.

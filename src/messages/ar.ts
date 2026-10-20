@@ -266,6 +266,26 @@ export const ar: Messages = {
     pushError: "تعذّر تفعيل الإشعارات. أعد المحاولة.",
   },
 
+  goal: {
+    title: "هدفي لهذا الشهر",
+    lead: "كم نقطة PV تستهدف هذا الشهر؟ حدّد هدفًا وتابع تقدّمك يومًا بعد يوم.",
+    editLead: "غيّر هدف هذا الشهر.",
+    targetLabel: "الهدف (PV)",
+    setGoal: "تحديد هدفي",
+    save: "حفظ",
+    cancel: "إلغاء",
+    editGoal: "تعديل",
+    progressLabel: "نقاط PV التي حققتها هذا الشهر",
+    remaining: "بقي لك {remaining} PV.",
+    reached: "تم بلوغ الهدف، مبروك!",
+    daysLeft:
+      "{count, plural, one {بقي يوم واحد} two {بقي يومان} few {بقيت # أيام} many {بقي # يومًا} other {بقي # يوم}}",
+    nextUnlock: "بقي {missing} PV لتتمكن من طلب «{title}» ({pv} PV).",
+    previous: "{month}: {current} من {target} PV",
+    selfNote:
+      "هذه الأرقام من تسجيلك أنت: لا تفتح شيئًا بمفردها. لفتح دورة قدّم طلبك في صفحتها، ويتحقق الفريق من نقاطك على Ultimate.",
+  },
+
   groups: {
     metaTitle: "مجموعاتي",
     eyebrow: "مجموعاتي",
