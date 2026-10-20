@@ -169,15 +169,18 @@ export function VideoForm({ initial }: { initial: VideoFormInitial | null }) {
 
       {!initial && <p className="text-[13px] leading-snug text-ink-500">{t("createNext")}</p>}
 
-      <Button type="submit" size="lg" disabled={pending} className="w-full sm:w-auto">
-        {initial ? (
-          t("save")
-        ) : (
-          <>
-            <Plus className="size-[18px]" aria-hidden /> {t("create")}
-          </>
-        )}
-      </Button>
+      {/* on a phone the button stays at the bottom of the screen while the form is long, so it is never lost below the fold */}
+      <div className="sticky bottom-0 z-10 -mx-5 -mb-5 rounded-b-2xl border-t border-ink-100 bg-white/95 px-5 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur sm:static sm:mx-0 sm:mb-0 sm:rounded-none sm:border-0 sm:bg-transparent sm:p-0 sm:backdrop-blur-none">
+        <Button type="submit" size="lg" disabled={pending} className="w-full sm:w-auto">
+          {initial ? (
+            t("save")
+          ) : (
+            <>
+              <Plus className="size-[18px]" aria-hidden /> {t("create")}
+            </>
+          )}
+        </Button>
+      </div>
     </form>
   );
 }
