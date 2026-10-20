@@ -121,19 +121,25 @@ export function VideoForm({ initial }: { initial: VideoFormInitial | null }) {
         />
       </div>
 
-      <Field
-        label={t("fieldLink")}
-        hint={t("linkHint")}
-        name="link"
-        type="text"
-        inputMode="url"
-        autoComplete="off"
-        maxLength={300}
-        ltr
-        defaultValue={v("link")}
-        placeholder={t("linkPlaceholder")}
-        error={err(errors.link)}
-      />
+      {/* the video is normally sent from the phone (see VideoUploader); a link is the alternative */}
+      <details className="rounded-xl bg-ivory-50 px-4 py-3 ring-1 ring-ink-900/5" open={Boolean(v("link")) || undefined}>
+        <summary className="cursor-pointer text-sm font-semibold text-ink-700">{t("linkInstead")}</summary>
+        <div className="mt-3">
+          <Field
+            label={t("fieldLink")}
+            hint={t("linkHint")}
+            name="link"
+            type="text"
+            inputMode="url"
+            autoComplete="off"
+            maxLength={300}
+            ltr
+            defaultValue={v("link")}
+            placeholder={t("linkPlaceholder")}
+            error={err(errors.link)}
+          />
+        </div>
+      </details>
 
       <div className="space-y-3">
         <Segmented

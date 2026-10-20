@@ -143,7 +143,7 @@ create table if not exists videos (
                    check (category in ('network','leadership','prospecting','mindset','products')),
   duration_seconds integer not null default 0 check (duration_seconds >= 0),
   pv               integer not null default 0 check (pv >= 0),
-  provider         text check (provider in ('youtube','vimeo')),
+  provider         text check (provider in ('youtube','vimeo','file')),
   ref              text,
   status           text not null default 'draft' check (status in ('draft','published')),
   position         integer not null default 0,
@@ -167,6 +167,37 @@ create table if not exists video_views (
   member_code integer not null references members(code) on delete cascade,
   first_at    timestamptz not null default now(),
   primary key (slug, member_code)
+);
+
+-- A video uploaded from a phone lives in the object storage (see src/server/storage.ts):
+-- provider 'file', ref = the object's key, file_bytes = its size. Databases made before
+-- this existed only allowed 'youtube' and 'vimeo', so the check is widened once.
+alter table videos add column if not exists file_bytes bigint;
+do $$
+begin
+  if exists (
+    select 1 from pg_constraint
+     where conrelid = 'videos'::regclass and conname = 'videos_provider_check'
+       and pg_get_constraintdef(oid) not like '%file%'
+  ) then
+    alter table videos drop constraint videos_provider_check;
+    alter table videos add constraint videos_provider_check
+      check (provider in ('youtube','vimeo','file'));
+  end if;
+end
+$$;
+
+-- An upload that has started and not finished (one per formation). It lets the same file be
+-- picked again to carry on where it stopped, and says which unfinished upload to clean up.
+create table if not exists video_uploads (
+  slug          text primary key references videos(slug) on delete cascade,
+  upload_id     text not null,
+  object_key    text not null,
+  file_name     text not null,
+  file_bytes    bigint not null,
+  last_modified bigint not null default 0,
+  content_type  text not null,
+  created_at    timestamptz not null default now()
 );
 
 -- From the first version, where PV and the link were kept apart (sample data only).

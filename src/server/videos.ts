@@ -1,13 +1,14 @@
 import "server-only";
 import type { L10n, Video, VideoCategory } from "@/lib/data";
 import { slugify } from "@/lib/slug";
-import type { VideoSource } from "@/lib/video-source";
+import type { HostedSource, VideoProvider, VideoSource } from "@/lib/video-source";
 import { db } from "./db";
 
 /*
   The formations. The team creates and edits them in the workspace; each one is a row of
-  the `videos` table. The video itself is hosted on YouTube / Vimeo (we only keep which
-  host and which video), and the optional cover image is a small JPEG kept in the database.
+  the `videos` table. The video itself is either hosted on YouTube / Vimeo (we only keep which
+  host and which video) or an uploaded file kept in the object storage (see storage.ts), and the
+  optional cover image is a small JPEG kept in the database.
 */
 
 interface Row {
@@ -19,8 +20,9 @@ interface Row {
   category: VideoCategory;
   duration_seconds: number;
   pv: number;
-  provider: "youtube" | "vimeo" | null;
+  provider: VideoProvider | null;
   ref: string | null;
+  file_bytes: number | null;
   status: "draft" | "published";
   position: number;
   published_at: Date | null;
@@ -29,7 +31,8 @@ interface Row {
 }
 
 const SELECT = `select v.slug, v.title_fr, v.title_ar, v.description_fr, v.description_ar, v.category,
-       v.duration_seconds, v.pv, v.provider, v.ref, v.status, v.position, v.published_at,
+       v.duration_seconds, v.pv, v.provider, v.ref, v.file_bytes::double precision as file_bytes,
+       v.status, v.position, v.published_at,
        (select count(*)::int from video_views w where w.slug = v.slug) as views,
        c.updated_at as cover_at
   from videos v left join video_covers c on c.slug = v.slug`;
@@ -93,14 +96,30 @@ export async function videoTitles(): Promise<Map<string, L10n>> {
   return new Map(rows.map((r) => [r.slug, both(r.title_fr, r.title_ar)]));
 }
 
-/** Where the video is, for a formation the caller already knows may be watched. */
+/**
+ * Where the video is, for a formation the caller already knows may be watched. For an uploaded
+ * file the key stays on the server (`ref` is empty): the player asks for a short-lived address.
+ */
 export async function getVideoSource(slug: string): Promise<VideoSource | null> {
   const database = await db();
-  const [row] = await database.query<{ provider: "youtube" | "vimeo" | null; ref: string | null }>(
+  const [row] = await database.query<{ provider: VideoProvider | null; ref: string | null }>(
     "select provider, ref from videos where slug = $1",
     [slug],
   );
-  return row?.provider && row.ref ? { provider: row.provider, ref: row.ref } : null;
+  if (!row?.provider || !row.ref) return null;
+  return { provider: row.provider, ref: row.provider === "file" ? "" : row.ref } as VideoSource;
+}
+
+/** What the "watch" address needs to decide whether to hand out a link to an uploaded file. */
+export async function getWatchTarget(
+  slug: string,
+): Promise<{ status: "draft" | "published"; pv: number; key: string } | null> {
+  const database = await db();
+  const [row] = await database.query<{ status: "draft" | "published"; pv: number; ref: string | null }>(
+    "select status, pv, ref from videos where slug = $1 and provider = 'file' and ref is not null",
+    [slug],
+  );
+  return row?.ref ? { status: row.status, pv: row.pv, key: row.ref } : null;
 }
 
 /** Everything the edit form needs. */
@@ -111,6 +130,8 @@ export interface VideoRecord {
   descriptionFr: string;
   descriptionAr: string;
   source: VideoSource | null;
+  /** size of the uploaded file, when the video is one */
+  fileBytes: number | null;
 }
 
 export async function getVideoRecord(slug: string): Promise<VideoRecord | null> {
@@ -123,7 +144,8 @@ export async function getVideoRecord(slug: string): Promise<VideoRecord | null> 
     titleAr: row.title_ar,
     descriptionFr: row.description_fr,
     descriptionAr: row.description_ar,
-    source: row.provider && row.ref ? { provider: row.provider, ref: row.ref } : null,
+    source: row.provider && row.ref ? ({ provider: row.provider, ref: row.ref } as VideoSource) : null,
+    fileBytes: row.provider === "file" && row.file_bytes !== null ? Number(row.file_bytes) : null,
   };
 }
 
@@ -137,7 +159,8 @@ export interface VideoInput {
   category: VideoCategory;
   durationSeconds: number;
   pv: number;
-  source: VideoSource | null;
+  /** a pasted YouTube / Vimeo link; null leaves an uploaded file as it is */
+  source: HostedSource | null;
   status: "draft" | "published";
 }
 
@@ -183,12 +206,21 @@ export async function createVideo(input: VideoInput, staffId: number): Promise<s
   });
 }
 
+/**
+ * Saves the form. A pasted link replaces whatever video there was (an uploaded file is then no
+ * longer used); an empty link field leaves an uploaded file in place, since the file is not
+ * something the form shows.
+ */
 export async function updateVideo(slug: string, input: VideoInput): Promise<boolean> {
   const database = await db();
   const rows = await database.query(
     `update videos
         set title_fr = $2, title_ar = $3, description_fr = $4, description_ar = $5, category = $6,
-            duration_seconds = $7, pv = $8, provider = $9, ref = $10, status = $11,
+            duration_seconds = $7, pv = $8,
+            provider = case when $9::text is null and provider = 'file' then provider else $9::text end,
+            ref = case when $9::text is null and provider = 'file' then ref else $10::text end,
+            file_bytes = case when $9::text is null and provider = 'file' then file_bytes else null end,
+            status = $11,
             published_at = case when $11 = 'published' and published_at is null then now() else published_at end,
             updated_at = now()
       where slug = $1

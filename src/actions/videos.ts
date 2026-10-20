@@ -11,6 +11,8 @@ import { parseVideoLink } from "@/lib/video-source";
 import { staffFor } from "@/server/current";
 import { sendNotification } from "@/server/notifications";
 import { sendPush } from "@/server/push";
+import { abortMultipart, deleteFile } from "@/server/storage";
+import { storageLeftBy } from "@/server/video-files";
 import {
   createVideo,
   deleteVideo,
@@ -123,6 +125,11 @@ export async function saveVideoAction(_prev: FormState, fd: FormData): Promise<F
   if (!existing || !(await updateVideo(slug, input))) {
     return { errors: { form: "unknown_video" }, values };
   }
+  // a pasted link takes the place of an uploaded file, which is then no use any more
+  if (input.source && existing.source?.provider === "file") {
+    const oldKey = existing.source.ref;
+    after(() => deleteFile(oldKey));
+  }
   if (input.status === "published" && existing.video.status === "draft" && notify) {
     await announce(slug, input.titleFr, input.titleAr, staff.id);
   }
@@ -154,7 +161,13 @@ export async function moveVideoAction(slug: string, direction: string): Promise<
 export async function deleteVideoAction(slug: string): Promise<FormState> {
   const staff = await staffFor("videos_manage");
   if (!staff) return { errors: { form: "forbidden" } };
+  const left = await storageLeftBy(slug);
   if (!(await deleteVideo(slug))) return { errors: { form: "unknown_video" } };
+  // the uploaded file (and any upload still under way) goes with the formation
+  after(async () => {
+    if (left.fileKey) await deleteFile(left.fileKey);
+    if (left.pending) await abortMultipart(left.pending.key, left.pending.uploadId);
+  });
   revalidatePath("/", "layout");
   return { ok: true };
 }

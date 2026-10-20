@@ -52,3 +52,13 @@ services:
         sync: false
       - key: VAPID_PRIVATE_KEY
         sync: false
+      # Where videos sent from a phone are kept: an S3-compatible bucket (Backblaze B2, see README
+      # "Videos on Backblaze B2"). Without these, the upload button is off and only links work.
+      - key: STORAGE_ENDPOINT
+        sync: false
+      - key: STORAGE_BUCKET
+        sync: false
+      - key: STORAGE_KEY_ID
+        sync: false
+      - key: STORAGE_KEY_SECRET
+        sync: false

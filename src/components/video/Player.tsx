@@ -7,6 +7,7 @@ import type { Locale } from "@/i18n/routing";
 import type { Video } from "@/lib/data";
 import { embedUrl, type VideoSource } from "@/lib/video-source";
 import { cn } from "@/lib/utils";
+import { FileVideo, type FileVideoHandle } from "./FileVideo";
 import { Thumb } from "./Thumb";
 
 /** Who is watching, for the moving name over a protected video. */
@@ -16,9 +17,10 @@ export interface Viewer {
 }
 
 /**
- * The formation's video. The video is hosted elsewhere (YouTube / Vimeo) and shown
- * through its player; `source` is only given to the page when the member may watch,
- * so a locked page never contains the video's address. `locked` is decided on the
+ * The formation's video: either hosted elsewhere (YouTube / Vimeo) and shown through its
+ * player, or a file uploaded to our storage and played by our own player (which asks the
+ * website for a short-lived address, only given to someone who may watch). `source` is only
+ * given to the page when the member may watch, so a locked page never contains the video's address. `locked` is decided on the
  * server from the member's access rights.
  *
  * `protect` is on for formations that needed PV. A web page cannot truly stop a
@@ -51,6 +53,7 @@ export function Player({
   const [canFullscreen, setCanFullscreen] = useState(false);
   const stageRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLIFrameElement>(null);
+  const fileRef = useRef<FileVideoHandle>(null);
   const guard = protect && !locked && Boolean(source);
   const provider = source?.provider;
 
@@ -58,8 +61,12 @@ export function Player({
     if (!guard) return;
     let timer: ReturnType<typeof setTimeout> | undefined;
 
-    // ask the host's player to pause (their documented message API)
+    // ask the host's player to pause (their documented message API); our own player just pauses
     const pauseVideo = () => {
+      if (provider === "file") {
+        fileRef.current?.pause();
+        return;
+      }
       const target = frameRef.current?.contentWindow;
       if (!target) return;
       target.postMessage(
@@ -176,14 +183,24 @@ export function Player({
       )}
       onContextMenu={guard ? (e) => e.preventDefault() : undefined}
     >
-      <iframe
-        ref={frameRef}
-        src={embedUrl(source)}
-        title={video.title[locale]}
-        className="absolute inset-0 size-full border-0"
-        allow="autoplay; encrypted-media; picture-in-picture; clipboard-write"
-        referrerPolicy="strict-origin-when-cross-origin"
-      />
+      {source.provider === "file" ? (
+        <FileVideo
+          ref={fileRef}
+          slug={video.slug}
+          coverVersion={video.coverVersion}
+          fullscreen={fullscreen}
+          onToggleFullscreen={canFullscreen ? toggleFullscreen : undefined}
+        />
+      ) : (
+        <iframe
+          ref={frameRef}
+          src={embedUrl(source)}
+          title={video.title[locale]}
+          className="absolute inset-0 size-full border-0"
+          allow="autoplay; encrypted-media; picture-in-picture; clipboard-write"
+          referrerPolicy="strict-origin-when-cross-origin"
+        />
+      )}
 
       {/* the viewer's name, drifting: two copies at opposite points of the loop */}
       {guard && viewer && (
@@ -209,7 +226,7 @@ export function Player({
         </span>
       )}
 
-      {canFullscreen && (
+      {canFullscreen && source.provider !== "file" && (
         <button
           type="button"
           onClick={toggleFullscreen}

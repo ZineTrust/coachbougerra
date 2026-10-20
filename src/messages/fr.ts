@@ -96,6 +96,12 @@ export const fr = {
     cannot_post: "Ce groupe est en lecture seule.",
     no_audience: "Choisissez au moins un rang ou ajoutez des codes membres.",
     too_many_invites: "20 codes au maximum à la fois.",
+    storage_off: "L'envoi de vidéos n'est pas encore activé sur ce site.",
+    video_too_big: "Vidéo trop lourde pour être envoyée.",
+    unsupported_video: "Format non accepté : envoyez une vidéo MP4, MOV ou WebM.",
+    upload_failed: "L'envoi a échoué. Réessayez : il reprendra là où il s'est arrêté.",
+    upload_incomplete: "Il manque des morceaux de la vidéo. Choisissez de nouveau le même fichier pour finir l'envoi.",
+    unknown_upload: "Cet envoi n'existe plus. Recommencez.",
     generic: "Une erreur est survenue. Réessayez.",
   },
 
@@ -608,6 +614,13 @@ export const fr = {
     comingSoonText: "Cette formation sera disponible très prochainement.",
     fullscreen: "Plein écran",
     exitFullscreen: "Quitter le plein écran",
+    resume: "Lecture",
+    mute: "Couper le son",
+    unmute: "Activer le son",
+    seek: "Position dans la vidéo",
+    loadingVideo: "Chargement de la vidéo…",
+    loadFailed: "Impossible de charger la vidéo.",
+    retry: "Réessayer",
   },
 
   story: {
@@ -974,7 +987,7 @@ export const fr = {
       formTitleCreate: "Nouvelle formation",
       formTitleEdit: "Modifier la formation",
       createSubtitle:
-        "Donnez un titre, choisissez les PV demandés et collez le lien de la vidéo. Vous pourrez ajouter une image de couverture ensuite.",
+        "Donnez un titre, choisissez les PV demandés et enregistrez. Vous enverrez ensuite la vidéo depuis votre téléphone, avec une image de couverture.",
       back: "Toutes les formations",
       fieldTitleFr: "Titre (français)",
       titleFrPlaceholder: "Ex. : Présenter l'opportunité sans forcer",
@@ -999,7 +1012,7 @@ export const fr = {
       notifyHelp: "Envoie une notification (et une alerte sur les téléphones) pour annoncer cette formation.",
       save: "Enregistrer",
       create: "Créer la formation",
-      created: "Formation créée. Vous pouvez maintenant ajouter une image de couverture.",
+      created: "Formation créée. Envoyez maintenant la vidéo depuis votre téléphone, puis ajoutez une image de couverture.",
       saved: "Formation enregistrée.",
       coverTitle: "Image de couverture",
       coverHelp: "Facultatif. Une image en paysage (16:9) donne le meilleur résultat.",
@@ -1009,7 +1022,7 @@ export const fr = {
       coverSaved: "Image enregistrée.",
       coverNone: "Pas d'image : une couleur est utilisée à la place.",
       previewTitle: "Aperçu de la vidéo",
-      previewNone: "Ajoutez un lien de vidéo pour la voir ici.",
+      previewNone: "Envoyez une vidéo pour la voir ici.",
       dangerTitle: "Supprimer",
       delete: "Supprimer la formation",
       deleteConfirm:
@@ -1030,7 +1043,39 @@ export const fr = {
       linkSaved: "Vidéo liée",
       linkRemoved: "Vidéo retirée",
       linkHelp:
-        "Mettez chaque vidéo sur YouTube en « Non répertoriée » (ou sur Vimeo), puis collez son lien dans la formation. Seuls les membres qui y ont accès reçoivent le lien de la vidéo.",
+        "Pour ajouter une vidéo, ouvrez la formation et envoyez-la directement depuis votre téléphone. Seuls les membres qui y ont accès peuvent la regarder.",
+      videoTitle: "Vidéo",
+      videoNone: "Pas encore de vidéo.",
+      videoFile: "Vidéo envoyée ({size})",
+      videoLink: "Vidéo liée par un lien YouTube / Vimeo.",
+      storageOff:
+        "L'envoi de vidéos n'est pas encore activé sur ce site. En attendant, utilisez un lien YouTube ou Vimeo (en bas du formulaire).",
+      uploadChoose: "Envoyer la vidéo",
+      uploadReplace: "Remplacer la vidéo",
+      uploadHelp: "Choisissez la vidéo dans la galerie du téléphone, ou filmez-la. MP4 ou MOV, {max} au maximum.",
+      uploadPreparing: "Préparation…",
+      uploadProgress: "Envoi en cours : {percent} %",
+      uploadFinishing: "Finalisation…",
+      uploadKeepOpen:
+        "Laissez cette page ouverte et l'écran allumé jusqu'à la fin. Si la connexion coupe, l'envoi reprend tout seul.",
+      uploadCancel: "Annuler l'envoi",
+      uploadDone: "Vidéo envoyée. Vérifiez-la dans l'aperçu.",
+      uploadUnreadable:
+        "Vidéo envoyée, mais ce navigateur n'arrive pas à la lire. Si l'aperçu ne la lit pas non plus, filmez de nouveau avec le format « Le plus compatible » (iPhone : Réglages → Appareil photo → Formats).",
+      uploadStopped:
+        "L'envoi s'est arrêté. Choisissez de nouveau la même vidéo : il reprendra là où il s'est arrêté.",
+      uploadResume:
+        "Un envoi n'est pas terminé ({name}, {size}). Choisissez le même fichier pour le reprendre là où il s'est arrêté.",
+      removeVideo: "Retirer la vidéo",
+      removeVideoConfirm: "Retirer la vidéo de cette formation ? Le fichier envoyé sera supprimé.",
+      storageUsed: "Stockage utilisé : {used} sur {quota}.",
+      tipsTitle: "Conseils pour un envoi rapide",
+      tipWifi: "Utilisez le Wi-Fi si possible : une vidéo pèse vite plusieurs centaines de Mo.",
+      tipQuality:
+        "Filmez en 1080p (ou 720p), pas en 4K : le fichier est bien plus léger et les membres le regardent mieux avec une connexion mobile.",
+      tipIphone:
+        "iPhone : Réglages → Appareil photo → Formats → « Le plus compatible », pour que la vidéo se lise partout.",
+      linkInstead: "Ou utiliser un lien YouTube / Vimeo à la place",
     },
     groups: {
       metaTitle: "Groupes",

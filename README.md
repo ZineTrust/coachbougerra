@@ -56,18 +56,27 @@ No database to install: locally an embedded Postgres runs and stores its files i
   permission change a formation's PV in Workspace → Formations (saved at once, applies to everyone).
 - **Formations** (Workspace → Formations, permission *manage formations*): "Nouvelle formation" creates one:
   title and description in French and Arabic (at least one title; the other language shows the one written),
-  category, duration (optional), **PV required** (0 = free), the video link, and **draft / published**. A new
-  formation can announce itself to every member (notification + push). Each formation then has its own page with a
-  16:9 **cover image** (optional; without one a colour is used), a preview of the video and a delete button. The
+  category, duration (optional), **PV required** (0 = free), and **draft / published**. A new
+  formation can announce itself to every member (notification + push). Each formation then has its own page, where
+  the **video is sent from the phone** (see "Videos" below), with a 16:9 **cover image** (optional; without one a
+  colour is used), a preview of the video and a delete button. The
   **order of the list is the order members see**, and "Mon parcours" follows it (its video steps take the formations
   one after the other; the home page shows the first four). Drafts and their covers are only visible to the team.
   A formation's address (slug) comes from its title when it is created and never changes afterwards. Views are
   counted once per member who opens a formation they may watch.
-- **Videos**: each formation's video lives on YouTube or Vimeo; staff paste its link in the formation (an empty
-  field = "Vidéo bientôt disponible"). Put the video on YouTube as **"Non répertoriée"** (unlisted). The link is
-  only sent to members who may watch the formation (a locked page does not contain it). This is not a lock: a member
-  who has access could still share the YouTube link; a host with signed links and DRM (Bunny Stream, Mux,
-  VdoCipher…) is the next step if that matters.
+- **Videos**: on the formation's page the team picks the video in the phone's gallery (or films it) and it is sent
+  **straight to the storage** (Backblaze B2, see "Videos on Backblaze B2" below) in pieces of 16 MB, three at a time,
+  with a progress bar. The page must stay open; a dropped connection only costs one piece, and picking the same file
+  again carries on from where it stopped (the unfinished upload is remembered in `video_uploads`). MP4, MOV (iPhone)
+  or WebM, 2 GB at most (`VIDEO_MAX_MB`). Sending a new video replaces the old file (deleted from the storage), as do
+  "Retirer la vidéo" and deleting the formation. Members watch through our own player: the bucket is private, and
+  `/api/videos/<slug>/watch` gives a signed address (valid 2 hours; the player asks again if it runs out) only to the
+  team, to anyone for a free published formation, and to members who unlocked a PV one. A locked page, and the page
+  of someone who may watch, never contain the file's key or address. As before, a pasted **YouTube / Vimeo link**
+  ("Non répertoriée") is still possible (under "Ou utiliser un lien" in the form) and replaces an uploaded file; saving
+  the form with that field empty leaves an uploaded file alone. Without the `STORAGE_*` settings the upload button is
+  replaced by a notice and only links work. This is not a lock: a member who has access could still share a signed
+  address while it lasts; a host with DRM (Bunny Stream, Mux, VdoCipher…) is the next step if that matters.
 - **Protected playback** (formations that need PV): the viewer's number and name drift over the picture, the picture
   goes black and the video pauses when the window loses focus, the tab is hidden or a screenshot key is pressed, and
   fullscreen is our own button (the host's is hidden) so the name stays on screen.
@@ -182,6 +191,37 @@ The site only needs a plain Postgres: it uses none of Supabase's own login, stor
    table owner and is not affected. If the dashboard offers it, also turn the **Data API** off (Project Settings).
 5. Free Supabase has no downloadable backups: before real members arrive, either move to a plan with backups or
    export the members regularly.
+
+### Videos on Backblaze B2
+
+Uploaded videos need an S3-compatible bucket; this was made for **Backblaze B2** (10 GB free, no card reported at
+sign-up; check backblaze.com). Cloudflare R2, Wasabi or MinIO work with the same four settings.
+
+1. backblaze.com → create an account → **Buckets → Create a Bucket**: name `coach-bougerra-videos`, **Private**,
+   encryption off, Object Lock off, and under *Lifecycle* choose **"Keep only the last version of the file"**
+   (otherwise a deleted video stays, and counts, as an old version).
+2. **Application Keys → Add a New Application Key**: allow access to that one bucket only, **Read and Write**. Copy
+   the *keyID* and the *applicationKey* now (the secret is shown once). The bucket page shows its **Endpoint**
+   (`s3.<region>.backblazeb2.com`).
+3. Render → the service → **Environment**: `STORAGE_ENDPOINT=https://s3.<region>.backblazeb2.com`,
+   `STORAGE_BUCKET=<bucket name>`, `STORAGE_KEY_ID=<keyID>`, `STORAGE_KEY_SECRET=<applicationKey>` → Save.
+   Optional: `VIDEO_MAX_MB` (default 2048), `STORAGE_QUOTA_GB` (only the "used / total" line, default 10).
+4. **Allow the website to send to the bucket (once).** Backblaze's web page only offers download rules, so run:
+   `node --env-file=.env.local scripts/storage-cors.mjs https://<your-site>.onrender.com` with the same four
+   `STORAGE_*` lines in `.env.local`. That call needs a key allowed to change bucket settings: use the account's
+   **master application key** (Account → Application Keys) as `STORAGE_ADMIN_KEY_ID` / `STORAGE_ADMIN_KEY_SECRET`
+   in `.env.local` for this one run, then delete those two lines. Add other origins (a custom domain) as extra arguments.
+5. Open a formation, choose a short video: it should reach 100 %, play in the preview, and show in the bucket.
+
+Good to know:
+- **Downloads are free up to 3× the stored size per month** (about 30 GB of viewing with 10 GB stored), then
+  $0.01/GB: a 1 GB video watched by 30 members already uses it. Film in **1080p or 720p, not 4K**, and choose the
+  *most compatible* format on iPhone (Settings → Camera → Formats), which also plays everywhere.
+- Files are served as they were recorded: no quality switching on slow connections and no conversion. An iPhone
+  "high efficiency" (HEVC) video may not play on every member's phone; the uploader warns when its own browser
+  cannot read the file. A video service that converts (Mux, Bunny Stream) is the upgrade if that bites.
+- Tested here against an in-memory S3 stand-in (pieces, resume after a reload, retries, an expired address, a missing
+  file, clean-up on replace / remove / delete) but **not yet against a real Backblaze bucket**: do step 5 first.
 
 ## What is still sample / not built
 
