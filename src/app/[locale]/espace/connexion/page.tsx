@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ShieldCheck } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { StaffLoginForm } from "@/components/app/StaffLoginForm";
+import { AppearanceMenu } from "@/components/site/AppearanceMenu";
 import { LanguageSwitcher } from "@/components/site/LanguageSwitcher";
 import { Logo } from "@/components/ui/Logo";
 import { Link, redirect } from "@/i18n/navigation";
@@ -27,7 +28,10 @@ export default async function StaffLoginPage({ params }: PageProps<"/[locale]/es
       <div className="dots absolute inset-0 opacity-50" aria-hidden />
       <div className="relative flex w-full max-w-md items-center justify-between">
         <Logo tone="dark" />
-        <LanguageSwitcher />
+        <div className="flex items-center gap-1">
+          <AppearanceMenu />
+          <LanguageSwitcher />
+        </div>
       </div>
 
       <div className="relative flex w-full flex-1 items-center justify-center py-8">

@@ -86,7 +86,7 @@ export function InviteShare({
             href={`https://wa.me/?text=${encodeURIComponent(message)}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex h-11 items-center gap-2 rounded-full bg-[#1fa855] px-5 text-sm font-semibold text-white hover:bg-[#188f48]"
+            className="inline-flex h-11 items-center gap-2 rounded-full bg-[#15803d] px-5 text-sm font-semibold text-white hover:bg-[#116b33]"
           >
             <MessageCircle className="size-[18px]" aria-hidden /> {t("whatsapp")}
           </a>

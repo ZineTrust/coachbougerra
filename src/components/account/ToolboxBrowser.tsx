@@ -91,7 +91,7 @@ export function ToolboxBrowser({
             ))}
           </div>
         </div>
-        <p className="mt-4 text-[13px] text-ink-500">{t("points", { points: POINTS.script })}</p>
+        <p className="mt-4 text-[0.8125rem] text-ink-500">{t("points", { points: POINTS.script })}</p>
       </div>
 
       <div className="mt-6 grid gap-5 lg:grid-cols-2">
@@ -111,7 +111,7 @@ export function ToolboxBrowser({
                   <h3 className="mt-1 text-lg font-bold leading-snug">{s.title[locale]}</h3>
                 </div>
                 {used.includes(s.id) && (
-                  <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-jade-50 px-2.5 py-1 text-[11px] font-bold text-jade-700">
+                  <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-jade-50 px-2.5 py-1 text-[0.6875rem] font-bold text-jade-700">
                     <Check className="size-3" strokeWidth={3} aria-hidden /> {t("used")}
                   </span>
                 )}
@@ -119,12 +119,12 @@ export function ToolboxBrowser({
 
               <p
                 dir="auto"
-                className="mt-4 whitespace-pre-line rounded-xl bg-ivory-50 p-4 text-[15px] leading-relaxed text-ink-800 ring-1 ring-ink-900/5"
+                className="mt-4 whitespace-pre-line rounded-xl bg-ivory-50 p-4 text-[0.9375rem] leading-relaxed text-ink-800 ring-1 ring-ink-900/5"
               >
                 <Highlighted text={text} />
               </p>
 
-              <p className="mt-3 flex items-start gap-2 text-[13px] leading-snug text-ink-500">
+              <p className="mt-3 flex items-start gap-2 text-[0.8125rem] leading-snug text-ink-500">
                 <Lightbulb className="mt-0.5 size-4 shrink-0 text-gold-600" aria-hidden />
                 <span>
                   <b className="text-ink-700">{t("tip")} : </b>

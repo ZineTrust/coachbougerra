@@ -6,6 +6,7 @@ import {
   LockOpen,
   LogOut,
   Mail,
+  Palette,
   PartyPopper,
   ShieldCheck,
   Smartphone,
@@ -18,6 +19,7 @@ import { CopyCode } from "@/components/account/CopyCode";
 import { GoalCard } from "@/components/account/GoalCard";
 import { ProfileForm } from "@/components/account/ProfileForm";
 import { PwaCard } from "@/components/account/PwaCard";
+import { AppearanceControls } from "@/components/site/AppearanceMenu";
 import { MemberAvatar } from "@/components/ui/Avatar";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -198,7 +200,7 @@ export default async function AccountPage({
             }
           >
             {unlockRequests.length === 0 ? (
-              <p className="text-[15px] leading-relaxed text-ink-600">{tu("accountEmpty")}</p>
+              <p className="text-[0.9375rem] leading-relaxed text-ink-600">{tu("accountEmpty")}</p>
             ) : (
               <ul className="divide-y divide-ink-100">
                 {unlockRequests.map((r) => {
@@ -234,7 +236,7 @@ export default async function AccountPage({
                 })}
               </ul>
             )}
-            <p className="mt-4 text-[13px] leading-snug text-ink-500">{tu("resetNote")}</p>
+            <p className="mt-4 text-[0.8125rem] leading-snug text-ink-500">{tu("resetNote")}</p>
           </Card>
 
           <Card
@@ -261,7 +263,7 @@ export default async function AccountPage({
                       <p dir="auto" className="font-bold text-ink-900">{n.title}</p>
                       {!n.read && <Badge tone="live">{t("newBadge")}</Badge>}
                     </div>
-                    <p dir="auto" className="mt-1.5 whitespace-pre-line text-[15px] leading-relaxed text-ink-600">
+                    <p dir="auto" className="mt-1.5 whitespace-pre-line text-[0.9375rem] leading-relaxed text-ink-600">
                       {n.body}
                     </p>
                     <p className="mt-2 text-xs text-ink-400">{formatDateTime(n.createdAt, locale)}</p>
@@ -269,6 +271,10 @@ export default async function AccountPage({
                 ))}
               </ul>
             )}
+          </Card>
+
+          <Card icon={Palette} title={(await getTranslations("appearance"))("title")}>
+            <AppearanceControls />
           </Card>
 
           <Card icon={Smartphone} title={(await getTranslations("pwa"))("title")}>
@@ -304,11 +310,11 @@ export default async function AccountPage({
 
           <Card icon={ShieldCheck} title={t("access")}>
             {accessLines.length === 0 ? (
-              <p className="text-[15px] leading-relaxed text-ink-600">{t("accessDefault")}</p>
+              <p className="text-[0.9375rem] leading-relaxed text-ink-600">{t("accessDefault")}</p>
             ) : (
               <ul className="space-y-2.5">
                 {accessLines.map((line) => (
-                  <li key={line} className="flex items-start gap-2.5 text-[15px] font-semibold text-ink-800">
+                  <li key={line} className="flex items-start gap-2.5 text-[0.9375rem] font-semibold text-ink-800">
                     <ShieldCheck className="mt-0.5 size-[18px] shrink-0 text-jade-600" aria-hidden />
                     {line}
                   </li>

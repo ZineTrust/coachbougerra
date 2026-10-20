@@ -121,7 +121,7 @@ export default async function CalendarPage({
         <div className="mt-6 overflow-hidden rounded-2xl bg-white shadow-card ring-1 ring-ink-900/5">
           <div className="grid grid-cols-7 border-b border-ink-100 bg-ivory-50 text-center">
             {weekdays.map((d) => (
-              <div key={d} className="py-2.5 text-[11px] font-bold uppercase tracking-wide text-ink-500 sm:text-xs">
+              <div key={d} className="py-2.5 text-[0.6875rem] font-bold uppercase tracking-wide text-ink-500 sm:text-xs">
                 {d}
               </div>
             ))}
@@ -167,7 +167,7 @@ export default async function CalendarPage({
                             <div
                               key={o.live.id}
                               className={cn(
-                                "rounded-md px-1.5 py-1 text-[11px] leading-tight",
+                                "rounded-md px-1.5 py-1 text-[0.6875rem] leading-tight",
                                 o.live.access === "premium"
                                   ? "bg-gold-100 text-ink-900"
                                   : "bg-jade-50 text-jade-800",
@@ -208,9 +208,9 @@ export default async function CalendarPage({
                   )}
                 >
                   <div className="h-fit min-w-[4.25rem] rounded-xl bg-ink-900 px-3 py-2.5 text-center text-white">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-gold-400">{weekday}</p>
+                    <p className="text-[0.625rem] font-bold uppercase tracking-wider text-gold-400">{weekday}</p>
                     <p className="font-display text-2xl font-semibold leading-none">{day}</p>
-                    <p className="mt-0.5 text-[10px] font-semibold uppercase text-ink-300">{monthName}</p>
+                    <p className="mt-0.5 text-[0.625rem] font-semibold uppercase text-ink-300">{monthName}</p>
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
@@ -250,7 +250,7 @@ export default async function CalendarPage({
         <div className="mt-12 flex flex-col items-start gap-4 rounded-2xl bg-ivory-100 p-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="font-bold">{t("subscribe")}</p>
-            <p className="mt-1 max-w-xl text-[15px] leading-relaxed text-ink-600">{t("subscribeHelp")}</p>
+            <p className="mt-1 max-w-xl text-[0.9375rem] leading-relaxed text-ink-600">{t("subscribeHelp")}</p>
           </div>
           <a
             href={`/api/calendar.ics?lang=${locale}`}

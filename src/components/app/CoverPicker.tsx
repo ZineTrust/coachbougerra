@@ -111,7 +111,7 @@ export function CoverPicker({ slug, coverVersion }: { slug: string; coverVersion
           e.target.value = "";
         }}
       />
-      <p className="mt-2 text-[13px] leading-snug text-ink-500">{t("coverHelp")}</p>
+      <p className="mt-2 text-[0.8125rem] leading-snug text-ink-500">{t("coverHelp")}</p>
       {message && (
         <div className="mt-3">
           <Notice tone={message.tone}>{message.text}</Notice>

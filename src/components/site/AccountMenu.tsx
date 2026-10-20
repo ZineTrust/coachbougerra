@@ -62,7 +62,7 @@ export function AccountMenu({
         aria-label={t("accountMenu")}
         className="inline-flex h-10 items-center gap-2 rounded-full bg-white/10 ps-1.5 pe-3 text-sm font-semibold text-white transition-colors hover:bg-white/15"
       >
-        <MemberAvatar code={code} name={name} photoVersion={photoVersion} className="size-7 text-[10px]" />
+        <MemberAvatar code={code} name={name} photoVersion={photoVersion} className="size-7 text-[0.625rem]" />
         <span className="hidden xl:inline">{t("myAccount")}</span>
         {groups > 0 && <span className="size-2 rounded-full bg-live" aria-hidden />}
         <span dir="ltr" className="rounded-full bg-jade-600 px-2 py-0.5 text-xs tabular-nums">
@@ -86,7 +86,7 @@ export function AccountMenu({
             >
               <Icon className="size-[18px] text-jade-600" aria-hidden /> {t(key)}
               {key === "groups" && groups > 0 && (
-                <span className="ms-auto grid min-w-[20px] place-items-center rounded-full bg-live px-1.5 text-[11px] font-bold leading-5 text-white">
+                <span className="ms-auto grid min-w-[20px] place-items-center rounded-full bg-live px-1.5 text-[0.6875rem] font-bold leading-5 text-white">
                   {groups > 99 ? "99+" : groups}
                 </span>
               )}

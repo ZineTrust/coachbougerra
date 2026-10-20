@@ -110,7 +110,7 @@ export function VoiceBubble({ src, seconds, mine }: { src: string; seconds: numb
               }}
               className={cn("block h-1 w-full cursor-pointer", mine ? "accent-white" : "accent-jade-600")}
             />
-            <p className={cn("mt-1 flex items-center gap-1.5 text-[11px] tabular-nums", mine ? "text-white/80" : "text-ink-500")}>
+            <p className={cn("mt-1 flex items-center gap-1.5 text-[0.6875rem] tabular-nums", mine ? "text-white/80" : "text-ink-500")}>
               <Mic className="size-3" aria-hidden />
               {formatDuration(Math.floor(state === "idle" && time === 0 ? length : shown))}
             </p>

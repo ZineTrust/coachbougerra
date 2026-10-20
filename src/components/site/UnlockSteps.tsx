@@ -38,7 +38,7 @@ export function UnlockSteps() {
               </span>
             </div>
             <h3 className="mt-5 text-lg font-bold">{t(`${id}.title`)}</h3>
-            <p className="mt-2 text-[15px] leading-relaxed text-ink-600">{t(`${id}.text`)}</p>
+            <p className="mt-2 text-[0.9375rem] leading-relaxed text-ink-600">{t(`${id}.text`)}</p>
           </li>
         ))}
       </ol>
@@ -49,7 +49,7 @@ export function UnlockSteps() {
         </span>
         <div>
           <p className="text-lg font-bold">{t("resetTitle")}</p>
-          <p className="mt-1 text-[15px] leading-relaxed text-ink-200">{t("resetText")}</p>
+          <p className="mt-1 text-[0.9375rem] leading-relaxed text-ink-200">{t("resetText")}</p>
         </div>
       </div>
 

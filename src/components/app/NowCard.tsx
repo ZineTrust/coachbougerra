@@ -26,7 +26,7 @@ export function NowCard({ nextTitle, nextAt }: { nextTitle: string; nextAt: stri
         </p>
 
         <div className="mt-6 rounded-xl bg-white/8 p-4 ring-1 ring-white/10">
-          <p className="text-[11px] font-bold uppercase tracking-wider text-gold-400">
+          <p className="text-[0.6875rem] font-bold uppercase tracking-wider text-gold-400">
             {t("nowNext")}
           </p>
           <p className="mt-1.5 font-semibold leading-snug">{nextTitle}</p>

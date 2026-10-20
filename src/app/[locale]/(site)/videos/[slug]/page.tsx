@@ -123,7 +123,7 @@ export default async function VideoPage({ params }: Props) {
             <div>{t("video.ago", { when: formatDaysAgo(video.daysAgo, locale) })}</div>
           </dl>
 
-          <p dir="auto" className="mt-6 max-w-3xl whitespace-pre-line text-[17px] leading-relaxed text-ink-600">
+          <p dir="auto" className="mt-6 max-w-3xl whitespace-pre-line text-[1.0625rem] leading-relaxed text-ink-600">
             {video.description[locale]}
           </p>
 
@@ -143,7 +143,7 @@ export default async function VideoPage({ params }: Props) {
                   {video.pv} <span className="text-2xl text-ink-300">PV</span>
                 </p>
                 <p className="mt-3 flex-1 text-sm leading-relaxed text-ink-200">{t("unlock.requiredText")}</p>
-                <p className="mt-4 flex items-start gap-2 text-[13px] leading-snug text-ink-300">
+                <p className="mt-4 flex items-start gap-2 text-[0.8125rem] leading-snug text-ink-300">
                   <CalendarClock className="mt-0.5 size-4 shrink-0 text-jade-300" aria-hidden />
                   {t("unlock.resetNote")}
                 </p>
@@ -170,7 +170,7 @@ export default async function VideoPage({ params }: Props) {
                       <Hourglass className="size-5" aria-hidden />
                     </span>
                     <h2 className="mt-4 text-lg font-bold">{t("unlock.pendingTitle")}</h2>
-                    <p className="mt-1.5 text-[15px] leading-relaxed text-ink-600">
+                    <p className="mt-1.5 text-[0.9375rem] leading-relaxed text-ink-600">
                       {t("unlock.pendingText", { pv: mine.pvClaimed })}
                     </p>
                   </>

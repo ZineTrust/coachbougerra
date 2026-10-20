@@ -84,7 +84,7 @@ function PhotoUploader({
   return (
     <div>
       <p className="text-sm font-semibold text-ink-700">{t("photo")}</p>
-      <div className="mt-2 flex items-center gap-4">
+      <div className="mt-2 flex flex-wrap items-center gap-4">
         <MemberAvatar
           code={code}
           name={name}
@@ -119,7 +119,7 @@ function PhotoUploader({
           }}
         />
       </div>
-      <p className="mt-2 text-[13px] text-ink-500">{t("photoHint")}</p>
+      <p className="mt-2 text-[0.8125rem] text-ink-500">{t("photoHint")}</p>
       {message && (
         <div className="mt-3">
           <Notice tone={message.tone}>{message.text}</Notice>
@@ -182,7 +182,7 @@ export function ProfileForm({
           />
           <span>
             <span className="block text-sm font-semibold text-ink-900">{t("ranking")}</span>
-            <span className="mt-0.5 block text-[13px] leading-snug text-ink-500">{t("rankingHelp")}</span>
+            <span className="mt-0.5 block text-[0.8125rem] leading-snug text-ink-500">{t("rankingHelp")}</span>
           </span>
         </label>
         <Button type="submit" disabled={pending}>

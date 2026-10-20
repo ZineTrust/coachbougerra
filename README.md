@@ -93,6 +93,13 @@ No database to install: locally an embedded Postgres runs and stores its files i
   untick "members can write" for an announcements-only group. **The team can read every group** (and sees messages
   removed by members). Members are NOT told on the pages (the owner chose not to show a notice). Staff write as "Équipe". Group data is in `groups`,
   `group_members`, `group_messages`, `group_reads` (`src/server/groups.ts`).
+- **Voice notes in groups**: a mic button next to the text box (shown only when the video storage is set up, see
+  "Videos on Backblaze B2"). The browser records from the microphone with Web Audio and encodes a small **MP3**
+  itself (`src/lib/voice-recorder.ts`: mono, 16 kHz, 32 kbit/s, about 4 KB per second; MP3 because it plays on every
+  phone while WebM / MP4 recordings do not), up to **3 minutes / 1.5 MB**. `POST /api/groups/<id>/voice?seconds=` stores
+  it in the bucket under `voice/<group>/` and adds a message; `GET /api/groups/<id>/voice/<message>` checks the person
+  is in the group (or is the team, `?as=team`) and redirects to a 2-hour signed address. Voice files are deleted with
+  their group. The mic needs https (or localhost) and the person's permission.
 - **Contact button and messages**: signed-in members get one floating button on every public page that
   opens a chat with the team (visitors are invited to sign in). Staff with the *messages* permission read
   and answer from Workspace → Messages, with an unread badge in the sidebar. Replies appear on the member's
@@ -105,6 +112,24 @@ No database to install: locally an embedded Postgres runs and stores its files i
 ## Member space
 
 Signed-in members get a menu on their number in the header with these pages:
+
+- **Objectif du mois** (card on Mon compte and Mon parcours): the member sets a PV target for the month and writes
+  down the PV made so far; a bar fills, with the PV left, the days left (Algiers time) and the closest locked formation
+  they could ask for. It is **personal tracking**: it unlocks nothing (unlocks still go through a request the team
+  checks on Ultimate). One row per member and month in `member_goals`, so a new month starts empty and last month's
+  result is shown in small print.
+- **Inviter** (`/invitation`): every member has a random link token (`members.invite_token`, made on first use) and a
+  link `…/<lang>/invitation/<token>`, with a ready WhatsApp message, share / copy buttons and a **QR code** (SVG made
+  on the server with `qrcode`, white tile in every theme, PNG download). The public page `/invitation/<token>` says who
+  invites (noindex) and leads to sign-up with the token; the new member keeps `members.sponsor_code`, the inviter gets a
+  notification + push, and sees who joined (with rank and date). The team sees "invited by" on the member page. Set
+  `SITE_URL` (e.g. a custom domain) to fix the address used in the links; otherwise it is read from the request.
+- **Apparence** (the sun/moon button in the headers and a card on Mon compte): theme **light / dark / auto** and text
+  size **normal / large / very large**, kept per device in localStorage (`src/lib/appearance.ts`; a script in the
+  page head applies it before painting, so there is no flash). Light is the default. Dark mode is `src/app/dark.css`:
+  the site is designed light first, so that file re-colours the classes that mean "light surface" or "text on a light
+  surface" (add a line there when a new such colour class is used). Text size changes the root font size, which is why
+  all text sizes are in rem (a codemod turned the old `text-[13px]` into `text-[0.8125rem]`: keep using rem).
 
 - **Mon parcours** (`/mon-parcours`): a list of steps chosen for their rank (`src/lib/path.ts`: profile,
   formations, scripts, a live), a progress ring, points, level, badges and an optional leaderboard.

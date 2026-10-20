@@ -99,7 +99,7 @@ export default async function EditVideoPage({ params, searchParams }: Props) {
                 notice={sendProblem ? { tone: "error", text: sendProblem } : null}
               />
               {storageReady && (
-                <p className="mt-4 text-[13px] text-ink-500">
+                <p className="mt-4 text-[0.8125rem] text-ink-500">
                   {t("storageUsed", {
                     used: formatBytes(used, locale),
                     quota: formatBytes(STORAGE_QUOTA_BYTES, locale),

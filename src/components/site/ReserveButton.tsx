@@ -119,9 +119,9 @@ export function ReserveButton({
           </Button>
         </div>
       )}
-      {total > 0 && <p className={cn("text-[13px]", muted)}>{t("count", { count: total })}</p>}
+      {total > 0 && <p className={cn("text-[0.8125rem]", muted)}>{t("count", { count: total })}</p>}
       {failed && (
-        <p role="alert" className="text-[13px] font-semibold text-live">
+        <p role="alert" className="text-[0.8125rem] font-semibold text-live">
           {t("error")}
         </p>
       )}

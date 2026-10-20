@@ -52,7 +52,7 @@ export function MemberUnlocks({ lines, canManage }: { lines: UnlockLine[]; canMa
     <div>
       <p className="mb-4 text-sm leading-relaxed text-ink-500">{t("memberHelp")}</p>
       {lines.length === 0 ? (
-        <p className="text-[15px] text-ink-600">{t("memberEmpty")}</p>
+        <p className="text-[0.9375rem] text-ink-600">{t("memberEmpty")}</p>
       ) : (
         <ul className="divide-y divide-ink-100">
           {lines.map((l) => (

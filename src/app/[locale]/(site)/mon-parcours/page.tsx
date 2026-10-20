@@ -338,7 +338,7 @@ export default async function PathPage({ params }: PageProps<"/[locale]/mon-parc
             <h2 className="text-lg font-bold">{t("howTitle")}</h2>
             <ul className="mt-4 space-y-3">
               {how.map(({ text, icon: Icon }) => (
-                <li key={text} className="flex items-center gap-3 text-[15px] font-medium text-ink-700">
+                <li key={text} className="flex items-center gap-3 text-[0.9375rem] font-medium text-ink-700">
                   <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-white text-jade-600">
                     <Icon className="size-4" aria-hidden />
                   </span>

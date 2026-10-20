@@ -271,6 +271,17 @@ export const ar: Messages = {
     pushError: "تعذّر تفعيل الإشعارات. أعد المحاولة.",
   },
 
+  appearance: {
+    title: "المظهر",
+    menu: "المظهر: السمة وحجم النص",
+    themeTitle: "السمة",
+    theme: { light: "فاتح", dark: "داكن", auto: "تلقائي" },
+    autoHelp: "تتبع السمة إعداد هاتفك.",
+    textTitle: "حجم النص",
+    text: { md: "الحجم العادي", lg: "حجم كبير", xl: "حجم كبير جدًا" },
+    sample: "هذا مثال على النص بالحجم الذي اخترته.",
+  },
+
   invite: {
     metaTitle: "دعوة الأصدقاء",
     eyebrow: "دعوة",

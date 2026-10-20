@@ -60,7 +60,7 @@ export function LiveRoomMock() {
                 }}
               >
                 <Avatar name={p.name} hue={p.hue} className="size-8 text-xs sm:size-10 sm:text-sm" />
-                <span className="absolute inset-x-1 bottom-1 hidden truncate rounded bg-ink-950/60 px-1.5 py-0.5 text-[10px] font-semibold text-white sm:block">
+                <span className="absolute inset-x-1 bottom-1 hidden truncate rounded bg-ink-950/60 px-1.5 py-0.5 text-[0.625rem] font-semibold text-white sm:block">
                   {p.name}
                 </span>
               </div>
@@ -89,7 +89,7 @@ export function LiveRoomMock() {
         <p className="mb-2.5 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-ink-500">
           <MessageSquare className="size-3.5" aria-hidden /> {t("chat")}
         </p>
-        <div className="space-y-2 text-[13px] leading-snug">
+        <div className="space-y-2 text-[0.8125rem] leading-snug">
           <p className="rounded-xl rounded-ss-sm bg-ivory-100 px-3 py-2">
             <b className="text-jade-700">{t("asker")}&nbsp;:</b> {t("question")}
           </p>

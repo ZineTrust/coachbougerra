@@ -28,7 +28,7 @@ export function Badge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide ring-1 ring-inset",
+        "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[0.6875rem] font-bold uppercase tracking-wide ring-1 ring-inset",
         tones[tone],
         className,
       )}
@@ -87,7 +87,7 @@ export function LiveAccessBadge({ access }: { access: LiveAccess }) {
 
 export function LiveDot({ label }: { label: string }) {
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-live px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-white">
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-live px-2.5 py-1 text-[0.6875rem] font-bold uppercase tracking-wide text-white">
       <Radio className="size-3" aria-hidden />
       {label}
     </span>

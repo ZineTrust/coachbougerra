@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./dark.css";
 
 /*
   Coach Bougerra design tokens
@@ -92,7 +93,15 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 
+/*
+  "Larger text" (see lib/appearance.ts): every size in the site is in rem, so changing the root size
+  scales the text, and the spacing around it, together.
+*/
+html[data-text="lg"] { font-size: 112.5%; }
+html[data-text="xl"] { font-size: 125%; }
+
 body {
+  overflow-x: clip;
   background: var(--color-ivory-50);
   color: var(--color-ink-900);
   font-family: var(--font-sans);

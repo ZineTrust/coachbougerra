@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { logoutStaffAction } from "@/actions/auth";
+import { AppearanceMenu } from "@/components/site/AppearanceMenu";
 import { LanguageSwitcher } from "@/components/site/LanguageSwitcher";
 import { Avatar } from "@/components/ui/Avatar";
 import { Logo } from "@/components/ui/Logo";
@@ -151,7 +152,7 @@ export function AppShell({
                   href={n.href}
                   aria-current={current ? "page" : undefined}
                   className={cn(
-                    "flex items-center gap-3 rounded-xl px-3.5 py-3 text-[15px] font-semibold transition-colors",
+                    "flex items-center gap-3 rounded-xl px-3.5 py-3 text-[0.9375rem] font-semibold transition-colors",
                     current ? "bg-jade-600 text-white" : "text-ink-300 hover:bg-white/8 hover:text-white",
                   )}
                 >
@@ -159,7 +160,7 @@ export function AppShell({
                   {t(`nav.${n.key}`)}
                   {n.key === "requests" && pendingRequests > 0 && (
                     <span
-                      className="ms-auto grid min-w-[22px] place-items-center rounded-full bg-gold-400 px-1.5 text-[11px] font-bold leading-[22px] text-ink-950"
+                      className="ms-auto grid min-w-[22px] place-items-center rounded-full bg-gold-400 px-1.5 text-[0.6875rem] font-bold leading-[22px] text-ink-950"
                       aria-label={t("requests.waiting", { count: pendingRequests })}
                     >
                       {pendingRequests > 99 ? "99+" : pendingRequests}
@@ -167,7 +168,7 @@ export function AppShell({
                   )}
                   {n.key === "messages" && inbox > 0 && (
                     <span
-                      className="ms-auto grid min-w-[22px] place-items-center rounded-full bg-live px-1.5 text-[11px] font-bold leading-[22px] text-white"
+                      className="ms-auto grid min-w-[22px] place-items-center rounded-full bg-live px-1.5 text-[0.6875rem] font-bold leading-[22px] text-white"
                       aria-label={t("messages.unread", { count: inbox })}
                     >
                       {inbox > 99 ? "99+" : inbox}
@@ -237,7 +238,8 @@ export function AppShell({
               <Menu className="size-6" />
             </button>
             <p className="font-display text-lg font-semibold">{currentLabel}</p>
-            <div className="ms-auto">
+            <div className="ms-auto flex items-center gap-1">
+              <AppearanceMenu tone="light" />
               <LanguageSwitcher tone="light" />
             </div>
           </header>

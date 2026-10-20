@@ -97,7 +97,7 @@ export default async function GroupsPage({ params }: PageProps<"/[locale]/groupe
                           <span className="text-xs text-ink-400">{formatDateTime(g.last.createdAt, locale)}</span>
                         )}
                         {g.unread > 0 && (
-                          <span className="grid min-w-[22px] place-items-center rounded-full bg-live px-1.5 text-[11px] font-bold leading-[22px] text-white">
+                          <span className="grid min-w-[22px] place-items-center rounded-full bg-live px-1.5 text-[0.6875rem] font-bold leading-[22px] text-white">
                             {g.unread > 99 ? "99+" : g.unread}
                           </span>
                         )}

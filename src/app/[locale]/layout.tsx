@@ -6,6 +6,7 @@ import { Cairo, El_Messiri, Fraunces, Plus_Jakarta_Sans } from "next/font/google
 import { ServiceWorkerRegister } from "@/components/site/ServiceWorkerRegister";
 import { PUBLIC_NAMESPACES, pickNamespaces } from "@/i18n/client-messages";
 import { isRtl, routing } from "@/i18n/routing";
+import { APPEARANCE_SCRIPT } from "@/lib/appearance";
 import "../globals.css";
 
 // French / Latin
@@ -56,7 +57,12 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[lo
       dir={isRtl(locale) ? "rtl" : "ltr"}
       data-scroll-behavior="smooth"
       className={`${fonts} h-full antialiased`}
+      // data-theme and data-text are set on <html> by the script below, before React starts
+      suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: APPEARANCE_SCRIPT }} />
+      </head>
       <body className="flex min-h-full flex-col">
         <NextIntlClientProvider messages={messages}>{children}</NextIntlClientProvider>
         <ServiceWorkerRegister />

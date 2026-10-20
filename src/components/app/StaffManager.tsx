@@ -47,7 +47,7 @@ function Credentials({ email, password }: { email: string; password: string }) {
           <dd dir="ltr" className="select-all text-start font-mono text-xl font-bold tracking-wider">{password}</dd>
         </div>
       </dl>
-      <p className="mt-3 text-[13px] leading-snug text-ink-700">{t("credentialsNote")}</p>
+      <p className="mt-3 text-[0.8125rem] leading-snug text-ink-700">{t("credentialsNote")}</p>
     </div>
   );
 }
@@ -163,7 +163,7 @@ export function StaffCard({ staff }: { staff: StaffCardData }) {
 
       <div className="mt-4 flex flex-wrap gap-1.5">
         {staff.isOwner ? (
-          <p className="text-[13px] text-ink-500">{t("team.ownerNote")}</p>
+          <p className="text-[0.8125rem] text-ink-500">{t("team.ownerNote")}</p>
         ) : staff.permissions.length === 0 ? (
           <Badge tone="neutral">{t("team.noPermissions")}</Badge>
         ) : (
@@ -192,7 +192,7 @@ export function StaffCard({ staff }: { staff: StaffCardData }) {
                 <input type="checkbox" name="active" defaultChecked={staff.active} className="mt-1 size-4 accent-jade-600" />
                 <span>
                   <span className="block text-sm font-semibold">{t("team.active")}</span>
-                  <span className="mt-0.5 block text-[13px] text-ink-500">{t("team.activeHelp")}</span>
+                  <span className="mt-0.5 block text-[0.8125rem] text-ink-500">{t("team.activeHelp")}</span>
                 </span>
               </label>
               <Button type="submit" disabled={pending}>

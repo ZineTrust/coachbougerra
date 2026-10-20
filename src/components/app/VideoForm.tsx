@@ -130,7 +130,7 @@ export function VideoForm({
           error={err(errors.titleAr)}
         />
       </div>
-      <p className="-mt-2 text-[13px] leading-snug text-ink-500">{t("titleHelp")}</p>
+      <p className="-mt-2 text-[0.8125rem] leading-snug text-ink-500">{t("titleHelp")}</p>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <TextArea
@@ -233,7 +233,7 @@ export function VideoForm({
                   e.target.value = "";
                 }}
               />
-              <p className="mt-2 text-[13px] leading-snug text-ink-500">{t("uploadHelp", { max: formatBytes(maxBytes, locale) })}</p>
+              <p className="mt-2 text-[0.8125rem] leading-snug text-ink-500">{t("uploadHelp", { max: formatBytes(maxBytes, locale) })}</p>
               {pickError && (
                 <div className="mt-3">
                   <Notice tone="error">{err(pickError)}</Notice>
@@ -279,7 +279,7 @@ export function VideoForm({
             { value: "published", label: t("statusPublished") },
           ]}
         />
-        <p className="text-[13px] leading-snug text-ink-500">{t("statusHelp")}</p>
+        <p className="text-[0.8125rem] leading-snug text-ink-500">{t("statusHelp")}</p>
         {status === "published" && !alreadyPublished && (
           <CheckRow
             name="notify"
@@ -295,7 +295,7 @@ export function VideoForm({
       {current.ok && initial && <Notice tone="success">{t("saved")}</Notice>}
 
       {phase && <UploadProgress phase={phase} onCancel={() => abort.current?.abort()} />}
-      {!initial && file && !busy && <p className="text-[13px] leading-snug text-ink-500">{t("createNext")}</p>}
+      {!initial && file && !busy && <p className="text-[0.8125rem] leading-snug text-ink-500">{t("createNext")}</p>}
 
       {/* on a phone the button stays at the bottom of the screen while the form is long, so it is never lost below the fold */}
       <div className="sticky bottom-0 z-10 -mx-5 -mb-5 rounded-b-2xl border-t border-ink-100 bg-white/95 px-5 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur sm:static sm:mx-0 sm:mb-0 sm:rounded-none sm:border-0 sm:bg-transparent sm:p-0 sm:backdrop-blur-none">

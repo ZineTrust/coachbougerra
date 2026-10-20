@@ -28,7 +28,7 @@ export function Features() {
               <Icon className="size-6" aria-hidden />
             </span>
             <h3 className="mt-5 text-lg font-bold text-ink-900">{t(`${key}.title`)}</h3>
-            <p className="mt-2 text-[15px] leading-relaxed text-ink-500">{t(`${key}.text`)}</p>
+            <p className="mt-2 text-[0.9375rem] leading-relaxed text-ink-500">{t(`${key}.text`)}</p>
           </div>
         ))}
       </div>

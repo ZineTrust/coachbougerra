@@ -22,7 +22,7 @@ export function Hero({ next }: { next: UpcomingLive }) {
 
       <div className="relative mx-auto grid max-w-7xl items-center gap-16 px-5 pb-28 pt-12 sm:px-8 lg:grid-cols-[1.02fr_1fr] lg:gap-10 lg:pb-32 lg:pt-20">
         <div>
-          <p className="inline-flex items-center gap-2 rounded-full border border-gold-400/30 bg-gold-400/10 py-1.5 ps-2.5 pe-4 text-[13px] font-semibold text-gold-300">
+          <p className="inline-flex items-center gap-2 rounded-full border border-gold-400/30 bg-gold-400/10 py-1.5 ps-2.5 pe-4 text-[0.8125rem] font-semibold text-gold-300">
             <Star className="size-4 fill-gold-400 text-gold-400" aria-hidden />
             {t("badge")}
           </p>
@@ -50,7 +50,7 @@ export function Hero({ next }: { next: UpcomingLive }) {
           <div className="mt-10 flex flex-col gap-4 rounded-2xl bg-white/6 p-4 ring-1 ring-white/10 backdrop-blur sm:flex-row sm:items-center sm:justify-between sm:p-5">
             <div className="min-w-0">
               <LiveDot label={t("nextLive")} />
-              <p className="mt-2.5 truncate text-[15px] font-bold text-white">
+              <p className="mt-2.5 truncate text-[0.9375rem] font-bold text-white">
                 {next.title[locale]}
               </p>
               <p className="mt-0.5 text-sm text-ink-300">

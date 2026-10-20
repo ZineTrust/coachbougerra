@@ -211,7 +211,7 @@ export function Player({
               dir="ltr"
               aria-hidden
               style={{ animationDelay: `${delay}s` }}
-              className="pointer-events-none absolute z-20 max-w-[55%] animate-watermark select-none truncate rounded px-2 py-1 text-[11px] font-bold text-white/30 [text-shadow:0_1px_3px_rgb(0_0_0/0.6)] sm:text-sm"
+              className="pointer-events-none absolute z-20 max-w-[55%] animate-watermark select-none truncate rounded px-2 py-1 text-[0.6875rem] font-bold text-white/30 [text-shadow:0_1px_3px_rgb(0_0_0/0.6)] sm:text-sm"
             >
               #{viewer.code}
               {viewer.name ? ` · ${viewer.name}` : ""}
@@ -221,7 +221,7 @@ export function Player({
       )}
 
       {guard && (
-        <span className="pointer-events-none absolute start-3 top-3 z-10 inline-flex items-center gap-1 rounded-full bg-ink-950/70 px-2.5 py-1 text-[11px] font-semibold text-jade-300 backdrop-blur">
+        <span className="pointer-events-none absolute start-3 top-3 z-10 inline-flex items-center gap-1 rounded-full bg-ink-950/70 px-2.5 py-1 text-[0.6875rem] font-semibold text-jade-300 backdrop-blur">
           <ShieldCheck className="size-3.5" aria-hidden /> {t("video.protected")}
         </span>
       )}

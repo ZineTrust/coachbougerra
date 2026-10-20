@@ -63,14 +63,14 @@ export default async function MembersPage({
             name="q"
             defaultValue={q}
             placeholder={t("search")}
-            className="h-12 w-full rounded-xl bg-white ps-11 pe-4 text-[15px] ring-1 ring-ink-200 placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-jade-500"
+            className="h-12 w-full rounded-xl bg-white ps-11 pe-4 text-[0.9375rem] ring-1 ring-ink-200 placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-jade-500"
           />
         </label>
         <select
           name="title"
           defaultValue={title ?? ""}
           aria-label={t("rank")}
-          className="h-12 rounded-xl bg-white px-4 text-[15px] ring-1 ring-ink-200 focus:outline-none focus:ring-2 focus:ring-jade-500"
+          className="h-12 rounded-xl bg-white px-4 text-[0.9375rem] ring-1 ring-ink-200 focus:outline-none focus:ring-2 focus:ring-jade-500"
         >
           <option value="">{t("allTitles")}</option>
           {MEMBER_TITLES.map((m) => (

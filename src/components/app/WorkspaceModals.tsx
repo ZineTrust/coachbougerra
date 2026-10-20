@@ -104,7 +104,7 @@ export function ComingSoonModal({
           <Radio className="size-8" aria-hidden />
         </span>
         <p className="mt-5 text-lg font-bold">{t("comingTitle")}</p>
-        <p className="mx-auto mt-2 max-w-sm text-[15px] leading-relaxed text-ink-500">
+        <p className="mx-auto mt-2 max-w-sm text-[0.9375rem] leading-relaxed text-ink-500">
           {t("comingText")}
         </p>
         <Button className="mt-7" onClick={onClose}>

@@ -110,7 +110,7 @@ function LoginForm() {
         </Button>
       </form>
 
-      <p className="mt-6 flex items-start gap-2.5 text-[13px] leading-relaxed text-ink-500">
+      <p className="mt-6 flex items-start gap-2.5 text-[0.8125rem] leading-relaxed text-ink-500">
         <Info className="mt-0.5 size-4 shrink-0 text-jade-600" aria-hidden />
         {t("codeHint")}
       </p>
@@ -162,7 +162,7 @@ function RegisterForm({ invitation }: { invitation: { token: string; name: strin
             ))}
           </div>
           {errors.title && (
-            <p role="alert" className="mt-1.5 text-[13px] font-medium text-live">
+            <p role="alert" className="mt-1.5 text-[0.8125rem] font-medium text-live">
               {err(errors.title)}
             </p>
           )}
@@ -217,7 +217,7 @@ function RegisterForm({ invitation }: { invitation: { token: string; name: strin
         </Button>
       </form>
 
-      <p className="mt-6 flex items-start gap-2.5 rounded-xl bg-jade-50 p-4 text-[13px] leading-relaxed text-jade-900">
+      <p className="mt-6 flex items-start gap-2.5 rounded-xl bg-jade-50 p-4 text-[0.8125rem] leading-relaxed text-jade-900">
         <Info className="mt-0.5 size-4 shrink-0 text-jade-600" aria-hidden />
         {t("codeInfo")}
       </p>

@@ -62,7 +62,7 @@ export function Countdown({
           <div className="font-display text-2xl font-semibold tabular-nums text-white">
             {c.v === undefined ? "--" : pad(c.v)}
           </div>
-          <div className="text-[10px] font-bold uppercase tracking-wider text-ink-300">
+          <div className="text-[0.625rem] font-bold uppercase tracking-wider text-ink-300">
             {c.label}
           </div>
         </div>

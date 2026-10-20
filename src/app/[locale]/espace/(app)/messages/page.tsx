@@ -101,7 +101,7 @@ export default async function MessagesPage({
                   <div className="flex shrink-0 flex-col items-end gap-1.5">
                     <span className="text-xs text-ink-400">{formatDateTime(c.lastAt, locale)}</span>
                     {c.unread > 0 && (
-                      <span className="rounded-full bg-live px-2.5 py-0.5 text-[11px] font-bold text-white">
+                      <span className="rounded-full bg-live px-2.5 py-0.5 text-[0.6875rem] font-bold text-white">
                         {t("unread", { count: c.unread })}
                       </span>
                     )}

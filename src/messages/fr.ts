@@ -269,6 +269,17 @@ export const fr = {
     pushError: "Impossible d'activer les notifications. Réessayez.",
   },
 
+  appearance: {
+    title: "Apparence",
+    menu: "Apparence : thème et taille du texte",
+    themeTitle: "Thème",
+    theme: { light: "Clair", dark: "Sombre", auto: "Auto" },
+    autoHelp: "Le thème suit le réglage de votre téléphone.",
+    textTitle: "Taille du texte",
+    text: { md: "Taille normale", lg: "Grande taille", xl: "Très grande taille" },
+    sample: "Voici un exemple de texte à la taille choisie.",
+  },
+
   invite: {
     metaTitle: "Inviter des amis",
     eyebrow: "Inviter",

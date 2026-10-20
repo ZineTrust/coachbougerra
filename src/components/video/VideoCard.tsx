@@ -21,7 +21,7 @@ export function VideoCard({ video, unlocked = false }: { video: Video; unlocked?
           <p className="text-xs font-bold uppercase tracking-wider text-jade-600">
             {t(`categories.${video.category}`)}
           </p>
-          <h3 dir="auto" className="mt-1 line-clamp-2 text-[15px] font-bold leading-snug text-ink-900">
+          <h3 dir="auto" className="mt-1 line-clamp-2 text-[0.9375rem] font-bold leading-snug text-ink-900">
             {video.title[locale]}
           </h3>
         </div>

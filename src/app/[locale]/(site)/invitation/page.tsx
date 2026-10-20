@@ -58,7 +58,7 @@ export default async function InvitePage({ params }: PageProps<"/[locale]/invita
           </h2>
 
           {invited.length === 0 ? (
-            <p className="mt-4 text-[15px] leading-relaxed text-ink-600">{t("joinedEmpty")}</p>
+            <p className="mt-4 text-[0.9375rem] leading-relaxed text-ink-600">{t("joinedEmpty")}</p>
           ) : (
             <ul className="mt-4 divide-y divide-ink-100">
               {invited.map((m) => (
@@ -84,7 +84,7 @@ export default async function InvitePage({ params }: PageProps<"/[locale]/invita
               ))}
             </ul>
           )}
-          <p className="mt-4 text-[13px] leading-snug text-ink-500">{t("privacyNote")}</p>
+          <p className="mt-4 text-[0.8125rem] leading-snug text-ink-500">{t("privacyNote")}</p>
         </div>
       </section>
     </>

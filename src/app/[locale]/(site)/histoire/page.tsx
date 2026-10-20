@@ -37,7 +37,7 @@ export default async function StoryPage({ params }: PageProps<"/[locale]/histoir
   return (
     <>
       <PageHeader eyebrow={t("eyebrow")} title={t("title")} lead={t("lead")}>
-        <p className="mt-8 inline-flex items-center gap-2 rounded-full border border-gold-400/30 bg-gold-400/10 py-1.5 ps-2.5 pe-4 text-[13px] font-semibold text-gold-300">
+        <p className="mt-8 inline-flex items-center gap-2 rounded-full border border-gold-400/30 bg-gold-400/10 py-1.5 ps-2.5 pe-4 text-[0.8125rem] font-semibold text-gold-300">
           <Star className="size-4 fill-gold-400 text-gold-400" aria-hidden />
           {t("role")}
         </p>
@@ -56,7 +56,7 @@ export default async function StoryPage({ params }: PageProps<"/[locale]/histoir
             </div>
           </div>
 
-          <div className="max-w-2xl space-y-6 text-[18px] leading-[1.85] text-ink-700">
+          <div className="max-w-2xl space-y-6 text-[1.125rem] leading-[1.85] text-ink-700">
             <p>{t("p1")}</p>
             <p>{t("p2")}</p>
             <p>{t("p3")}</p>

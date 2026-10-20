@@ -100,7 +100,7 @@ export function ContactButton({ member }: { member: { code: number; unread: numb
         {open ? <X className="size-6" aria-hidden /> : <MessageCircle className="size-6" aria-hidden />}
         <span className="hidden text-sm font-bold sm:inline">{t("button")}</span>
         {unread > 0 && (
-          <span className="absolute -end-1 -top-1 grid min-w-[22px] place-items-center rounded-full bg-live px-1.5 text-[11px] font-bold leading-[22px] text-white ring-2 ring-ivory-50">
+          <span className="absolute -end-1 -top-1 grid min-w-[22px] place-items-center rounded-full bg-live px-1.5 text-[0.6875rem] font-bold leading-[22px] text-white ring-2 ring-ivory-50">
             {unread > 9 ? "9+" : unread}
           </span>
         )}
@@ -216,17 +216,17 @@ function ContactThread({ onRead }: { onRead: () => void }) {
           <div key={m.id} className={cn("flex", m.fromStaff ? "justify-start" : "justify-end")}>
             <div
               className={cn(
-                "max-w-[85%] rounded-2xl px-3.5 py-2.5 text-[14px] leading-snug",
+                "max-w-[85%] rounded-2xl px-3.5 py-2.5 text-[0.875rem] leading-snug",
                 m.fromStaff
                   ? "rounded-ss-sm bg-white text-ink-900 shadow-card"
                   : "rounded-se-sm bg-jade-600 text-white",
               )}
             >
               {m.fromStaff && (
-                <p className="mb-0.5 text-[11px] font-bold text-jade-700">{m.staffName ?? t("team")}</p>
+                <p className="mb-0.5 text-[0.6875rem] font-bold text-jade-700">{m.staffName ?? t("team")}</p>
               )}
               <p dir="auto" className="whitespace-pre-line break-words">{m.body}</p>
-              <p className={cn("mt-1 text-[10px]", m.fromStaff ? "text-ink-400" : "text-white/70")}>
+              <p className={cn("mt-1 text-[0.625rem]", m.fromStaff ? "text-ink-400" : "text-white/70")}>
                 {formatDateTime(new Date(m.createdAt), locale)}
               </p>
             </div>
@@ -242,7 +242,7 @@ function ContactThread({ onRead }: { onRead: () => void }) {
         }}
       >
         {formError && (
-          <p role="alert" className="mb-2 text-[13px] font-medium text-live">
+          <p role="alert" className="mb-2 text-[0.8125rem] font-medium text-live">
             {err(formError)}
           </p>
         )}
@@ -261,7 +261,7 @@ function ContactThread({ onRead }: { onRead: () => void }) {
             aria-label={t("placeholder")}
             rows={1}
             maxLength={2000}
-            className="max-h-28 min-h-11 flex-1 resize-none rounded-2xl bg-ivory-50 px-4 py-2.5 text-[15px] ring-1 ring-ink-200 placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-jade-500"
+            className="max-h-28 min-h-11 flex-1 resize-none rounded-2xl bg-ivory-50 px-4 py-2.5 text-[0.9375rem] ring-1 ring-ink-200 placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-jade-500"
           />
           <button
             type="submit"

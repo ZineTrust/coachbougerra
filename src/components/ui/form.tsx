@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
 const control =
-  "mt-1.5 w-full rounded-xl bg-white px-4 text-[15px] ring-1 ring-ink-200 placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-jade-500 aria-[invalid=true]:ring-2 aria-[invalid=true]:ring-live";
+  "mt-1.5 w-full rounded-xl bg-white px-4 text-[0.9375rem] ring-1 ring-ink-200 placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-jade-500 aria-[invalid=true]:ring-2 aria-[invalid=true]:ring-live";
 
 /** Turns an error code from the server ("email_taken") into text in the current language. */
 export function useErrorText() {
@@ -40,11 +40,11 @@ function FieldShell({
         {children}
       </label>
       {error ? (
-        <p role="alert" className="mt-1.5 text-[13px] font-medium text-live">
+        <p role="alert" className="mt-1.5 text-[0.8125rem] font-medium text-live">
           {error}
         </p>
       ) : (
-        hint && <p className="mt-1.5 text-[13px] text-ink-500">{hint}</p>
+        hint && <p className="mt-1.5 text-[0.8125rem] text-ink-500">{hint}</p>
       )}
     </div>
   );
@@ -213,7 +213,7 @@ export function CheckRow({
       />
       <span>
         <span className="block text-sm font-semibold text-ink-900">{label}</span>
-        {help && <span className="mt-0.5 block text-[13px] leading-snug text-ink-500">{help}</span>}
+        {help && <span className="mt-0.5 block text-[0.8125rem] leading-snug text-ink-500">{help}</span>}
       </span>
     </label>
   );

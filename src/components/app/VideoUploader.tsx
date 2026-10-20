@@ -82,7 +82,7 @@ export function UploadProgress({ phase, onCancel }: { phase: UploadPhase; onCanc
       >
         <div className="h-full rounded-full bg-jade-500 transition-[width] duration-300" style={{ width: `${shown}%` }} />
       </div>
-      <p className="mt-3 text-[13px] leading-snug text-ink-600">{t("uploadKeepOpen")}</p>
+      <p className="mt-3 text-[0.8125rem] leading-snug text-ink-600">{t("uploadKeepOpen")}</p>
       {onCancel && (phase.name === "preparing" || phase.name === "sending") && (
         <Button variant="outline" size="sm" className="mt-3" onClick={onCancel}>
           <X className="size-4" aria-hidden /> {t("uploadCancel")}
@@ -202,7 +202,7 @@ export function VideoUploader({
               </Button>
             )}
           </div>
-          <p className="mt-2 text-[13px] leading-snug text-ink-500">{t("uploadHelp", { max: formatBytes(maxBytes, locale) })}</p>
+          <p className="mt-2 text-[0.8125rem] leading-snug text-ink-500">{t("uploadHelp", { max: formatBytes(maxBytes, locale) })}</p>
           {pending && !message && (
             <div className="mt-3">
               <Notice tone="info">
@@ -239,7 +239,7 @@ export function VideoUploader({
       )}
 
       {storageReady && (
-        <details className="mt-4 text-[13px] leading-relaxed text-ink-600">
+        <details className="mt-4 text-[0.8125rem] leading-relaxed text-ink-600">
           <summary className="cursor-pointer font-semibold text-ink-700">{t("tipsTitle")}</summary>
           <ul className="mt-2 list-disc space-y-1 ps-5">
             <li>{t("tipWifi")}</li>

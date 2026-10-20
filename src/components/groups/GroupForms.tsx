@@ -45,7 +45,7 @@ export function CreateGroupForm() {
       <Button type="submit" disabled={pending} className="w-full">
         <Plus className="size-[18px]" aria-hidden /> {t("create")}
       </Button>
-      <p className="text-[13px] leading-snug text-ink-500">
+      <p className="text-[0.8125rem] leading-snug text-ink-500">
         {t("createHelp", { max: MAX_FRIEND_GROUPS_PER_MEMBER })}
       </p>
     </form>
@@ -165,7 +165,7 @@ export function OfficialGroupForm({
 
       <fieldset>
         <legend className="text-sm font-semibold text-ink-700">{t("ranksLabel")}</legend>
-        <p className="mt-0.5 text-[13px] leading-snug text-ink-500">{t("ranksHelp")}</p>
+        <p className="mt-0.5 text-[0.8125rem] leading-snug text-ink-500">{t("ranksHelp")}</p>
         <div className="mt-2 grid gap-2 sm:grid-cols-2">
           {MEMBER_TITLES.map((title) => (
             <CheckRow

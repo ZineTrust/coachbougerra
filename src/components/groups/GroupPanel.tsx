@@ -120,7 +120,7 @@ export function GroupPanel({
           })}
         </ul>
         {kind === "official" && (
-          <p className="mt-3 text-[13px] leading-snug text-ink-500">{t("byRankNote")}</p>
+          <p className="mt-3 text-[0.8125rem] leading-snug text-ink-500">{t("byRankNote")}</p>
         )}
       </section>
 

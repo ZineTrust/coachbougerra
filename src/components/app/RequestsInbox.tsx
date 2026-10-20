@@ -125,7 +125,7 @@ function PendingCard({ r }: { r: RequestItem }) {
       )}
 
       {r.note && (
-        <p dir="auto" className="mt-3 whitespace-pre-line rounded-xl bg-ivory-50 px-4 py-3 text-[15px] leading-relaxed text-ink-700 ring-1 ring-ink-900/5">
+        <p dir="auto" className="mt-3 whitespace-pre-line rounded-xl bg-ivory-50 px-4 py-3 text-[0.9375rem] leading-relaxed text-ink-700 ring-1 ring-ink-900/5">
           {r.note}
         </p>
       )}

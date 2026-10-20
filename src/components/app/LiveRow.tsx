@@ -21,16 +21,16 @@ export function LiveRow({
   return (
     <div className="flex items-center gap-4">
       <div className="w-14 shrink-0 rounded-xl bg-ink-900 py-2 text-center text-white">
-        <p className="truncate px-0.5 text-[9px] font-bold uppercase tracking-wider text-gold-400">
+        <p className="truncate px-0.5 text-[0.5625rem] font-bold uppercase tracking-wider text-gold-400">
           {weekday}
         </p>
         <p className="font-display text-xl font-semibold leading-none">{day}</p>
-        <p className="mt-0.5 truncate px-0.5 text-[9px] font-semibold uppercase text-ink-300">
+        <p className="mt-0.5 truncate px-0.5 text-[0.5625rem] font-semibold uppercase text-ink-300">
           {month}
         </p>
       </div>
       <div className="min-w-0 flex-1">
-        <p className="truncate text-[15px] font-bold text-ink-900">{live.title[locale]}</p>
+        <p className="truncate text-[0.9375rem] font-bold text-ink-900">{live.title[locale]}</p>
         <p className="mt-0.5 text-sm text-ink-500">
           <bdi>{formatLiveTime(live.startsAt, locale)}</bdi> · {t("min", { count: live.length })}
           {!compact && ` · ${t("registered", { count: live.registered })}`}

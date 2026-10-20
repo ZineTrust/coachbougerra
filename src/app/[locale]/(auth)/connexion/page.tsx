@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Check } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AuthForm } from "@/components/auth/AuthForm";
+import { AppearanceMenu } from "@/components/site/AppearanceMenu";
 import { LanguageSwitcher } from "@/components/site/LanguageSwitcher";
 import { Logo } from "@/components/ui/Logo";
 import { emDark } from "@/components/ui/rich";
@@ -66,7 +67,10 @@ export default async function ConnexionPage({
           <div className="lg:hidden">
             <Logo tone="light" />
           </div>
-          <LanguageSwitcher tone="light" />
+          <div className="flex items-center gap-1">
+            <AppearanceMenu tone="light" />
+            <LanguageSwitcher tone="light" />
+          </div>
         </div>
         <div className="flex w-full flex-1 items-center justify-center py-6">
           <AuthForm

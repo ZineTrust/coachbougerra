@@ -159,7 +159,7 @@ export function PwaCard({ vapidPublicKey }: { vapidPublicKey: string }) {
               <Download className="size-4" aria-hidden /> {t("install")}
             </Button>
           ) : (
-            <p className="mt-2.5 text-[13px] font-semibold text-ink-700">{t("iosHelp")}</p>
+            <p className="mt-2.5 text-[0.8125rem] font-semibold text-ink-700">{t("iosHelp")}</p>
           )}
         </div>
       )}

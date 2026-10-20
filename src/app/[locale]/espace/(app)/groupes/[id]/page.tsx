@@ -59,7 +59,7 @@ export default async function WorkspaceGroup({ params }: Props) {
       <div className="mt-6 grid gap-6 xl:grid-cols-[1fr_22rem]">
         <div className="min-w-0 space-y-3">
           <GroupChat groupId={group.id} mode="team" canPostInitially isAdminInitially voiceReady={storageConfigured()} />
-          <p className="flex items-start gap-2 text-[13px] leading-snug text-ink-500">
+          <p className="flex items-start gap-2 text-[0.8125rem] leading-snug text-ink-500">
             <Eye className="mt-0.5 size-4 shrink-0" aria-hidden /> {t("readingAsTeam")}
           </p>
         </div>

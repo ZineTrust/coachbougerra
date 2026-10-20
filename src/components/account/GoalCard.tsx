@@ -69,7 +69,7 @@ export function GoalCard({ monthLabel, goal, previous, daysLeft, nextUnlock }: G
           }}
           className="mt-5"
         >
-          <p className="text-[15px] leading-relaxed text-ink-600">{goal ? t("editLead") : t("lead")}</p>
+          <p className="text-[0.9375rem] leading-relaxed text-ink-600">{goal ? t("editLead") : t("lead")}</p>
           <div className="mt-4 flex flex-wrap gap-2">
             {GOAL_SUGGESTIONS.map((n) => (
               <button
@@ -188,7 +188,7 @@ export function GoalCard({ monthLabel, goal, previous, daysLeft, nextUnlock }: G
           })}
         </p>
       )}
-      <p className="mt-4 text-[13px] leading-snug text-ink-500">{t("selfNote")}</p>
+      <p className="mt-4 text-[0.8125rem] leading-snug text-ink-500">{t("selfNote")}</p>
     </section>
   );
 }

@@ -42,7 +42,7 @@ export function ProgressRing({
       </svg>
       <div dir="ltr" className="absolute inset-0 grid place-content-center text-center text-white">
         <span className="font-display text-3xl font-semibold leading-none tabular-nums">{label}</span>
-        {sublabel && <span className="mt-1 text-[11px] font-semibold text-ink-300">{sublabel}</span>}
+        {sublabel && <span className="mt-1 text-[0.6875rem] font-semibold text-ink-300">{sublabel}</span>}
       </div>
     </div>
   );

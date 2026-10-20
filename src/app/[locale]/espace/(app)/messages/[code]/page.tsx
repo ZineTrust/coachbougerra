@@ -82,7 +82,7 @@ export default async function ConversationPage({
                 <li key={m.id} className={cn("flex", m.fromStaff ? "justify-end" : "justify-start")}>
                   <div
                     className={cn(
-                      "max-w-[88%] rounded-2xl px-4 py-3 text-[15px] leading-relaxed",
+                      "max-w-[88%] rounded-2xl px-4 py-3 text-[0.9375rem] leading-relaxed",
                       m.fromStaff
                         ? "rounded-se-sm bg-jade-600 text-white"
                         : "rounded-ss-sm bg-ivory-100 text-ink-900",
@@ -90,14 +90,14 @@ export default async function ConversationPage({
                   >
                     <p
                       className={cn(
-                        "mb-1 text-[11px] font-bold",
+                        "mb-1 text-[0.6875rem] font-bold",
                         m.fromStaff ? "text-jade-100" : "text-jade-700",
                       )}
                     >
                       {m.fromStaff ? (m.staffName ?? t("team")) : `#${member.code}`}
                     </p>
                     <p dir="auto" className="whitespace-pre-line break-words">{m.body}</p>
-                    <p className={cn("mt-1.5 text-[11px]", m.fromStaff ? "text-white/70" : "text-ink-400")}>
+                    <p className={cn("mt-1.5 text-[0.6875rem]", m.fromStaff ? "text-white/70" : "text-ink-400")}>
                       {formatDateTime(m.createdAt, locale)}
                     </p>
                   </div>

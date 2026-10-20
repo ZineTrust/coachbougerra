@@ -106,11 +106,11 @@ export function NotificationBell({ initial }: { initial: number }) {
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-label={t("notifications", { count })}
-        className="relative grid size-10 place-items-center rounded-full text-ink-200 transition-colors hover:bg-white/10 hover:text-white"
+        className="relative grid size-[40px] place-items-center rounded-full text-ink-200 transition-colors hover:bg-white/10 hover:text-white"
       >
         <Bell className="size-5" aria-hidden />
         {count > 0 && (
-          <span className="absolute -end-0.5 -top-0.5 grid min-w-[18px] place-items-center rounded-full bg-live px-1 text-[10px] font-bold leading-[18px] text-white">
+          <span className="absolute -end-0.5 -top-0.5 grid min-w-[18px] place-items-center rounded-full bg-live px-1 text-[0.625rem] font-bold leading-[18px] text-white">
             {count > 99 ? "99+" : count}
           </span>
         )}
@@ -154,11 +154,11 @@ export function NotificationBell({ initial }: { initial: number }) {
                         <span className="mt-1.5 size-2 shrink-0 rounded-full bg-live" aria-label={b("newBadge")} />
                       )}
                       <div className="min-w-0 flex-1">
-                        <p dir="auto" className="text-[14px] font-bold leading-snug">{n.title}</p>
-                        <p dir="auto" className="mt-1 line-clamp-3 whitespace-pre-line text-[13px] leading-snug text-ink-600">
+                        <p dir="auto" className="text-[0.875rem] font-bold leading-snug">{n.title}</p>
+                        <p dir="auto" className="mt-1 line-clamp-3 whitespace-pre-line text-[0.8125rem] leading-snug text-ink-600">
                           {n.body}
                         </p>
-                        <p className="mt-1.5 text-[11px] text-ink-400">
+                        <p className="mt-1.5 text-[0.6875rem] text-ink-400">
                           {formatDateTime(new Date(n.createdAt), locale)}
                         </p>
                       </div>

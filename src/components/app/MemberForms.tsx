@@ -179,7 +179,7 @@ export function MemberActions({
           <p dir="ltr" className="mt-1.5 select-all text-start font-mono text-xl font-bold tracking-wider text-ink-900">
             {resetState.info.password}
           </p>
-          <p className="mt-2 text-[13px] leading-snug text-ink-700">{t("resetNote")}</p>
+          <p className="mt-2 text-[0.8125rem] leading-snug text-ink-700">{t("resetNote")}</p>
         </div>
       )}
     </div>

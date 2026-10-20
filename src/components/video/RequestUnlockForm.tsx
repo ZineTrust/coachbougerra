@@ -51,7 +51,7 @@ export function RequestUnlockForm({ slug, required }: { slug: string; required: 
       <Button type="submit" size="lg" variant="gold" disabled={pending} className="w-full">
         <Send className="flip-rtl size-[18px]" aria-hidden /> {t("submit")}
       </Button>
-      <p className="text-[13px] leading-snug text-ink-500">{t("verifyNote")}</p>
+      <p className="text-[0.8125rem] leading-snug text-ink-500">{t("verifyNote")}</p>
     </form>
   );
 }

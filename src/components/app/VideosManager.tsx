@@ -155,7 +155,7 @@ export function VideosManager({ videos }: { videos: Video[] }) {
                   <Thumb video={v} showBadges={false} showPlay={false} />
                 </div>
                 <div className="min-w-0">
-                  <p dir="auto" className="line-clamp-2 text-[15px] font-bold leading-snug">
+                  <p dir="auto" className="line-clamp-2 text-[0.9375rem] font-bold leading-snug">
                     {v.title[locale]}
                   </p>
                   <p className="mt-1 text-sm text-ink-500">
@@ -223,7 +223,7 @@ export function VideosManager({ videos }: { videos: Video[] }) {
         ))}
       </ul>
       {filter === "all" && (
-        <p className="border-t border-ink-100 px-5 py-3 text-[13px] text-ink-500">{t("space.videos.orderHelp")}</p>
+        <p className="border-t border-ink-100 px-5 py-3 text-[0.8125rem] text-ink-500">{t("space.videos.orderHelp")}</p>
       )}
     </div>
   );

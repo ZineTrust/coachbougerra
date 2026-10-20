@@ -8,6 +8,7 @@ import { Logo } from "@/components/ui/Logo";
 import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { AccountMenu, MEMBER_LINKS } from "./AccountMenu";
+import { AppearanceMenu } from "./AppearanceMenu";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { NotificationBell } from "./NotificationBell";
 
@@ -60,6 +61,7 @@ export function Navbar({ member, isStaff }: NavbarProps) {
         </nav>
 
         <div className="hidden items-center gap-2 lg:flex">
+          <AppearanceMenu />
           <LanguageSwitcher />
           {/* only rendered for a signed-in staff account */}
           {isStaff && (
@@ -89,7 +91,7 @@ export function Navbar({ member, isStaff }: NavbarProps) {
             <Link
               href="/espace"
               aria-label={t("staffSpace")}
-              className="grid size-10 place-items-center rounded-full bg-gold-400 text-ink-950 shadow-[0_6px_16px_-6px_rgb(224_180_85/0.8)]"
+              className="grid size-[40px] place-items-center rounded-full bg-gold-400 text-ink-950 shadow-[0_6px_16px_-6px_rgb(224_180_85/0.8)]"
             >
               <ShieldCheck className="size-5" aria-hidden />
             </Link>
@@ -98,7 +100,7 @@ export function Navbar({ member, isStaff }: NavbarProps) {
           <button
             type="button"
             onClick={() => setOpenOn(open ? null : pathname)}
-            className="grid size-11 place-items-center rounded-full text-white hover:bg-white/10"
+            className="grid size-[44px] place-items-center rounded-full text-white hover:bg-white/10"
             aria-label={open ? t("closeMenu") : t("openMenu")}
             aria-expanded={open}
             aria-controls="mobile-menu"
@@ -160,7 +162,8 @@ export function Navbar({ member, isStaff }: NavbarProps) {
               </Button>
             </div>
           )}
-          <div className="mt-3 flex justify-center">
+          <div className="mt-3 flex items-center justify-center gap-2">
+            <AppearanceMenu up />
             <LanguageSwitcher />
           </div>
         </div>

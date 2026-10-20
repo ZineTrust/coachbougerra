@@ -284,7 +284,7 @@ export function GroupChat({
               )}
               <div
                 className={cn(
-                  "max-w-[85%] rounded-2xl px-3.5 py-2.5 text-[14px] leading-snug",
+                  "max-w-[85%] rounded-2xl px-3.5 py-2.5 text-[0.875rem] leading-snug",
                   mine
                     ? "rounded-se-sm bg-jade-600 text-white"
                     : m.fromStaff
@@ -294,10 +294,10 @@ export function GroupChat({
                 )}
               >
                 {!mine && (
-                  <p className="mb-0.5 flex items-center gap-1.5 text-[11px] font-bold text-jade-700">
+                  <p className="mb-0.5 flex items-center gap-1.5 text-[0.6875rem] font-bold text-jade-700">
                     <span dir="auto">{author(m)}</span>
                     {m.fromStaff ? (
-                      <span className="rounded bg-ink-900 px-1.5 py-px text-[9px] uppercase tracking-wide text-gold-300">
+                      <span className="rounded bg-ink-900 px-1.5 py-px text-[0.5625rem] uppercase tracking-wide text-gold-300">
                         {t("team")}
                       </span>
                     ) : (
@@ -323,9 +323,9 @@ export function GroupChat({
                   </p>
                 )}
                 {m.removed && (m.body || m.voice) && (
-                  <p className="mt-1 text-[10px] font-bold uppercase tracking-wide text-live">{t("deleted")}</p>
+                  <p className="mt-1 text-[0.625rem] font-bold uppercase tracking-wide text-live">{t("deleted")}</p>
                 )}
-                <p className={cn("mt-1 text-[10px]", mine ? "text-white/70" : "text-ink-400")}>
+                <p className={cn("mt-1 text-[0.625rem]", mine ? "text-white/70" : "text-ink-400")}>
                   {formatDateTime(new Date(m.createdAt), locale)}
                 </p>
               </div>
@@ -344,7 +344,7 @@ export function GroupChat({
           }}
         >
           {formError && (
-            <p role="alert" className="mb-2 text-[13px] font-medium text-live">
+            <p role="alert" className="mb-2 text-[0.8125rem] font-medium text-live">
               {err(formError)}
             </p>
           )}
@@ -404,7 +404,7 @@ export function GroupChat({
               aria-label={t("placeholder")}
               rows={1}
               maxLength={GROUP_MESSAGE_MAX}
-              className="max-h-28 min-h-11 flex-1 resize-none rounded-2xl bg-ivory-50 px-4 py-2.5 text-[15px] ring-1 ring-ink-200 placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-jade-500"
+              className="max-h-28 min-h-11 flex-1 resize-none rounded-2xl bg-ivory-50 px-4 py-2.5 text-[0.9375rem] ring-1 ring-ink-200 placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-jade-500"
             />
             {voiceSupported && !text.trim() ? (
               <button

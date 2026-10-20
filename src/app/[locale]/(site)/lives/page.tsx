@@ -53,7 +53,7 @@ export default async function LivesPage({ params }: PageProps<"/[locale]/lives">
           </div>
           <div className="flex flex-col p-7 sm:p-10">
             <div className="flex items-center gap-3">
-              <span className="rounded-full bg-live px-3 py-1 text-[11px] font-bold uppercase tracking-wider">
+              <span className="rounded-full bg-live px-3 py-1 text-[0.6875rem] font-bold uppercase tracking-wider">
                 {t("next")}
               </span>
               <LiveAccessBadge access={next.access} />
@@ -131,7 +131,7 @@ export default async function LivesPage({ params }: PageProps<"/[locale]/lives">
                   </span>
                 </div>
                 <h3 className="mt-4 text-lg font-bold">{title}</h3>
-                <p className="mt-1.5 text-[15px] leading-relaxed text-ink-500">{text}</p>
+                <p className="mt-1.5 text-[0.9375rem] leading-relaxed text-ink-500">{text}</p>
               </li>
             ))}
           </ol>
