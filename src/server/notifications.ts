@@ -34,7 +34,8 @@ export async function sendNotification(input: {
   title: string;
   body: string;
   codes: number[] | "all";
-  staffId: number;
+  /** the staff member sending it; null for a message the site sends by itself */
+  staffId: number | null;
 }): Promise<{ id: number; recipients: number | "all" }> {
   const database = await db();
   return database.transaction(async (tx) => {

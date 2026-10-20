@@ -13,7 +13,14 @@ import { cn } from "@/lib/utils";
 
 type Mode = "login" | "register";
 
-export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
+export function AuthForm({
+  initialMode = "login",
+  invitation = null,
+}: {
+  initialMode?: Mode;
+  /** the member whose invitation link was followed */
+  invitation?: { token: string; name: string } | null;
+}) {
   const t = useTranslations("auth");
   const [mode, setMode] = useState<Mode>(initialMode);
 
@@ -46,7 +53,7 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
         ))}
       </div>
 
-      {mode === "login" ? <LoginForm /> : <RegisterForm />}
+      {mode === "login" ? <LoginForm /> : <RegisterForm invitation={invitation} />}
 
       <p className="mt-8 text-center text-sm">
         <Link href="/" className="font-semibold text-ink-600 hover:text-ink-900">
@@ -111,7 +118,7 @@ function LoginForm() {
   );
 }
 
-function RegisterForm() {
+function RegisterForm({ invitation }: { invitation: { token: string; name: string } | null }) {
   const t = useTranslations("auth.register");
   const titles = useTranslations("titles");
   const err = useErrorText();
@@ -126,6 +133,12 @@ function RegisterForm() {
 
       <form key={JSON.stringify(values)} action={action} className="mt-8 space-y-5">
         {errors.form && <Notice tone="error">{err(errors.form)}</Notice>}
+        {invitation && (
+          <>
+            <input type="hidden" name="ref" value={invitation.token} />
+            <Notice tone="success">{t("invitedBy", { name: invitation.name })}</Notice>
+          </>
+        )}
 
         <fieldset>
           <legend className="text-sm font-semibold text-ink-700">{t("rank")}</legend>

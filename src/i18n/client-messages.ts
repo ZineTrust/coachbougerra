@@ -24,6 +24,7 @@ export const PUBLIC_NAMESPACES = [
   "unlock",
   "groups",
   "goal",
+  "invite",
 ] as const;
 
 export const WORKSPACE_NAMESPACES = [...PUBLIC_NAMESPACES, "space"] as const;

@@ -264,6 +264,43 @@ export const fr = {
     pushError: "Impossible d'activer les notifications. Réessayez.",
   },
 
+  invite: {
+    metaTitle: "Inviter des amis",
+    eyebrow: "Inviter",
+    title: "Invitez vos amis, <em>grandissez ensemble</em>.",
+    lead: "Partagez votre lien personnel ou votre QR code. Quand quelqu'un crée son compte avec, vous êtes prévenu et vous le retrouvez ici.",
+    linkTitle: "Votre lien d'invitation",
+    copyLink: "Copier le lien",
+    copyMessage: "Copier le message",
+    copied: "Copié",
+    whatsapp: "Envoyer sur WhatsApp",
+    share: "Partager",
+    shareText:
+      "Salut ! Je te recommande Coach Bougerra : des formations en marketing de réseau et en leadership. Crée ton compte gratuit avec mon lien : {url}",
+    qrTitle: "Votre QR code",
+    qrHelp: "À montrer à quelqu'un en face de vous : il le scanne avec l'appareil photo de son téléphone.",
+    qrDownload: "Télécharger le QR code",
+    joinedTitle: "Inscrits avec votre lien",
+    joinedCount: "{count, plural, =0 {Personne pour l'instant} one {# personne inscrite} other {# personnes inscrites}}",
+    joinedEmpty: "Personne ne s'est encore inscrit avec votre lien. Partagez-le pour commencer.",
+    memberN: "Membre n°{code}",
+    joinedOn: "inscrit le {date}",
+    privacyNote: "Cette liste n'est visible que par vous.",
+    landingMeta: "Invitation",
+    landingMetaText:
+      "Des formations en marketing de réseau et en leadership, des lives et une communauté pour avancer ensemble. Inscription gratuite.",
+    landingEyebrow: "Invitation",
+    landingTitle: "{name} vous invite à rejoindre <em>Coach Bougerra</em>.",
+    landingTitleGeneric: "Rejoignez <em>Coach Bougerra</em>.",
+    landingLead:
+      "Des formations en marketing de réseau et en leadership, des lives avec Coach Bougerra et une communauté pour avancer ensemble. Créer un compte est gratuit.",
+    landingInvalid:
+      "Ce lien d'invitation n'est plus valable, mais vous pouvez rejoindre la communauté : créer un compte est gratuit.",
+    landingCta: "Créer mon compte",
+    landingHave: "J'ai déjà un compte",
+    landingAccount: "Aller à mon compte",
+  },
+
   goal: {
     title: "Mon objectif du mois",
     lead: "Combien de PV visez-vous ce mois-ci ? Fixez un objectif et suivez votre avancée jour après jour.",
@@ -442,6 +479,7 @@ export const fr = {
     toolbox: "Boîte à outils",
     groups: "Groupes",
     calendar: "Calendrier",
+    invite: "Inviter",
     accountMenu: "Menu du compte",
     main: "Navigation principale",
     mobile: "Navigation mobile",
@@ -706,6 +744,7 @@ export const fr = {
       password: "Mot de passe",
       passwordHint: "8 caractères minimum.",
       submit: "Créer mon compte",
+      invitedBy: "Vous vous inscrivez grâce à l'invitation de {name}.",
       codeInfo:
         "Après l'inscription, vous recevez votre code membre personnel : gardez-le, il vous permet de vous connecter sans e-mail.",
     },
@@ -826,6 +865,8 @@ export const fr = {
       accessSome: "{count, plural, one {# accès} other {# accès}}",
       back: "Tous les membres",
       detailTitle: "Membre n°{code}",
+      invitedBy: "Invité par",
+      invitedCount: "Inscrits avec son lien",
       info: "Informations",
       lastLogin: "Dernière connexion",
       never: "Jamais",

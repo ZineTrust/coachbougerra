@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { CalendarDays, ChevronDown, LogOut, Route, UserRound, UsersRound, Wrench } from "lucide-react";
+import { CalendarDays, ChevronDown, LogOut, Route, UserPlus, UserRound, UsersRound, Wrench } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { logoutMemberAction } from "@/actions/auth";
 import { MemberAvatar } from "@/components/ui/Avatar";
@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 export const MEMBER_LINKS = [
   { href: "/mon-parcours", key: "myPath", icon: Route },
   { href: "/groupes", key: "groups", icon: UsersRound },
+  { href: "/invitation", key: "invite", icon: UserPlus },
   { href: "/boite-a-outils", key: "toolbox", icon: Wrench },
   { href: "/calendrier", key: "calendar", icon: CalendarDays },
   { href: "/compte", key: "myAccount", icon: UserRound },

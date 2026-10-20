@@ -14,6 +14,7 @@ import { lastDayOfMonth } from "@/lib/unlock";
 import { formatDate, formatDateTime } from "@/lib/utils";
 import { requireStaff } from "@/server/current";
 import { doneKeys, statsFor } from "@/server/engagement";
+import { invitedCount, sponsorOf } from "@/server/invites";
 import { getGrants, getMember, isProfileComplete } from "@/server/members";
 import { can } from "@/server/staff";
 import { requestsThisMonth } from "@/server/unlocks";
@@ -38,12 +39,14 @@ export default async function MemberPage({ params }: PageProps<"/[locale]/espace
   const t = await getTranslations("space.members");
   const tt = await getTranslations("titles");
   const tp = await getTranslations("path");
-  const [grants, done, requests, publicVideos, titles] = await Promise.all([
+  const [grants, done, requests, publicVideos, titles, sponsor, invited] = await Promise.all([
     getGrants(member.code),
     doneKeys(member.code),
     requestsThisMonth(member.code),
     listPublicVideos(),
     videoTitles(),
+    sponsorOf(member.code),
+    invitedCount(member.code),
   ]);
   const unlockLines: UnlockLine[] = requests.map((r) => ({
     id: r.id,
@@ -76,6 +79,10 @@ export default async function MemberPage({ params }: PageProps<"/[locale]/espace
     [t("rank"), tt(member.title)],
     [t("ultimateCode"), member.ultimateCode],
     [t("registered"), formatDate(member.createdAt, locale)],
+    ...(sponsor
+      ? ([[t("invitedBy"), `#${sponsor.code}${sponsor.fullName ? ` · ${sponsor.fullName}` : ""}`]] as [string, string][])
+      : []),
+    ...(invited > 0 ? ([[t("invitedCount"), String(invited)]] as [string, string][]) : []),
     [t("lastLogin"), member.lastLoginAt ? formatDateTime(member.lastLoginAt, locale) : t("never")],
   ];
   const canManage = can(staff, "members_manage");

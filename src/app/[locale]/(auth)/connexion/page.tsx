@@ -8,6 +8,7 @@ import { emDark } from "@/components/ui/rich";
 import { redirect } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { currentMember } from "@/server/current";
+import { inviterByToken } from "@/server/invites";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/connexion">): Promise<Metadata> {
   const { locale } = await params;
@@ -25,8 +26,13 @@ export default async function ConnexionPage({
 
   if (await currentMember()) redirect({ href: "/compte", locale });
 
-  const { mode } = await searchParams;
+  const { mode, ref } = await searchParams;
   const t = await getTranslations("auth.aside");
+  const ti = await getTranslations("invite");
+  // arriving from a member's invitation link: the form carries who invited this person
+  const token = typeof ref === "string" ? ref : "";
+  const inviter = token ? await inviterByToken(token) : null;
+  const inviterName = inviter ? (inviter.fullName ?? ti("memberN", { code: inviter.code })) : null;
 
   const perks = [t("perk1"), t("perk2"), t("perk3")];
 
@@ -63,7 +69,10 @@ export default async function ConnexionPage({
           <LanguageSwitcher tone="light" />
         </div>
         <div className="flex w-full flex-1 items-center justify-center py-6">
-          <AuthForm initialMode={mode === "register" ? "register" : "login"} />
+          <AuthForm
+              initialMode={mode === "register" || inviter ? "register" : "login"}
+              invitation={inviter ? { token, name: inviterName! } : null}
+            />
         </div>
       </main>
     </div>

@@ -63,6 +63,8 @@ export async function createMember(input: {
   phone: string;
   ultimateCode: string;
   title: MemberTitle;
+  /** the member whose invitation link was used, if any */
+  sponsorCode?: number | null;
 }): Promise<CreateMemberResult> {
   const database = await db();
   try {
@@ -79,9 +81,9 @@ export async function createMember(input: {
         "update counters set value = value + 1 where name = 'member_code' returning value",
       );
       await tx.query(
-        `insert into members (code, email, password_hash, phone, ultimate_code, title)
-         values ($1, $2, $3, $4, $5, $6)`,
-        [value, input.email, input.passwordHash, input.phone, input.ultimateCode, input.title],
+        `insert into members (code, email, password_hash, phone, ultimate_code, title, sponsor_code)
+         values ($1, $2, $3, $4, $5, $6, $7)`,
+        [value, input.email, input.passwordHash, input.phone, input.ultimateCode, input.title, input.sponsorCode ?? null],
       );
       return value;
     });

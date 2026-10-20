@@ -96,6 +96,13 @@ alter table members add column if not exists full_name text;
 alter table members add column if not exists city text;
 alter table members add column if not exists show_in_ranking boolean not null default false;
 
+-- Invitations: each member has a personal link token (made the first time they open "Inviter"), and a
+-- member who signs up through someone's link keeps who invited them.
+alter table members add column if not exists invite_token text;
+create unique index if not exists members_invite_token_key on members (invite_token);
+alter table members add column if not exists sponsor_code integer references members(code) on delete set null;
+create index if not exists members_sponsor_idx on members (sponsor_code);
+
 -- Profile photo, already shrunk to a small JPEG (stored as base64 text).
 create table if not exists member_avatars (
   member_code integer primary key references members(code) on delete cascade,

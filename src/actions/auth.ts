@@ -1,6 +1,7 @@
 "use server";
 
 import { headers } from "next/headers";
+import { after } from "next/server";
 import { getLocale } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
 import { isMemberTitle } from "@/lib/permissions";
@@ -16,6 +17,7 @@ import {
   type FieldErrors,
 } from "@/lib/validation";
 import { currentMember, currentStaff } from "@/server/current";
+import { inviterByToken } from "@/server/invites";
 import {
   createMember,
   findMemberForLogin,
@@ -23,7 +25,9 @@ import {
   setMemberPassword,
   touchMemberLogin,
 } from "@/server/members";
+import { sendNotification } from "@/server/notifications";
 import { hashPassword, verifyAgainstDummy, verifyPassword } from "@/server/password";
+import { sendPush } from "@/server/push";
 import { allow, reset } from "@/server/rate-limit";
 import { createSession, destroyAllSessions, destroySession } from "@/server/session";
 import {
@@ -71,14 +75,26 @@ export async function registerAction(_prev: FormState, fd: FormData): Promise<Fo
     return { errors: { form: "too_many_attempts" }, values };
   }
 
+  // signed up through a member's invitation link: an unknown or stale token is simply ignored
+  const inviter = await inviterByToken(text(fd, "ref").trim());
+
   const created = await createMember({
     email,
     phone,
     ultimateCode,
     title: title as never,
     passwordHash: await hashPassword(password),
+    sponsorCode: inviter?.code ?? null,
   });
   if (!created.ok) return { errors: { [created.field]: created.error }, values };
+
+  if (inviter) {
+    // tell the member who invited them (both languages: they may use either)
+    const title = "Nouveau membre grâce à votre lien · عضو جديد بفضل رابطك";
+    const body = `Membre n°${created.code} · العضو رقم ${created.code}`;
+    await sendNotification({ title, body, codes: [inviter.code], staffId: null });
+    after(() => sendPush([inviter.code], { title, body, url: "/invitation" }));
+  }
 
   await createSession("member", created.code);
   redirect({ href: "/compte?bienvenue=1", locale: await getLocale() });
