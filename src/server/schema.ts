@@ -306,6 +306,41 @@ create table if not exists member_goals (
   primary key (member_code, month)
 );
 
+-- The AI assistant. A chat belongs to one member; each question and answer is a row. "weak" marks an
+-- answer given with little matching knowledge, "rating" is the member's thumb (1 up, -1 down): both feed
+-- the owner's "questions to improve" list. Notes are extra knowledge the owner writes (the assistant
+-- also has built-in notes in code: platform, coaching, products).
+create table if not exists assistant_chats (
+  id          serial primary key,
+  member_code integer not null references members(code) on delete cascade,
+  created_at  timestamptz not null default now(),
+  updated_at  timestamptz not null default now()
+);
+create index if not exists assistant_chats_member_idx on assistant_chats (member_code, id desc);
+
+create table if not exists assistant_messages (
+  id         serial primary key,
+  chat_id    integer not null references assistant_chats(id) on delete cascade,
+  role       text not null check (role in ('user','assistant')),
+  content    text not null,
+  model      text,
+  weak       boolean not null default false,
+  rating     smallint check (rating in (-1, 1)),
+  created_at timestamptz not null default now()
+);
+create index if not exists assistant_messages_chat_idx on assistant_messages (chat_id, id);
+
+create table if not exists assistant_notes (
+  id         serial primary key,
+  title      text not null,
+  keywords   text not null default '',
+  body       text not null,
+  enabled    boolean not null default true,
+  created_by integer references staff(id) on delete set null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
 -- Row-level security on every table, with no policies. The website connects as the
 -- table owner (which is not affected), but a host that exposes the database through
 -- a public data API (Supabase does for the "public" schema) can then read nothing.

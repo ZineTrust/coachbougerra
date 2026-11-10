@@ -131,6 +131,37 @@ Signed-in members get a menu on their number in the header with these pages:
   surface" (add a line there when a new such colour class is used). Text size changes the root font size, which is why
   all text sizes are in rem (a codemod turned the old `text-[13px]` into `text-[0.8125rem]`: keep using rem).
 
+- **Assistant IA** (`/assistant`, in the member menu): a chat where members ask anything, in **Arabic (also the
+  Algerian dialect and arabizi) or French**: how the platform works, network marketing and business, the Ultimate
+  products, or any other topic. It runs on **Groq's free plan** (no card): set `GROQ_API_KEY` (a key from
+  console.groq.com → API Keys) in Render → Environment; without it the page says the assistant is not active yet.
+  How it works (`src/server/assistant/`):
+  - **Knowledge, not training.** Each question is searched (BM25, Arabic and French normalised, `search.ts` +
+    `text.ts`) in short notes: the platform (`knowledge/site.ts`), coaching and prospecting advice
+    (`knowledge/coaching.ts`), the 191 catalogue products (`products.json`, no dosage on purpose) and a live list of
+    the published formations. The best 2–4 notes go into the prompt (`prompt.ts`: rules in French, answers in the
+    language of the question). A short follow-up with no match of its own borrows the previous question.
+  - **The owner's notes** (Workspace → *Assistant IA*, owner only): notes added there become knowledge at once (60 s
+    cache, dropped on every save). **Write the official compensation plan, prices and rules there**: without them
+    the assistant says it does not have them (a built-in note forbids inventing figures). The same page lists the
+    answers thumbed down by members or given with little matching knowledge, plus simple counts.
+  - **Free-plan limits.** Models are tried in turn (`provider.ts`: gpt-oss-120b, llama-3.3-70b, gpt-oss-20b,
+    llama-3.1-8b); a model that answers 429 is left alone for its `retry-after` wait and the next one answers.
+    Groq limits each model separately (about 1,000 requests a day on the big ones), so **`ASSISTANT_DAILY_LIMIT`
+    (default 5 questions per member per day, Algiers time)** keeps the total inside it: about 300 questions a day
+    in all. Raise the limit only after adding a paid key. Also: 8 questions a minute, one at a time per member,
+    600 characters per question, answers of at most 600 tokens.
+  - **Privacy.** The AI service receives the question, the last few messages, the matching notes and the member's
+    rank / monthly goal / unlocked count, never a name, phone, e-mail or code. Conversations are stored
+    (`assistant_chats`, `assistant_messages`) and the owner can read the flagged ones; the page tells members so.
+  - **Guardrails** are in the prompt: no promised income, no health claims about products, no legal or tax advice,
+    honest about being an AI, no invented Ultimate facts. A prompt is not a guarantee: read the "answers to improve"
+    list now and then.
+  - Another provider (or Claude) works through the same chat-completions API: set `ASSISTANT_API_URL`, the key in
+    `GROQ_API_KEY` and `ASSISTANT_MODELS` (comma-separated, best first).
+  Tested here against a stand-in for Groq (Arabic and French questions, retrieval into the prompt, fallback on 429,
+  rejected key, dropped stream, daily cap, one at a time, notes added / disabled / deleted, no personal data sent,
+  RTL, phone width, dark mode) but **not against the real Groq**: ask a few Arabic questions yourself first.
 - **Mon parcours** (`/mon-parcours`): a list of steps chosen for their rank (`src/lib/path.ts`: profile,
   formations, scripts, a live), a progress ring, points, level, badges and an optional leaderboard.
   Everything is **derived from what the member did**, nothing is stored apart from "formation finished" and

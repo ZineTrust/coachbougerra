@@ -157,6 +157,9 @@ export default async function AccountPage({
             <Button href="/mon-parcours" variant="gold" size="sm">
               {tn("myPath")}
             </Button>
+            <Button href="/assistant" variant="ghost-light" size="sm">
+              {tn("assistant")}
+            </Button>
             <Button href="/invitation" variant="ghost-light" size="sm">
               {tn("invite")}
             </Button>

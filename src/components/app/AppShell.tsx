@@ -13,6 +13,7 @@ import {
   PlayCircle,
   Radio,
   ShieldCheck,
+  Sparkles,
   UserCog,
   Users,
   UsersRound,
@@ -36,7 +37,17 @@ export interface ShellStaff {
   permissions: StaffPermission[];
 }
 
-type NavKey = "home" | "members" | "requests" | "messages" | "groups" | "notifications" | "lives" | "videos" | "team";
+type NavKey =
+  | "home"
+  | "members"
+  | "requests"
+  | "messages"
+  | "groups"
+  | "notifications"
+  | "lives"
+  | "videos"
+  | "assistant"
+  | "team";
 
 const NAV: {
   href: string;
@@ -54,6 +65,7 @@ const NAV: {
   { href: "/espace/notifications", key: "notifications", icon: Bell, needs: "notifications_send" },
   { href: "/espace/lives", key: "lives", icon: Radio, needs: "lives_manage" },
   { href: "/espace/videos", key: "videos", icon: PlayCircle, needs: "videos_manage" },
+  { href: "/espace/assistant", key: "assistant", icon: Sparkles, needs: "owner" },
   { href: "/espace/equipe", key: "team", icon: UsersRound, needs: "owner" },
 ];
 
