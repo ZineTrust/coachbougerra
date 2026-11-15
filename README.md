@@ -213,6 +213,24 @@ Please have a native speaker read through the Arabic before launch.
 - `next.config.ts` sets the `next-intl` alias by hand instead of using its plugin, because the plugin
   loads a native compiler add-on that fails on some Windows machines. Same effect, nothing lost.
 
+### Moving to another database (copy everything, members included)
+
+Render's free Postgres expires after 30 days (then 14 days of grace, then it is deleted). To move to
+Supabase (or anywhere else) without losing anyone:
+
+1. Keep the site off (or tell people not to sign up): a new member on the empty database would get
+   a number that already belongs to an old member.
+2. Put the two addresses in `.env.local` (never in git or in a chat):
+   `OLD_DATABASE_URL` = the old database (Render: "External Database URL", after allowing your IP
+   in its Access Control) and `NEW_DATABASE_URL` = the new one (Supabase: "Session pooler" string).
+3. `node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --env-file=.env.local scripts/copy-database.mjs --check`
+   reads the old database and lists every table with its row count (changes nothing).
+4. The same command without `--check` builds the tables in the new database, copies everything inside
+   one transaction, compares every table (row count + a fingerprint of every row) and only then commits.
+   It refuses a new database that already has members (unless `--replace` is given). The old database
+   is never written to.
+5. In Render → Environment, replace `DATABASE_URL` with the new address, then deploy.
+
 ## Deploy on Render
 
 `render.yaml` describes the website (and the first, temporary Render database). The site's database is the one
