@@ -233,11 +233,12 @@ Supabase (or anywhere else) without losing anyone:
 
 ## Deploy on Render
 
-`render.yaml` describes the website (and the first, temporary Render database). The site's database is the one
-named by `DATABASE_URL`, which is set by hand in the dashboard: **Supabase** (see "Database on Supabase" below).
+`render.yaml` describes the website only. The site's database is the one named by `DATABASE_URL`, which is set by
+hand in the dashboard: **Supabase** (see "Database on Supabase" below). Render's own free Postgres is not used any
+more: it expires after 30 days and is then locked (that is what took the site down on 2026-11-15).
 
 1. Push this folder to a **private** GitHub repository.
-2. Render dashboard → **New → Blueprint** → pick the repository → Render lists the website and the database.
+2. Render dashboard → **New → Blueprint** → pick the repository → Render lists the website.
 3. Fill in the secret values it asks for (they are never stored in the repo): `OWNER_EMAIL`, `OWNER_PASSWORD`
    (a **new** strong password, not the local one), `VAPID_SUBJECT` (`mailto:…`), `NEXT_PUBLIC_VAPID_PUBLIC_KEY` and
    `VAPID_PRIVATE_KEY` (the pair from `.env.local`: keep the same pair for ever).
@@ -248,7 +249,7 @@ Notes:
 - The tables are created and the owner account is made automatically on the first start (a fresh database: the
   first member is 101). `/api/health` is the health check.
 - **Free plans are for testing**: the site sleeps after ~15 minutes without visitors (the next visit takes about a
-  minute) and the free database is deleted after a limited period. Move both to a paid plan before the real launch.
+  minute) and a free Supabase project pauses after about a week without any request. Move both to a paid plan before the real launch.
 - Changing a `NEXT_PUBLIC_*` value needs a new deploy (it is baked in at build time).
 - Custom domain: service → Settings → Custom Domains, then add the DNS record Render shows; HTTPS is automatic.
 - The `pg` code path was tested against a Postgres-protocol server before the first deploy (sign-up, unlock
