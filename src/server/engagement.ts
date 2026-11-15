@@ -4,7 +4,7 @@ import { db } from "./db";
 
 /*
   Everything about how a member engages with the platform: profile photo,
-  progress, reserved lives, the ranking, and which live is on air.
+  progress, reserved lives and the ranking.
 */
 
 /* ------------------------------ profile photo ------------------------------ */
@@ -189,27 +189,4 @@ export async function ranking(limit = 100): Promise<RankingEntry[]> {
     hasAvatar: r.has_avatar,
     points: r.points,
   }));
-}
-
-/* ----------------------------------- live on air ---------------------------------- */
-
-export async function getLiveNow(): Promise<{ liveId: string; startedAt: Date } | null> {
-  const database = await db();
-  const [row] = await database.query<{ live_id: string | null; started_at: Date | null }>(
-    "select live_id, started_at from live_status where id = 1",
-  );
-  return row?.live_id && row.started_at ? { liveId: row.live_id, startedAt: row.started_at } : null;
-}
-
-/** liveId = null means "no live on air". */
-export async function setLiveNow(liveId: string | null, staffId: number) {
-  const database = await db();
-  await database.query(
-    `update live_status
-        set live_id = $1,
-            started_at = case when $1::text is null then null else now() end,
-            started_by = case when $1::text is null then null else $2::int end
-      where id = 1`,
-    [liveId, staffId],
-  );
 }

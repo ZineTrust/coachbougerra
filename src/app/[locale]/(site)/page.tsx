@@ -11,9 +11,9 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { VideoCard } from "@/components/video/VideoCard";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
-import { upcomingLives } from "@/lib/data";
 import { currentMember } from "@/server/current";
 import { reservationKey } from "@/server/engagement";
+import { upcomingLives } from "@/server/lives";
 import { reserveInfos } from "@/server/reserve";
 import { videoAccessFor } from "@/server/unlocks";
 import { listPublicVideos } from "@/server/videos";
@@ -23,7 +23,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   setRequestLocale(locale as Locale);
   const t = await getTranslations("home");
 
-  const lives = upcomingLives();
+  const lives = await upcomingLives({ limit: 6 });
   const [infos, videos, member] = await Promise.all([reserveInfos(lives), listPublicVideos(), currentMember()]);
   const canWatch = member ? await videoAccessFor(member.code) : null;
   // the first four, in the order the team set in the workspace
@@ -47,11 +47,17 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             </Link>
           }
         />
-        <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {lives.slice(0, 3).map((l) => (
-            <LiveCard key={l.id} live={l} reserve={infos.get(reservationKey(l.id, l.startsAt))!} />
-          ))}
-        </div>
+        {lives.length > 0 ? (
+          <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {lives.slice(0, 3).map((l) => (
+              <LiveCard key={l.id} live={l} reserve={infos.get(reservationKey(l.id, l.startsAt))!} />
+            ))}
+          </div>
+        ) : (
+          <p className="mt-10 rounded-2xl bg-white px-6 py-14 text-center text-ink-500 shadow-card ring-1 ring-ink-900/5">
+            {t("lives.none")}
+          </p>
+        )}
       </section>
 
       <section className="bg-ivory-100">

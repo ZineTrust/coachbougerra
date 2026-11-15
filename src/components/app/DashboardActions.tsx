@@ -4,13 +4,12 @@ import { useState } from "react";
 import { Bell, CalendarPlus, KeyRound, LogIn, MessageSquare, Upload, Users, Video } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ActionTile } from "./ActionTile";
-import { ComingSoonModal, ScheduleLiveModal } from "./WorkspaceModals";
-
-type Modal = "start" | "join" | "schedule" | null;
+import { LiveFormModal } from "./LiveForm";
 
 /** Zoom-style home tiles. Each one only appears if this staff account may use it. */
 export function DashboardActions({
   can,
+  live,
 }: {
   can: {
     lives: boolean;
@@ -20,20 +19,35 @@ export function DashboardActions({
     messages: boolean;
     requests: boolean;
   };
+  live: {
+    /** the live whose room is open right now */
+    onAirId: string | null;
+    /** the next planned live */
+    nextId: string | null;
+    /** the suggested start of a new live, Algiers time */
+    defaultStart: string;
+  };
 }) {
-  const t = useTranslations("space");
   const d = useTranslations("space.dashboard");
-  const [modal, setModal] = useState<Modal>(null);
-  const close = () => setModal(null);
+  const [planning, setPlanning] = useState(false);
 
   return (
     <>
       <div className="grid grid-cols-3 gap-x-2 gap-y-6 sm:grid-cols-4 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
         {can.lives && (
           <>
-            <ActionTile icon={Video} label={d("startLive")} tone="gold" onClick={() => setModal("start")} />
-            <ActionTile icon={LogIn} label={d("joinLive")} onClick={() => setModal("join")} />
-            <ActionTile icon={CalendarPlus} label={d("scheduleLive")} onClick={() => setModal("schedule")} />
+            <ActionTile
+              icon={Video}
+              label={d("startLive")}
+              tone="gold"
+              href={live.nextId ? `/espace/lives/${live.nextId}` : "/espace/lives"}
+            />
+            <ActionTile
+              icon={LogIn}
+              label={d("joinLive")}
+              href={live.onAirId ? `/espace/lives/${live.onAirId}` : "/espace/lives"}
+            />
+            <ActionTile icon={CalendarPlus} label={d("scheduleLive")} onClick={() => setPlanning(true)} />
           </>
         )}
         {can.videos && (
@@ -54,11 +68,13 @@ export function DashboardActions({
       </div>
 
       {can.lives && (
-        <>
-          <ComingSoonModal open={modal === "start"} onClose={close} title={t("modals.startLive")} />
-          <ComingSoonModal open={modal === "join"} onClose={close} title={t("modals.joinLive")} />
-          <ScheduleLiveModal open={modal === "schedule"} onClose={close} />
-        </>
+        <LiveFormModal
+          open={planning}
+          onClose={() => setPlanning(false)}
+          initial={null}
+          defaultStart={live.defaultStart}
+          videos={[]}
+        />
       )}
     </>
   );

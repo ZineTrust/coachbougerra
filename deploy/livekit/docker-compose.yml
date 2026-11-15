@@ -1,0 +1,26 @@
+# LiveKit (video) + Caddy (certificate + wss) on one small server. See README, "Live room", option B.
+#   1. fill .env from .env.example, put your sub-domain in Caddyfile
+#   2. docker compose up -d
+services:
+  livekit:
+    image: livekit/livekit-server:latest
+    command: --config /etc/livekit.yaml
+    restart: unless-stopped
+    network_mode: host   # WebRTC needs the real network ports (7881/tcp, 3478/udp, 50000-60000/udp)
+    environment:
+      LIVEKIT_KEYS: "${LIVEKIT_API_KEY}: ${LIVEKIT_API_SECRET}"
+    volumes:
+      - ./livekit.yaml:/etc/livekit.yaml:ro
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    network_mode: host   # ports 80 / 443; talks to LiveKit on 127.0.0.1:7880
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:

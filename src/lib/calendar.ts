@@ -1,9 +1,8 @@
 import type { Locale } from "@/i18n/routing";
 import type { Live } from "./data";
-import { nextOccurrence } from "./utils";
 
 /*
-  Calendar helpers. Lives happen on a weekly slot in Algiers time, which is UTC+1
+  Calendar helpers. Lives are planned on real dates, shown in Algiers time, which is UTC+1
   all year with no daylight saving, so a fixed offset is exact.
 */
 
@@ -19,19 +18,23 @@ export interface Occurrence {
   startsAt: Date;
 }
 
-/** Every occurrence of the given weekly lives that falls in a month (month: 0–11). */
+/** The planned lives that fall in a month (month: 0–11), placed on their Algiers day. */
 export function monthOccurrences(year: number, month: number, lives: Live[]): Occurrence[] {
-  const days = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
   const out: Occurrence[] = [];
-  for (let day = 1; day <= days; day++) {
-    const weekday = new Date(Date.UTC(year, month, day)).getUTCDay();
-    for (const live of lives) {
-      if (live.slot.weekday !== weekday) continue;
-      const wall = Date.UTC(year, month, day, live.slot.hour, live.slot.minute);
-      out.push({ day, live, startsAt: new Date(wall - ALGIERS_OFFSET_MS) });
-    }
+  for (const live of lives) {
+    const wall = new Date(live.startsAt.getTime() + ALGIERS_OFFSET_MS);
+    if (wall.getUTCFullYear() !== year || wall.getUTCMonth() !== month) continue;
+    out.push({ day: wall.getUTCDate(), live, startsAt: live.startsAt });
   }
   return out.sort((a, b) => a.day - b.day || a.startsAt.getTime() - b.startsAt.getTime());
+}
+
+/** The first and last instants of a month in Algiers time (end excluded), for database queries. */
+export function monthRange(year: number, month: number) {
+  return {
+    from: new Date(Date.UTC(year, month, 1) - ALGIERS_OFFSET_MS),
+    to: new Date(Date.UTC(year, month + 1, 1) - ALGIERS_OFFSET_MS),
+  };
 }
 
 /** Weeks of a month as rows of 7 cells (day number, or null for padding). */
@@ -49,10 +52,9 @@ export function monthGrid(year: number, month: number, weekStart: number): (numb
   return weeks;
 }
 
-/** Only the next two dates of a weekly live can be reserved. */
-export function isReservableDate(live: Live, startsAt: Date, now = new Date()) {
-  const next = nextOccurrence(live.slot, now).getTime();
-  return [0, 7].some((days) => next + days * 86_400_000 === startsAt.getTime());
+/** A place can be reserved at a live that is planned and not over yet. */
+export function isReservableLive(live: Live, now = new Date()) {
+  return live.status === "scheduled" && live.startsAt.getTime() + live.length * 60_000 > now.getTime();
 }
 
 /** "2026-10" -> { year, month }, falling back to the current month (Algiers time). */
@@ -83,15 +85,12 @@ export interface IcsEvent {
   description: string;
   startsAt: Date;
   minutes: number;
-  /** repeats every week on the same weekday */
-  weekly: boolean;
   url: string;
 }
 
 const pad = (n: number) => String(n).padStart(2, "0");
 const icsDate = (d: Date) =>
   `${d.getUTCFullYear()}${pad(d.getUTCMonth() + 1)}${pad(d.getUTCDate())}T${pad(d.getUTCHours())}${pad(d.getUTCMinutes())}00Z`;
-const BYDAY = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
 const escapeText = (s: string) =>
   s.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
 
@@ -130,7 +129,6 @@ export function buildIcs(events: IcsEvent[], calendarName: string): string {
       `DTSTAMP:${stamp}`,
       `DTSTART:${icsDate(e.startsAt)}`,
       `DTEND:${icsDate(end)}`,
-      ...(e.weekly ? [`RRULE:FREQ=WEEKLY;BYDAY=${BYDAY[e.startsAt.getUTCDay()]}`] : []),
       `SUMMARY:${escapeText(e.title)}`,
       `DESCRIPTION:${escapeText(e.description)}`,
       `URL:${e.url}`,

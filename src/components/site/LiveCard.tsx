@@ -1,7 +1,8 @@
 import { CalendarClock, Clock, Users } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { Avatar } from "@/components/ui/Avatar";
-import { LiveAccessBadge } from "@/components/ui/Badge";
+import { LiveAccessBadge, LiveDot } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
 import type { Locale } from "@/i18n/routing";
 import type { UpcomingLive } from "@/lib/data";
 import { dateTileParts, formatLiveTime } from "@/lib/utils";
@@ -21,7 +22,10 @@ export function LiveCard({ live, reserve }: { live: UpcomingLive; reserve: Reser
           <p className="font-display text-2xl font-semibold leading-none">{day}</p>
           <p className="mt-0.5 text-[0.625rem] font-semibold uppercase text-ink-300">{month}</p>
         </div>
-        <LiveAccessBadge access={live.access} />
+        <div className="flex flex-col items-end gap-1.5">
+          {live.status === "live" && <LiveDot label={t("banner.live")} />}
+          <LiveAccessBadge access={live.access} />
+        </div>
       </div>
 
       <h3 className="mt-4 text-lg font-bold leading-snug text-ink-900">{live.title[locale]}</h3>
@@ -42,7 +46,7 @@ export function LiveCard({ live, reserve }: { live: UpcomingLive; reserve: Reser
         </div>
         <div className="flex items-center gap-1.5">
           <Users className="size-4 text-jade-600" aria-hidden />
-          <dd>{t("common.registered", { count: live.registered + reserve.count })}</dd>
+          <dd>{t("common.registered", { count: reserve.count })}</dd>
         </div>
       </dl>
 
@@ -53,14 +57,20 @@ export function LiveCard({ live, reserve }: { live: UpcomingLive; reserve: Reser
             {live.host}
           </span>
         </div>
-        <ReserveButton
-          liveId={live.id}
-          startsAt={live.startsAt.toISOString()}
-          premium={live.access === "premium"}
-          signedIn={reserve.signedIn}
-          allowed={reserve.allowed}
-          reserved={reserve.reserved}
-        />
+        {live.status === "live" ? (
+          <Button href={`/lives/${live.id}`} size="sm" variant="danger">
+            {t("banner.join")}
+          </Button>
+        ) : (
+          <ReserveButton
+            liveId={live.id}
+            startsAt={live.startsAt.toISOString()}
+            premium={live.access === "premium"}
+            signedIn={reserve.signedIn}
+            allowed={reserve.allowed}
+            reserved={reserve.reserved}
+          />
+        )}
       </div>
     </article>
   );

@@ -183,7 +183,7 @@ export const SITE_NOTES: Note[] = [
       "لايف بث مباشر تقويم موعد حجز مكان تذكير توقيت الجزائر",
     body:
       "Les pages Lives et Calendrier présentent les rendez-vous annoncés (heure d'Alger). Vous pouvez réserver votre place, puis l'ajouter à l'agenda de votre téléphone. Quand un live est en cours, un bandeau « EN DIRECT » apparaît sur le site. " +
-      "Certains lives sont à accès réservé : l'équipe donne l'accès aux membres un par un. La salle de live interactive est en cours de préparation.",
+      "Certains lives sont à accès réservé : l'équipe donne l'accès aux membres un par un. Les lives se déroulent dans une salle vidéo intégrée au site : au moment du live, ouvrez la page du live et touchez « Rejoindre » (aucune installation). On y voit et entend le coach, on écrit dans le chat, on lève la main pour demander la parole (le coach peut alors inviter la personne sur scène), et l'option « Audio seulement » économise la connexion internet.",
   },
   {
     id: "site-boite-outils",

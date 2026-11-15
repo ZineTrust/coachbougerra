@@ -9,9 +9,9 @@ import { Avatar } from "@/components/ui/Avatar";
 import { Badge } from "@/components/ui/Badge";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
-import { upcomingLives } from "@/lib/data";
-import { formatDate } from "@/lib/utils";
+import { defaultLiveStart, formatDate } from "@/lib/utils";
 import { requireStaff } from "@/server/current";
+import { upcomingLives } from "@/server/lives";
 import { memberStats, recentMembers } from "@/server/members";
 import { unreadConversations } from "@/server/messages";
 import { notificationStats } from "@/server/notifications";
@@ -30,7 +30,6 @@ export default async function WorkspaceHome({ params }: PageProps<"/[locale]/esp
   setRequestLocale(locale);
 
   const staff = await requireStaff();
-  const t = await getTranslations("space");
   const d = await getTranslations("space.dashboard");
   const tt = await getTranslations("titles");
 
@@ -61,7 +60,7 @@ export default async function WorkspaceHome({ params }: PageProps<"/[locale]/esp
     staffTotal !== null && { label: d("statStaff"), value: staffTotal },
   ].filter((s): s is { label: string; value: number } => Boolean(s));
 
-  const lives = upcomingLives(new Date(), { includeTeam: true });
+  const lives = await upcomingLives({ includeTeam: true, limit: 3 });
   const showTiles = Object.values(perms).some(Boolean);
 
   return (
@@ -72,7 +71,14 @@ export default async function WorkspaceHome({ params }: PageProps<"/[locale]/esp
         <div className="space-y-6">
           {showTiles && (
             <Card>
-              <DashboardActions can={perms} />
+              <DashboardActions
+                can={perms}
+                live={{
+                  onAirId: lives.find((l) => l.status === "live")?.id ?? null,
+                  nextId: lives.find((l) => l.status === "scheduled")?.id ?? null,
+                  defaultStart: defaultLiveStart(),
+                }}
+              />
             </Card>
           )}
 
@@ -126,7 +132,14 @@ export default async function WorkspaceHome({ params }: PageProps<"/[locale]/esp
         </div>
 
         <div className="space-y-6">
-          <NowCard nextTitle={lives[0].title[locale]} nextAt={lives[0].startsAt.toISOString()} />
+          <NowCard
+            next={
+              lives[0]
+                ? { id: lives[0].id, title: lives[0].title[locale], at: lives[0].startsAt.toISOString(), onAir: lives[0].status === "live" }
+                : null
+            }
+            canHost={perms.lives}
+          />
 
           <Card
             title={d("upcoming")}
@@ -138,12 +151,15 @@ export default async function WorkspaceHome({ params }: PageProps<"/[locale]/esp
               )
             }
           >
-            <div className="space-y-4">
-              {lives.slice(0, 3).map((l) => (
-                <LiveRow key={l.id} live={l} compact />
-              ))}
-            </div>
-            <p className="mt-4 text-xs text-ink-400">{t("demoLabel")}</p>
+            {lives.length > 0 ? (
+              <div className="space-y-4">
+                {lives.map((l) => (
+                  <LiveRow key={l.id} live={l} compact />
+                ))}
+              </div>
+            ) : (
+              <p className="py-4 text-center text-ink-500">{d("noLives")}</p>
+            )}
           </Card>
         </div>
       </div>

@@ -34,30 +34,32 @@ export function formatDuration(seconds: number) {
 
 const ALGIERS_OFFSET_MIN = 60;
 
-export interface WeeklySlot {
-  /** 0 = Sunday … 6 = Saturday */
-  weekday: number;
-  hour: number;
-  minute: number;
+/** "2026-11-20T21:00" as typed in a date field (Algiers wall time) -> the real instant, or null. */
+export function parseAlgiersLocal(value: string): Date | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(value.trim());
+  if (!m) return null;
+  const [y, mo, d, h, mi] = m.slice(1).map(Number);
+  if (mo < 1 || mo > 12 || d < 1 || d > 31 || h > 23 || mi > 59) return null;
+  const wall = Date.UTC(y, mo - 1, d, h, mi);
+  const back = new Date(wall);
+  // reject 31 February and the like
+  if (back.getUTCMonth() !== mo - 1 || back.getUTCDate() !== d) return null;
+  return new Date(wall - ALGIERS_OFFSET_MIN * 60_000);
 }
 
-/** Next date (as a real instant) at which a weekly Algiers-time slot starts. */
-export function nextOccurrence(slot: WeeklySlot, now = new Date()) {
+/** A real instant -> "2026-11-20T21:00" in Algiers wall time (the value of a date field). */
+export function toAlgiersLocal(d: Date): string {
+  return new Date(d.getTime() + ALGIERS_OFFSET_MIN * 60_000).toISOString().slice(0, 16);
+}
+
+/** A sensible start for a new live: the next 20:30 in Algiers (tonight, or tomorrow once it is late). */
+export function defaultLiveStart(now = new Date()): string {
   const wall = new Date(now.getTime() + ALGIERS_OFFSET_MIN * 60_000);
-  const target = new Date(
-    Date.UTC(
-      wall.getUTCFullYear(),
-      wall.getUTCMonth(),
-      wall.getUTCDate(),
-      slot.hour,
-      slot.minute,
-    ),
-  );
-  target.setUTCDate(
-    target.getUTCDate() + ((slot.weekday - wall.getUTCDay() + 7) % 7),
-  );
-  if (target.getTime() <= wall.getTime()) target.setUTCDate(target.getUTCDate() + 7);
-  return new Date(target.getTime() - ALGIERS_OFFSET_MIN * 60_000);
+  const day = wall.toISOString().slice(0, 10);
+  const tonight = `${day}T20:30`;
+  if (toAlgiersLocal(now) < `${day}T20:00`) return tonight;
+  const tomorrow = new Date(wall.getTime() + 86_400_000).toISOString().slice(0, 10);
+  return `${tomorrow}T20:30`;
 }
 
 const formatters = new Map<string, Intl.DateTimeFormat>();

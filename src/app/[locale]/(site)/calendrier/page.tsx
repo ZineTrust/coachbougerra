@@ -3,23 +3,24 @@ import { CalendarClock, CalendarPlus, ChevronLeft, ChevronRight, Clock } from "l
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { PageHeader } from "@/components/site/PageHeader";
 import { ReserveButton } from "@/components/site/ReserveButton";
-import { LiveAccessBadge } from "@/components/ui/Badge";
+import { LiveAccessBadge, LiveDot } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { emDark } from "@/components/ui/rich";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import {
-  isReservableDate,
+  isReservableLive,
   monthGrid,
   monthOccurrences,
+  monthRange,
   monthParam,
   parseMonth,
   shiftMonth,
   weekStartFor,
 } from "@/lib/calendar";
-import { LIVES } from "@/lib/data";
 import { cn, dateTileParts, formatLiveTime } from "@/lib/utils";
 import { reservationKey } from "@/server/engagement";
+import { livesBetween } from "@/server/lives";
 import { reserveInfos } from "@/server/reserve";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/calendrier">): Promise<Metadata> {
@@ -42,6 +43,7 @@ export default async function CalendarPage({
 
   const t = await getTranslations("calendar");
   const common = await getTranslations("common");
+  const banner = await getTranslations("banner");
 
   const now = new Date();
   const { year, month } = parseMonth(typeof mois === "string" ? mois : undefined, now);
@@ -57,12 +59,13 @@ export default async function CalendarPage({
   };
   const isCurrentMonth = today.year === year && today.month === month;
 
-  const lives = LIVES.filter((l) => l.access !== "team");
+  const range = monthRange(year, month);
+  const lives = await livesBetween(range.from, range.to);
   const occurrences = monthOccurrences(year, month, lives);
   const weekStart = weekStartFor(locale);
   const weeks = monthGrid(year, month, weekStart);
 
-  const reservable = occurrences.filter((o) => isReservableDate(o.live, o.startsAt, now));
+  const reservable = occurrences.filter((o) => isReservableLive(o.live, now));
   const infos = await reserveInfos(
     reservable.map((o) => ({ id: o.live.id, access: o.live.access, startsAt: o.startsAt })),
   );
@@ -197,11 +200,12 @@ export default async function CalendarPage({
           <ul className="mt-5 grid gap-4 lg:grid-cols-2">
             {occurrences.map((o) => {
               const { weekday, day, month: monthName } = dateTileParts(o.startsAt, locale);
-              const past = o.startsAt.getTime() < now.getTime();
+              const onAir = o.live.status === "live";
+              const past = !onAir && o.startsAt.getTime() + o.live.length * 60_000 < now.getTime();
               const info = infos.get(reservationKey(o.live.id, o.startsAt));
               return (
                 <li
-                  key={`${o.live.id}-${o.day}`}
+                  key={o.live.id}
                   className={cn(
                     "flex gap-4 rounded-2xl bg-white p-4 shadow-card ring-1 ring-ink-900/5 sm:p-5",
                     past && "opacity-60",
@@ -214,9 +218,14 @@ export default async function CalendarPage({
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
+                      {onAir && <LiveDot label={banner("live")} />}
                       <LiveAccessBadge access={o.live.access} />
                     </div>
-                    <h4 className="mt-2 font-bold leading-snug">{o.live.title[locale]}</h4>
+                    <h4 className="mt-2 font-bold leading-snug">
+                      <Link href={`/lives/${o.live.id}`} className="hover:underline">
+                        {o.live.title[locale]}
+                      </Link>
+                    </h4>
                     <p className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ink-600">
                       <span className="inline-flex items-center gap-1.5">
                         <CalendarClock className="size-4 text-jade-600" aria-hidden />
@@ -227,7 +236,12 @@ export default async function CalendarPage({
                         {common("min", { count: o.live.length })}
                       </span>
                     </p>
-                    {info && (
+                    {onAir && (
+                      <Button href={`/lives/${o.live.id}`} size="sm" variant="danger" className="mt-4">
+                        {banner("join")}
+                      </Button>
+                    )}
+                    {!onAir && info && (
                       <ReserveButton
                         className="mt-4"
                         liveId={o.live.id}

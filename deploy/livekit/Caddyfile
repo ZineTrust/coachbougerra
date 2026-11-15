@@ -1,0 +1,4 @@
+# Replace with your sub-domain (an A record pointing to this server's IP). Caddy gets the certificate by itself.
+live.example.com {
+	reverse_proxy 127.0.0.1:7880
+}

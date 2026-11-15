@@ -3,7 +3,7 @@
 import { useSyncExternalStore } from "react";
 import { Radio, X } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { Countdown } from "./Countdown";
 
@@ -22,16 +22,20 @@ export function LiveBannerView({
   mode,
   title,
   startsAt,
+  href = "/lives",
   storageKey,
 }: {
   mode: "live" | "soon";
   title: string;
   /** ISO date the next live starts (mode "soon") */
   startsAt?: string;
+  /** where the button leads: the live's own page, where the room opens */
+  href?: string;
   /** changes whenever this is a new live, so a closed banner comes back for the next one */
   storageKey: string;
 }) {
   const t = useTranslations("banner");
+  const pathname = usePathname();
   const dismissed = useSyncExternalStore(
     subscribe,
     () => {
@@ -44,7 +48,8 @@ export function LiveBannerView({
     () => false,
   );
 
-  if (dismissed) return null;
+  // already on that live's page: the button would lead to where the person is
+  if (dismissed || pathname === href) return null;
 
   const close = () => {
     try {
@@ -89,7 +94,7 @@ export function LiveBannerView({
         </span>
       )}
       <Link
-        href="/lives"
+        href={href}
         className={cn(
           "shrink-0 rounded-full px-3.5 py-1 text-xs font-bold",
           live ? "bg-white text-live hover:bg-white/90" : "bg-ink-950 text-white hover:bg-ink-800",

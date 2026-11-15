@@ -4,8 +4,8 @@ Live-streaming, formations and community platform for Coach Bougerra (Ultimate H
 in **French and Arabic** (right-to-left).
 
 **Status: accounts, permissions, notifications, groups, formations and PV unlocks are real.** There is **no
-payment at all**: formations are unlocked with PV (see below). The live room is not built yet, and the lives
-shown are still sample content.
+payment at all**: formations are unlocked with PV (see below). **Lives are real too**: planned in the workspace and
+held in a video room inside the site (see "Live room"; it needs a LiveKit server, free to start).
 
 ## Run it
 
@@ -172,12 +172,13 @@ Signed-in members get a menu on their number in the header with these pages:
   with the contact's first name filled in. Copying one counts as using it.
 - **Calendrier** (`/calendrier`): month view in Algiers time, reserve a place at a live, "add to my calendar"
   (`/api/calendar.ics?live=…`) and a subscribe link for the whole schedule (`/api/calendar.ics`).
-  Only the next two dates of a live can be reserved; lives marked "reserved access" need the access grant from staff.
+  A place can be reserved at any planned live that is not over; lives marked "reserved access" need the access grant
+  from staff, and moving a live to another date keeps the places already reserved.
 - **Mon compte**: name, city and **profile photo** (resized to 256 px and stored in the database; shown only to
   the member, staff, and others if the member joined the leaderboard), plus install / push settings.
-- **EN DIRECT banner**: staff press "Marquer en direct" on a live in Workspace → Lives and a red banner shows on
-  every public page until they press "Terminer le direct". A gold "Bientôt" banner shows in the hour before a live.
-  Visitors can close either for the rest of their visit.
+- **EN DIRECT banner**: when staff press "Démarrer" on a live (Workspace → Lives → the live), a red banner shows on
+  every public page, leading to the live's room, until they end the live. A gold "Bientôt" banner shows in the hour
+  before a live. Visitors can close either for the rest of their visit.
 - **App on the phone (PWA)**: the site can be installed on the home screen (manifest + `public/sw.js`, with an
   offline page) and sends push notifications. Push needs **HTTPS** (fine on Render) and the VAPID keys below
   (the public key is shipped to browsers; the private key must stay secret; never regenerate the pair after launch).
@@ -187,7 +188,7 @@ Signed-in members get a menu on their number in the header with these pages:
 
 `/fr/...` and `/ar/...`, switchable from the menu on every page. Texts live in
 `src/messages/fr.ts` and `src/messages/ar.ts` (Arabic must have exactly the same keys — the
-compiler enforces it). Sample formations and lives are bilingual in `src/lib/data.ts`.
+compiler enforces it). Formations and lives are bilingual too: each has a French and an Arabic title and description.
 Please have a native speaker read through the Arabic before launch.
 
 ## Where to change things
@@ -195,8 +196,8 @@ Please have a native speaker read through the Arabic before launch.
 - **Coach Bougerra's story** (`story.*` in both message files) is a **draft written without any personal
   details**. Replace it with his real story. Photos are in `public/images/`, referenced in
   `src/lib/data.ts` (`BRAND.photos`); captions are also in `story.*`.
-- **Sample content** (the lives only): `src/lib/data.ts`. Formations are created in the workspace (table `videos`,
-  `src/server/videos.ts`). The home page section explaining the PV steps is `src/components/site/UnlockSteps.tsx`;
+- **Lives and formations** are created in the workspace (tables `lives` / `videos`, `src/server/lives.ts` /
+  `src/server/videos.ts`; the video room is in `src/components/live/` and `src/server/livekit.ts`). The home page section explaining the PV steps is `src/components/site/UnlockSteps.tsx`;
   the steps of "Mon parcours" per rank are in `src/lib/path.ts`.
 - **Colours & fonts**: design tokens at the top of `src/app/globals.css`.
 
@@ -281,9 +282,60 @@ Good to know:
 - Tested here against an in-memory S3 stand-in (pieces, resume after a reload, retries, an expired address, a missing
   file, clean-up on replace / remove / delete) but **not yet against a real Backblaze bucket**: do step 5 first.
 
+## Live room (Salle de live)
+
+The lives are real: the team plans them in **Espace → Lives** (title and description in French and Arabic, date and time
+in Algiers time, length, who may enter), then opens the room on the day. Members get the page `/lives/<id>`, the
+site-wide red banner appears while a live is on air, and the page of a live that has not begun opens its room by itself
+the moment the host presses "Démarrer".
+
+**In the room:** the host's camera, microphone and screen share; the audience watches and listens; a chat; a raised hand
+that the host sees (and answers by bringing the member **on stage** to speak, or by sending them out); an "audio
+only" switch for members on a weak connection; the phone stays awake. Reserved lives (`premium`) need the team's grant
+for that member, lives for the team only are invisible to members. Who came in is counted (Espace → Lives → the live).
+
+**The video itself does not go through the website.** Render cannot carry live video (it needs UDP ports), so the site
+signs a ticket for each person and the browser talks to a **LiveKit** server (open source). Three settings turn it on,
+the same whichever LiveKit it is, in Render → Environment and in `.env.local`:
+
+```
+LIVEKIT_URL=wss://<your-project>.livekit.cloud     (or wss://live.<your-domain>)
+LIVEKIT_API_KEY=...
+LIVEKIT_API_SECRET=...
+```
+
+Optional: `LIVEKIT_MAX_PARTICIPANTS` (a limit of our own per room; 0 or empty = none).
+
+### Option A, to start for free: LiveKit Cloud
+
+1. cloud.livekit.io → create an account and a project (the **Build** plan is free, no card).
+2. Project → **Settings → Keys**: copy the WebSocket URL (`wss://….livekit.cloud`), then create an API key and copy its
+   key and secret (the secret is shown once). Paste the three values in Render → Environment → Save (the site restarts).
+3. Free limits (check livekit.io/pricing, they change): about 5,000 participant-minutes a month, 50 GB of
+   downstream, 100 people at the same time. That is roughly **80 hours of one person watching a month**: enough for
+   tests and a small pilot, not for a big weekly live. Audio-only viewers count less bandwidth but the same minutes.
+
+### Option B, for real audiences: your own LiveKit on a small server (about €5 a month)
+
+A €5–6 server (Hetzner CX-class, Contabo, OVH… 2–4 vCPU, with a very generous traffic allowance) carries a few hundred
+viewers; LiveKit measured about 190 viewers per CPU core for a single speaker. It needs a card or PayPal and a domain
+name (a sub-domain such as `live.coachbougerra.com` pointing to the server). The files are in `deploy/livekit/`:
+
+1. Ubuntu server with Docker. Open ports **80, 443, 7881/tcp, 3478/udp, 50000-60000/udp**.
+2. Put the three values of `deploy/livekit/.env.example` in a `.env` file next to `docker-compose.yml`, and your sub-domain in
+   `Caddyfile`. `docker compose up -d` starts LiveKit and the certificate-managing proxy (Caddy).
+3. Render → `LIVEKIT_URL=wss://live.<your-domain>` with the same key and secret. Nothing else changes in the site.
+
+### Good to know
+- Tested here with a mock of the LiveKit API and, when a LiveKit server was available, with two browsers (host + viewer).
+  A first real live with a handful of members is the best test: phone data, Arabic interface, headphones.
+- The chat only exists while the room is open: someone who arrives late sees what is written from then on.
+- A live left "on air" by mistake closes itself on the site after 12 hours; the host can end it at any time.
+- The **replay**: record the live (phone or computer), publish the video as a formation (Espace → Formations), then edit the
+  live and choose it under *Replay*. It then shows on the public Lives page.
+- Members sent out of a live cannot come back into it (kept in memory: a restart of the site forgets it).
+
 ## What is still sample / not built
 
-The lives listing and the "plan a live" form are placeholders (nothing is saved). **Next:**
-the live room (video calls, chat, hand-raise, screen share — LiveKit is the leading candidate), a video host with
-signed links / DRM if sharing of links becomes a problem, e-mail notifications, password reset by e-mail. The
-"EN DIRECT" banner is already wired: the live room will plug into the same on-air switch.
+**Next:** automatic recording of lives (LiveKit egress, needs the server option B), a video host with signed links /
+DRM if sharing of links becomes a problem, e-mail notifications, password reset by e-mail.

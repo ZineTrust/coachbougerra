@@ -8,6 +8,7 @@ import { initialState } from "@/actions/types";
 import { Button } from "@/components/ui/Button";
 import { useErrorText } from "@/components/ui/form";
 import { LogoMark } from "@/components/ui/Logo";
+import { usePathname } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { cn, formatDateTime } from "@/lib/utils";
 
@@ -27,6 +28,7 @@ export function ContactButton({ member }: { member: { code: number; unread: numb
   const t = useTranslations("contact");
   const c = useTranslations("common");
   const [open, setOpen] = useState(false);
+  const inRoom = /^\/lives\/\d+/.test(usePathname());
 
   // unread replies: the server's number first, then live updates from polling;
   // while the panel is open they count as read
@@ -62,6 +64,9 @@ export function ContactButton({ member }: { member: { code: number; unread: numb
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [open]);
+
+  // in a live room the button would sit on top of the chat's "send": the room has its own chat
+  if (inRoom && !open) return null;
 
   return (
     <>

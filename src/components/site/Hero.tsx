@@ -9,8 +9,9 @@ import { formatLiveDay, formatLiveTime } from "@/lib/utils";
 import { Countdown } from "./Countdown";
 import { LiveRoomMock } from "./LiveRoomMock";
 
-export function Hero({ next }: { next: UpcomingLive }) {
+export function Hero({ next }: { next: UpcomingLive | undefined }) {
   const t = useTranslations("home.hero");
+  const tb = useTranslations("banner");
   const locale = useLocale() as Locale;
 
   return (
@@ -48,17 +49,33 @@ export function Hero({ next }: { next: UpcomingLive }) {
 
           {/* next live */}
           <div className="mt-10 flex flex-col gap-4 rounded-2xl bg-white/6 p-4 ring-1 ring-white/10 backdrop-blur sm:flex-row sm:items-center sm:justify-between sm:p-5">
-            <div className="min-w-0">
-              <LiveDot label={t("nextLive")} />
-              <p className="mt-2.5 truncate text-[0.9375rem] font-bold text-white">
-                {next.title[locale]}
-              </p>
-              <p className="mt-0.5 text-sm text-ink-300">
-                {formatLiveDay(next.startsAt, locale)} ·{" "}
-                <bdi>{formatLiveTime(next.startsAt, locale)}</bdi>
-              </p>
-            </div>
-            <Countdown target={next.startsAt.toISOString()} />
+            {next ? (
+              <>
+                <div className="min-w-0">
+                  <LiveDot label={next.status === "live" ? tb("live") : t("nextLive")} />
+                  <p className="mt-2.5 truncate text-[0.9375rem] font-bold text-white">
+                    {next.title[locale]}
+                  </p>
+                  <p className="mt-0.5 text-sm text-ink-300">
+                    {formatLiveDay(next.startsAt, locale)} ·{" "}
+                    <bdi>{formatLiveTime(next.startsAt, locale)}</bdi>
+                  </p>
+                </div>
+                {next.status === "live" ? (
+                  <Button href={`/lives/${next.id}`} variant="danger">
+                    {tb("join")}
+                  </Button>
+                ) : (
+                  <Countdown target={next.startsAt.toISOString()} />
+                )}
+              </>
+            ) : (
+              <div className="min-w-0">
+                <LiveDot label={t("nextLive")} />
+                <p className="mt-2.5 text-[0.9375rem] font-bold text-white">{t("noLive")}</p>
+                <p className="mt-0.5 text-sm text-ink-300">{t("noLiveHelp")}</p>
+              </div>
+            )}
           </div>
         </div>
 

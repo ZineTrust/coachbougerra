@@ -1,12 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { LIVES } from "@/lib/data";
+import { isReservableLive } from "@/lib/calendar";
 import { GRANT_ALL_LIVES } from "@/lib/permissions";
 import { getScript } from "@/lib/toolbox";
-import { nextOccurrence } from "@/lib/utils";
 import { currentMember } from "@/server/current";
 import { setDone, setReservation } from "@/server/engagement";
+import { getLive } from "@/server/lives";
 import { getGrants } from "@/server/members";
 import { removeSubscription, saveSubscription } from "@/server/push";
 import { videoAccessFor } from "@/server/unlocks";
@@ -38,8 +38,8 @@ export async function markScriptUsedAction(id: string): Promise<void> {
 }
 
 /**
- * Member: reserve (or cancel) a place at a live. The date is checked against the
- * schedule, so only the next two real occurrences can be reserved.
+ * Member: reserve (or cancel) a place at a live. The date must be the one the team planned (a live
+ * that moved leaves no reservation on the old date), and the live must not be over.
  */
 export async function toggleReservationAction(
   liveId: string,
@@ -49,14 +49,13 @@ export async function toggleReservationAction(
   const member = await currentMember();
   if (!member) return { errors: { form: "forbidden" } };
 
-  const live = LIVES.find((l) => l.id === liveId);
-  if (!live || live.access === "team") return { errors: { form: "unknown_member" } };
+  const live = await getLive(liveId);
+  if (!live || live.access === "team") return { errors: { form: "unknown_live" } };
 
   const startsAt = new Date(startsAtIso);
-  const next = nextOccurrence(live.slot);
-  const following = new Date(next.getTime() + 7 * 86_400_000);
-  const valid = [next, following].some((d) => d.getTime() === startsAt.getTime());
-  if (!valid) return { errors: { form: "generic" } };
+  if (startsAt.getTime() !== live.startsAt.getTime()) return { errors: { form: "generic" } };
+  // a place can still be given back after the live began, but a new one can only be taken on a live to come
+  if (reserved && !isReservableLive(live)) return { errors: { form: "generic" } };
 
   if (reserved && live.access === "premium") {
     const grants = await getGrants(member.code);

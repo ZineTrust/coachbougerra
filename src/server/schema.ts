@@ -136,6 +136,39 @@ create table if not exists live_status (
 );
 insert into live_status (id) values (1) on conflict (id) do nothing;
 
+-- The lives the team plans (this replaced the sample weekly lives and the live_status switch above, which
+-- is no longer read). One row per date: a repeating live is simply copied to the next week.
+-- status: scheduled -> live (the room is open) -> ended, or cancelled. live_reservations.live_id holds
+-- this id as text and starts_at its starts_at.
+create table if not exists lives (
+  id             serial primary key,
+  title_fr       text not null default '',
+  title_ar       text not null default '',
+  description_fr text not null default '',
+  description_ar text not null default '',
+  host           text not null default 'Coach Bougerra',
+  access         text not null default 'free' check (access in ('free', 'premium', 'team')),
+  starts_at      timestamptz not null,
+  length_min     integer not null default 60 check (length_min between 5 and 600),
+  status         text not null default 'scheduled' check (status in ('scheduled', 'live', 'ended', 'cancelled')),
+  started_at     timestamptz,
+  ended_at       timestamptz,
+  -- the recording, published as a formation (videos.slug)
+  replay_slug    text,
+  created_by     integer references staff(id) on delete set null,
+  created_at     timestamptz not null default now(),
+  updated_at     timestamptz not null default now()
+);
+create index if not exists lives_starts_idx on lives (starts_at);
+
+-- Who actually entered the room (not the same as who reserved a place).
+create table if not exists live_attendance (
+  live_id     integer not null references lives(id) on delete cascade,
+  member_code integer not null references members(code) on delete cascade,
+  joined_at   timestamptz not null default now(),
+  primary key (live_id, member_code)
+);
+
 -- The formations. Title and description in both languages (at least one title is required;
 -- a missing language is filled from the other when shown). pv = PV needed to unlock, 0 = free.
 -- The video itself is hosted on YouTube / Vimeo: provider + ref say which one.

@@ -67,3 +67,12 @@ services:
       # dashboard only when needed: ASSISTANT_DAILY_LIMIT (default 5), ASSISTANT_MODELS, ASSISTANT_API_URL.
       - key: GROQ_API_KEY
         sync: false
+      # The live room: a LiveKit server carries the video (LiveKit Cloud free plan, or your own, see README
+      # "Live room"). Without these three the lives can be planned but the room is not open yet.
+      # Optional extra: LIVEKIT_MAX_PARTICIPANTS (a limit per room).
+      - key: LIVEKIT_URL
+        sync: false
+      - key: LIVEKIT_API_KEY
+        sync: false
+      - key: LIVEKIT_API_SECRET
+        sync: false

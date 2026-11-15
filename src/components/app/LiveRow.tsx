@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { LiveAccessBadge } from "@/components/ui/Badge";
+import { Badge, LiveAccessBadge, LiveDot } from "@/components/ui/Badge";
 import type { Locale } from "@/i18n/routing";
 import type { UpcomingLive } from "@/lib/data";
 import { dateTileParts, formatLiveTime } from "@/lib/utils";
@@ -9,13 +9,20 @@ export function LiveRow({
   live,
   action,
   compact = false,
+  reserved,
+  attended,
 }: {
   live: UpcomingLive;
   action?: ReactNode;
   compact?: boolean;
+  /** how many members reserved a place */
+  reserved?: number;
+  /** how many members came into the room */
+  attended?: number;
 }) {
   const locale = useLocale() as Locale;
   const t = useTranslations("common");
+  const s = useTranslations("space.lives");
   const { weekday, day, month } = dateTileParts(live.startsAt, locale);
 
   return (
@@ -33,9 +40,13 @@ export function LiveRow({
         <p className="truncate text-[0.9375rem] font-bold text-ink-900">{live.title[locale]}</p>
         <p className="mt-0.5 text-sm text-ink-500">
           <bdi>{formatLiveTime(live.startsAt, locale)}</bdi> · {t("min", { count: live.length })}
-          {!compact && ` · ${t("registered", { count: live.registered })}`}
+          {!compact && reserved !== undefined && ` · ${t("registered", { count: reserved })}`}
+          {!compact && attended ? ` · ${s("attended", { count: attended })}` : ""}
         </p>
       </div>
+      {live.status === "live" && <LiveDot label={s("onAir")} />}
+      {live.status === "ended" && <Badge tone="neutral">{s("ended")}</Badge>}
+      {live.status === "cancelled" && <Badge tone="alert">{s("cancelled")}</Badge>}
       {!compact && <LiveAccessBadge access={live.access} />}
       {action}
     </div>
