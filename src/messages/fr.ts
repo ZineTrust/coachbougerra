@@ -983,6 +983,7 @@ export const fr = {
     lowerHand: "Baisser la main",
     fullscreen: "Plein écran",
     exitFullscreen: "Quitter le plein écran",
+    rotateHint: "Tournez le téléphone pour agrandir l'image.",
     leave: "Quitter",
     endForAll: "Terminer le live",
     endConfirm: "Terminer le live pour tout le monde ? La salle sera fermée.",

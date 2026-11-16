@@ -134,6 +134,44 @@ function ControlButton({
   );
 }
 
+/* ---- full screen helpers (Safari still uses the "webkit" names) ---- */
+
+type FullscreenBox = HTMLElement & { webkitRequestFullscreen?: () => Promise<void> | void };
+type FullscreenDoc = Document & { webkitFullscreenElement?: Element | null; webkitExitFullscreen?: () => Promise<void> | void };
+
+const fullscreenElement = () => {
+  const doc = document as FullscreenDoc;
+  return document.fullscreenElement ?? doc.webkitFullscreenElement ?? null;
+};
+
+async function exitNativeFullscreen() {
+  const doc = document as FullscreenDoc;
+  try {
+    await (document.exitFullscreen?.() ?? doc.webkitExitFullscreen?.());
+  } catch {
+    // already out
+  }
+}
+
+type LockableOrientation = ScreenOrientation & { lock?: (to: string) => Promise<void>; unlock?: () => void };
+
+/** A phone in full screen is turned to landscape, the shape of the picture (only where the browser allows it). */
+async function lockLandscape() {
+  try {
+    await (screen.orientation as LockableOrientation | undefined)?.lock?.("landscape");
+  } catch {
+    // not allowed here (desktop, iPhone): the viewer turns the phone by hand
+  }
+}
+
+function unlockOrientation() {
+  try {
+    (screen.orientation as LockableOrientation | undefined)?.unlock?.();
+  } catch {
+    // nothing to unlock
+  }
+}
+
 /** The room once connected: stage, controls and the side panel (chat, and for the host the list of people). */
 export function RoomView({
   room,
@@ -173,7 +211,9 @@ export function RoomView({
   const [hand, setHand] = useState(false);
   const [problem, setProblem] = useState<string | null>(null);
   const [soundBlocked, setSoundBlocked] = useState(!room.canPlaybackAudio);
-  const [fullscreen, setFullscreen] = useState(false);
+  const [nativeFullscreen, setNativeFullscreen] = useState(false); // the browser's own full screen
+  const [coverPage, setCoverPage] = useState(false); // fallback: the stage covers the page (iPhone has no full screen for a page element)
+  const fullscreen = nativeFullscreen || coverPage;
   const stageBox = useRef<HTMLDivElement>(null);
   const lastSent = useRef(0);
   const wasOnStage = useRef(canPublish);
@@ -252,10 +292,43 @@ export function RoomView({
 
   /* ---- full screen of the stage ---- */
   useEffect(() => {
-    const change = () => setFullscreen(document.fullscreenElement === stageBox.current);
+    const change = () => {
+      const on = fullscreenElement() === stageBox.current;
+      setNativeFullscreen(on);
+      if (!on) unlockOrientation();
+    };
     document.addEventListener("fullscreenchange", change);
-    return () => document.removeEventListener("fullscreenchange", change);
+    document.addEventListener("webkitfullscreenchange", change);
+    return () => {
+      document.removeEventListener("fullscreenchange", change);
+      document.removeEventListener("webkitfullscreenchange", change);
+    };
   }, []);
+
+  // the fallback has no browser button to leave it: Escape does, and the page behind stops scrolling
+  useEffect(() => {
+    if (!coverPage) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setCoverPage(false);
+    };
+    document.addEventListener("keydown", onKey);
+    const root = document.documentElement;
+    const before = root.style.overflow;
+    root.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      root.style.overflow = before;
+    };
+  }, [coverPage]);
+
+  // leaving the room (or the live ending) while in full screen must not leave the screen locked
+  useEffect(
+    () => () => {
+      if (fullscreenElement()) void exitNativeFullscreen();
+      unlockOrientation();
+    },
+    [],
+  );
 
   const media = async (task: () => Promise<unknown>, denied: string) => {
     setProblem(null);
@@ -272,11 +345,28 @@ export function RoomView({
     void lp.setAttributes({ hand: next ? "1" : "" });
   };
 
-  const toggleFullscreen = () => {
+  const toggleFullscreen = async () => {
     const el = stageBox.current;
     if (!el) return;
-    if (document.fullscreenElement) void document.exitFullscreen();
-    else void el.requestFullscreen?.();
+    if (fullscreen) {
+      setCoverPage(false);
+      if (fullscreenElement()) await exitNativeFullscreen();
+      return;
+    }
+    // the browser's own full screen where there is one (a phone is then turned to landscape when it allows it)...
+    const box = el as FullscreenBox;
+    const request = box.requestFullscreen ?? box.webkitRequestFullscreen;
+    if (request) {
+      try {
+        await request.call(box);
+        void lockLandscape();
+        return;
+      } catch {
+        // refused: the fallback below
+      }
+    }
+    // ...else the stage fills the whole screen of the page
+    setCoverPage(true);
   };
 
   /* ---- the stage ---- */
@@ -309,8 +399,34 @@ export function RoomView({
           </p>
         </div>
 
-        <div ref={stageBox} className={cn("overflow-hidden rounded-2xl bg-ink-950 p-2", fullscreen && "flex items-center rounded-none")}>
-          <div className={cn("aspect-video w-full", fullscreen && "max-h-dvh")}>
+        <div
+          ref={stageBox}
+          onDoubleClick={() => void toggleFullscreen()}
+          // (one set of classes or the other, never both: two utilities for the same property fight)
+          className={
+            fullscreen
+              ? "fixed inset-0 z-[100] m-0 flex items-center justify-center overflow-hidden bg-black"
+              : "relative overflow-hidden rounded-2xl bg-ink-950 p-2"
+          }
+        >
+          {fullscreen && (
+            <button
+              type="button"
+              onClick={() => void toggleFullscreen()}
+              aria-label={t("exitFullscreen")}
+              title={t("exitFullscreen")}
+              className="absolute end-3 top-3 z-10 grid size-11 place-items-center rounded-full bg-black/60 text-white ring-1 ring-white/25 backdrop-blur transition-colors hover:bg-black/80"
+            >
+              <Minimize className="size-5" aria-hidden />
+            </button>
+          )}
+          {fullscreen && (
+            <p className="pointer-events-none absolute inset-x-0 bottom-10 z-10 px-6 text-center text-sm font-semibold text-white/70 landscape:hidden">
+              {t("rotateHint")}
+            </p>
+          )}
+          {/* full screen: the picture is as big as it can be without being cut (16:9 inside the screen) */}
+          <div className={fullscreen ? "aspect-video w-[min(100%,calc(100dvh*16/9))]" : "aspect-video w-full"}>
             {stage.length === 0 ? (
               <div className="grid size-full place-items-center rounded-xl bg-ink-900 px-6 text-center text-sm font-semibold text-ink-300">
                 {t("waitingHost")}
@@ -397,14 +513,12 @@ export function RoomView({
               onClick={() => onAudioOnly(!audioOnly)}
             />
           )}
-          {typeof document !== "undefined" && document.fullscreenEnabled && (
-            <ControlButton
-              icon={fullscreen ? Minimize : Maximize}
-              label={fullscreen ? t("exitFullscreen") : t("fullscreen")}
-              active={fullscreen}
-              onClick={toggleFullscreen}
-            />
-          )}
+          <ControlButton
+            icon={fullscreen ? Minimize : Maximize}
+            label={fullscreen ? t("exitFullscreen") : t("fullscreen")}
+            active={fullscreen}
+            onClick={() => void toggleFullscreen()}
+          />
           <ControlButton icon={PhoneOff} label={t("leave")} onClick={onLeave} />
           {isHost && <ControlButton icon={Square} label={t("endForAll")} tone="danger" onClick={onEnd} />}
         </div>

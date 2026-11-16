@@ -981,6 +981,7 @@ export const ar: Messages = {
     lowerHand: "إنزال اليد",
     fullscreen: "ملء الشاشة",
     exitFullscreen: "إنهاء ملء الشاشة",
+    rotateHint: "أدر الهاتف لتكبير الصورة.",
     leave: "مغادرة",
     endForAll: "إنهاء البث",
     endConfirm: "هل تريد إنهاء البث للجميع؟ ستُغلق القاعة.",
