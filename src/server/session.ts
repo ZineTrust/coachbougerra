@@ -8,7 +8,7 @@ import { db } from "./db";
   random token (stored hashed). That lets us cut a session off instantly —
   when a staff account is deactivated, a member suspended, a password reset.
 
-  Members and staff use separate cookies, so Coach Bougerra can be signed in as
+  Members and staff use separate cookies, so Coach Bouguerra can be signed in as
   staff and try the member side in the same browser.
 */
 

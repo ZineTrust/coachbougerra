@@ -1,5 +1,5 @@
 /*
-  Copies the whole Coach Bougerra database from one Postgres to another (for example from the Render
+  Copies the whole Coach Bouguerra database from one Postgres to another (for example from the Render
   database that is about to disappear to a new Supabase one), then checks that every table matches.
 
     node --env-file=.env.local scripts/copy-database.mjs --check     read the old database, change nothing

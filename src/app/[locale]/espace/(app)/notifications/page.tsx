@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/Badge";
 import type { Locale } from "@/i18n/routing";
 import { formatDateTime } from "@/lib/utils";
 import { requireStaff } from "@/server/current";
-import { listSentNotifications } from "@/server/notifications";
+import { imagePath, listSentNotifications } from "@/server/notifications";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/espace/notifications">): Promise<Metadata> {
   const { locale } = await params;
@@ -60,6 +60,15 @@ export default async function NotificationsPage({
                   <p className="mt-1.5 line-clamp-3 whitespace-pre-line text-sm leading-relaxed text-ink-600">
                     {n.body}
                   </p>
+                  {n.imageToken && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={imagePath(n.imageToken)}
+                      alt=""
+                      loading="lazy"
+                      className="mt-2 h-24 w-auto max-w-full rounded-lg object-cover ring-1 ring-ink-900/5"
+                    />
+                  )}
                   <p className="mt-2 text-xs text-ink-400">
                     {formatDateTime(n.createdAt, locale)}
                     {n.sender && ` · ${t("by", { name: n.sender })}`} · {t("readBy", { count: n.readCount })}

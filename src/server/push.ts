@@ -16,7 +16,7 @@ function configure() {
   const privateKey = process.env.VAPID_PRIVATE_KEY;
   const subject = process.env.VAPID_SUBJECT ?? "mailto:admin@example.com";
   if (!publicKey || !privateKey) {
-    console.warn("[coach-bougerra] Push notifications are off: set VAPID keys in the environment.");
+    console.warn("[coach-bouguerra] Push notifications are off: set VAPID keys in the environment.");
     return (configured = false);
   }
   webpush.setVapidDetails(subject, publicKey, privateKey);
@@ -64,6 +64,8 @@ export interface PushPayload {
   body: string;
   /** where a tap leads (a path without language: the site picks the member's language) */
   url?: string;
+  /** a picture shown under the text (a path on this site, e.g. /api/notification-image/<token>) */
+  image?: string;
 }
 
 /**
@@ -121,7 +123,7 @@ export async function sendPush(audience: "all" | number[], payload: PushPayload)
     }
     return { sent, removed: gone.length };
   } catch (error) {
-    console.error("[coach-bougerra] push failed", error);
+    console.error("[coach-bouguerra] push failed", error);
     return { sent: 0, removed: 0 };
   }
 }

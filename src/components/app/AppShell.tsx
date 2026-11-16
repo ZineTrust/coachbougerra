@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import {
   Bell,
   ExternalLink,
+  Film,
   Home,
   KeyRound,
   LogOut,
@@ -46,6 +47,7 @@ type NavKey =
   | "notifications"
   | "lives"
   | "videos"
+  | "showreel"
   | "assistant"
   | "team";
 
@@ -65,6 +67,7 @@ const NAV: {
   { href: "/espace/notifications", key: "notifications", icon: Bell, needs: "notifications_send" },
   { href: "/espace/lives", key: "lives", icon: Radio, needs: "lives_manage" },
   { href: "/espace/videos", key: "videos", icon: PlayCircle, needs: "videos_manage" },
+  { href: "/espace/accueil", key: "showreel", icon: Film, needs: "videos_manage" },
   { href: "/espace/assistant", key: "assistant", icon: Sparkles, needs: "owner" },
   { href: "/espace/equipe", key: "team", icon: UsersRound, needs: "owner" },
 ];

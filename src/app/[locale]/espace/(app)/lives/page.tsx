@@ -30,6 +30,7 @@ const toInitial = (l: Live): LiveFormInitial => ({
   start: toAlgiersLocal(l.startsAt),
   length: l.length,
   replaySlug: l.replaySlug ?? "",
+  coverVersion: l.coverVersion,
   status: l.status,
 });
 

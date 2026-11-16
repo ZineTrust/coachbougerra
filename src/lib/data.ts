@@ -13,12 +13,12 @@ export type L10n = Record<Locale, string>;
 /* ------------------------------ Brand ------------------------------ */
 
 export const BRAND = {
-  name: "Coach Bougerra",
-  /** Photos of Coach Bougerra (public/images). */
+  name: "Coach Bouguerra",
+  /** Photos of Coach Bouguerra (public/images). */
   photos: {
-    office: "/images/bougerra-ultimate-office.webp", // 1242 × 2000
-    portrait: "/images/bougerra-portrait.webp", // 960 × 960
-    celebration: "/images/bougerra-celebration.webp", // 1915 × 1078
+    office: "/images/bouguerra-ultimate-office.webp", // 1242 × 2000
+    portrait: "/images/bouguerra-portrait.webp", // 960 × 960
+    celebration: "/images/bouguerra-celebration.webp", // 1915 × 1078
   },
 } as const;
 
@@ -77,6 +77,8 @@ export interface Live {
   status: LiveStatus;
   /** slug of the formation that holds the recording, once published */
   replaySlug: string | null;
+  /** when the picture of the live was last set (a version for its address), null when there is none */
+  coverVersion: number | null;
   /** what the team typed, one language possibly empty (`title` and `description` fill it with the other) */
   typed: { titleFr: string; titleAr: string; descriptionFr: string; descriptionAr: string };
 }

@@ -37,8 +37,8 @@ const RANK: Record<MemberTitle, string> = {
 };
 
 /** Members with a question being answered right now (one at a time each). */
-const globalForAssistant = globalThis as unknown as { __coachBougerraAsking?: Set<number> };
-const asking = (globalForAssistant.__coachBougerraAsking ??= new Set<number>());
+const globalForAssistant = globalThis as unknown as { __coachBouguerraAsking?: Set<number> };
+const asking = (globalForAssistant.__coachBouguerraAsking ??= new Set<number>());
 
 /**
  * A member asks a question, the answer comes back as a stream of text. The headers tell the page which

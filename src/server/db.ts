@@ -22,15 +22,15 @@ export interface Db extends Queryable {
   transaction<T>(fn: (tx: Queryable) => Promise<T>): Promise<T>;
 }
 
-const globalForDb = globalThis as unknown as { __coachBougerraDb?: Promise<Db> };
+const globalForDb = globalThis as unknown as { __coachBouguerraDb?: Promise<Db> };
 
 /** Lazily opens (once per server process) and prepares the database. */
 export function db(): Promise<Db> {
-  globalForDb.__coachBougerraDb ??= connect().catch((error) => {
-    globalForDb.__coachBougerraDb = undefined; // let the next request retry
+  globalForDb.__coachBouguerraDb ??= connect().catch((error) => {
+    globalForDb.__coachBouguerraDb = undefined; // let the next request retry
     throw error;
   });
-  return globalForDb.__coachBougerraDb;
+  return globalForDb.__coachBouguerraDb;
 }
 
 async function connect(): Promise<Db> {
@@ -102,7 +102,7 @@ async function openPostgres(): Promise<Db> {
 }
 
 /**
- * The very first start creates Coach Bougerra's owner account from the
+ * The very first start creates Coach Bouguerra's owner account from the
  * OWNER_EMAIL / OWNER_PASSWORD environment variables. After that the
  * password lives in the database (change it from the profile page).
  * The owner's display name keeps following OWNER_NAME, so a rebrand carries over.
@@ -123,7 +123,7 @@ async function bootstrapOwner(database: Db) {
   const password = process.env.OWNER_PASSWORD;
   if (!email || !password) {
     console.warn(
-      "[coach-bougerra] No owner account yet. Set OWNER_EMAIL and OWNER_PASSWORD, then restart.",
+      "[coach-bouguerra] No owner account yet. Set OWNER_EMAIL and OWNER_PASSWORD, then restart.",
     );
     return;
   }
@@ -132,7 +132,7 @@ async function bootstrapOwner(database: Db) {
     `insert into staff (name, email, password_hash, is_owner)
      values ($1, $2, $3, true)
      on conflict (email) do update set is_owner = true`,
-    [process.env.OWNER_NAME?.trim() || "Coach Bougerra", email, await hashPassword(password)],
+    [process.env.OWNER_NAME?.trim() || "Coach Bouguerra", email, await hashPassword(password)],
   );
-  console.info(`[coach-bougerra] Owner account created for ${email}`);
+  console.info(`[coach-bouguerra] Owner account created for ${email}`);
 }

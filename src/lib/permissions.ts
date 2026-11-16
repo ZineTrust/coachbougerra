@@ -3,7 +3,7 @@
   server and client components can import it.
 */
 
-/** What a staff account may do. The owner (Coach Bougerra) can always do everything. */
+/** What a staff account may do. The owner (Coach Bouguerra) can always do everything. */
 export const STAFF_PERMISSIONS = [
   "members_view", // see the list of registered members
   "members_manage", // give / remove access, suspend, reset a member's password

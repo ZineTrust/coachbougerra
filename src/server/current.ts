@@ -39,7 +39,7 @@ export async function requireStaff(permission?: StaffPermission): Promise<Staff>
   return staff!;
 }
 
-/** Pages only Coach Bougerra (the owner) may open, e.g. managing staff accounts. */
+/** Pages only Coach Bouguerra (the owner) may open, e.g. managing staff accounts. */
 export async function requireOwner(): Promise<Staff> {
   const staff = await requireStaff();
   if (!staff.isOwner) redirect({ href: "/espace", locale: await getLocale() });

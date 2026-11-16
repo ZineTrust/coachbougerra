@@ -60,14 +60,14 @@ export function storageConfigured(): boolean {
   return readConfig() !== null;
 }
 
-const globalForStorage = globalThis as unknown as { __coachBougerraS3?: { key: string; client: S3Client } };
+const globalForStorage = globalThis as unknown as { __coachBouguerraS3?: { key: string; client: S3Client } };
 
 function connect(): { client: S3Client; bucket: string } {
   const config = readConfig();
   if (!config) throw new Error("The video storage is not set up (STORAGE_* settings).");
   const key = JSON.stringify(config);
-  if (globalForStorage.__coachBougerraS3?.key !== key) {
-    globalForStorage.__coachBougerraS3 = {
+  if (globalForStorage.__coachBouguerraS3?.key !== key) {
+    globalForStorage.__coachBouguerraS3 = {
       key,
       client: new S3Client({
         endpoint: config.endpoint,
@@ -81,7 +81,7 @@ function connect(): { client: S3Client; bucket: string } {
       }),
     };
   }
-  return { client: globalForStorage.__coachBougerraS3.client, bucket: config.bucket };
+  return { client: globalForStorage.__coachBouguerraS3.client, bucket: config.bucket };
 }
 
 /* ------------------------------ sending a file ------------------------------ */
@@ -205,4 +205,19 @@ export const WATCH_SECONDS = 2 * 3600;
 export async function signWatch(key: string): Promise<string> {
   const { client, bucket } = connect();
   return getSignedUrl(client, new GetObjectCommand({ Bucket: bucket, Key: key }), { expiresIn: WATCH_SECONDS });
+}
+
+/**
+ * A signed address for a video everybody may see (the home page's). Unlike signWatch, the address stays
+ * the same for six hours at a time (it is signed from the start of a six-hour window, and lasts twelve),
+ * so a browser that already has the video keeps it instead of downloading it again on every visit.
+ */
+export async function signPublic(key: string): Promise<string> {
+  const { client, bucket } = connect();
+  const window = 6 * 3600 * 1000;
+  const signingDate = new Date(Math.floor(Date.now() / window) * window);
+  return getSignedUrl(client, new GetObjectCommand({ Bucket: bucket, Key: key }), {
+    expiresIn: 12 * 3600,
+    signingDate,
+  });
 }

@@ -26,15 +26,15 @@ export async function GET(request: NextRequest) {
   const host = first(request.headers.get("x-forwarded-host")) ?? first(request.headers.get("host")) ?? request.nextUrl.host;
   const origin = `${proto}://${host}`;
   const events: IcsEvent[] = lives.map((l) => ({
-    uid: `live-${l.id}@coach-bougerra`,
-    title: `${l.title[lang]} — Coach Bougerra`,
+    uid: `live-${l.id}@coach-bouguerra`,
+    title: `${l.title[lang]} — Coach Bouguerra`,
     description: l.description[lang],
     startsAt: l.startsAt,
     minutes: l.length,
     url: `${origin}/${lang}/lives/${l.id}`,
   }));
 
-  const body = buildIcs(events, "Coach Bougerra");
+  const body = buildIcs(events, "Coach Bouguerra");
   const headers: Record<string, string> = {
     "Content-Type": "text/calendar; charset=utf-8",
     "Cache-Control": "public, max-age=900",

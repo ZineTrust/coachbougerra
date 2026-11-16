@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import { useTranslations } from "next-intl";
 import { saveLiveAction } from "@/actions/lives";
 import { initialState, type FormState } from "@/actions/types";
+import { ImageField } from "@/components/app/ImageField";
 import { Button } from "@/components/ui/Button";
 import { CheckRow, Field, Notice, Segmented, Select, TextArea, useErrorText } from "@/components/ui/form";
 import type { LiveAccess } from "@/lib/data";
@@ -22,6 +23,8 @@ export interface LiveFormInitial {
   start: string;
   length: number;
   replaySlug: string;
+  /** the version of the saved picture, null when there is none */
+  coverVersion: number | null;
   status: "scheduled" | "live" | "ended" | "cancelled";
 }
 
@@ -160,11 +163,21 @@ function LiveForm({
         </Select>
       </div>
 
+      <ImageField
+        name="image"
+        removeName="removeImage"
+        aspect={16 / 9}
+        label={t("fieldImage")}
+        hint={t("imageHint")}
+        error={err(errors.image)}
+        currentSrc={initial?.coverVersion != null ? `/api/live-cover/${initial.id}?v=${initial.coverVersion}` : null}
+      />
+
       <Field
         label={t("fieldHost")}
         name="host"
         maxLength={80}
-        defaultValue={v("host", initial?.host ?? "Coach Bougerra")}
+        defaultValue={v("host", initial?.host ?? "Coach Bouguerra")}
         error={err(errors.host)}
       />
 

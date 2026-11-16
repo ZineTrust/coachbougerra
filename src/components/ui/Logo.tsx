@@ -56,7 +56,7 @@ export function Logo({
         )}
         style={{ fontFamily: "var(--font-fraunces), Georgia, serif" }}
       >
-        Coach <span className="italic text-jade-500">Bougerra</span>
+        Coach <span className="italic text-jade-500">Bouguerra</span>
       </span>
     </Link>
   );

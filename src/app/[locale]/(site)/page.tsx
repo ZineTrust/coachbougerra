@@ -3,6 +3,7 @@ import { setRequestLocale, getTranslations } from "next-intl/server";
 import { CtaBanner } from "@/components/site/CtaBanner";
 import { Features } from "@/components/site/Features";
 import { Hero } from "@/components/site/Hero";
+import { HomeShowreel } from "@/components/site/HomeShowreel";
 import { LiveCard } from "@/components/site/LiveCard";
 import { StoryTeaser } from "@/components/site/StoryTeaser";
 import { UnlockSteps } from "@/components/site/UnlockSteps";
@@ -13,6 +14,7 @@ import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { currentMember } from "@/server/current";
 import { reservationKey } from "@/server/engagement";
+import { showreel } from "@/server/home-videos";
 import { upcomingLives } from "@/server/lives";
 import { reserveInfos } from "@/server/reserve";
 import { videoAccessFor } from "@/server/unlocks";
@@ -24,7 +26,13 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const t = await getTranslations("home");
 
   const lives = await upcomingLives({ limit: 6 });
-  const [infos, videos, member] = await Promise.all([reserveInfos(lives), listPublicVideos(), currentMember()]);
+  const [infos, videos, member, reel] = await Promise.all([
+    reserveInfos(lives),
+    listPublicVideos(),
+    currentMember(),
+    // the videos at the top: a failure here must never take the home page down
+    showreel().catch(() => []),
+  ]);
   const canWatch = member ? await videoAccessFor(member.code) : null;
   // the first four, in the order the team set in the workspace
   const featured = videos.slice(0, 4);
@@ -33,6 +41,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 
   return (
     <>
+      {reel.length > 0 && <HomeShowreel items={reel} />}
       <Hero next={lives[0]} />
       <Features />
 

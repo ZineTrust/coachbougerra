@@ -4,7 +4,7 @@
   in automatically when the member types their contact's first name.
 
   Written to stay honest: no promise of income or results, no pressure.
-  SAMPLE CONTENT: Coach Bougerra should read and adapt these in his own voice.
+  SAMPLE CONTENT: Coach Bouguerra should read and adapt these in his own voice.
 */
 import type { L10n } from "./data";
 
@@ -214,7 +214,7 @@ export const SCRIPTS: Script[] = [
     category: "invite",
     title: { fr: "Inviter à un live", ar: "دعوة إلى بث مباشر" },
     text: {
-      fr: "Bonjour [Prénom] ! Coach Bougerra fait un live ouvert à tous [jour] à [heure]. Il y parle de [thème]. Si ça t'intéresse, voici le lien pour réserver ta place : [lien]. Je serai connecté aussi, on pourra en discuter après.",
+      fr: "Bonjour [Prénom] ! Coach Bouguerra fait un live ouvert à tous [jour] à [heure]. Il y parle de [thème]. Si ça t'intéresse, voici le lien pour réserver ta place : [lien]. Je serai connecté aussi, on pourra en discuter après.",
       ar: "السلام عليكم [الاسم]! كوتش بوقرة سيقدّم بثًا مباشرًا مفتوحًا للجميع يوم [اليوم] على الساعة [الوقت]، وسيتحدث عن [الموضوع]. إن أثار اهتمامك فهذا رابط حجز مكانك: [الرابط]. سأكون متصلًا أيضًا ويمكننا النقاش بعده.",
     },
     tip: {

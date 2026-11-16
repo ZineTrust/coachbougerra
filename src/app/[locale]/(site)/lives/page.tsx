@@ -53,7 +53,17 @@ export default async function LivesPage({ params }: PageProps<"/[locale]/lives">
         {next && nextInfo ? (
         <article className="grid overflow-hidden rounded-3xl bg-ink-900 text-white shadow-lift lg:grid-cols-[0.9fr_1.1fr]">
           <div className="relative min-h-64 lg:min-h-full">
-            <CoachPhoto photo="portrait" alt="Coach Bougerra" sizes="(min-width: 1024px) 40vw, 100vw" />
+            {next.coverVersion !== null ? (
+              // the picture the team chose for this live takes the place of the coach's photo
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={`/api/live-cover/${next.id}?v=${next.coverVersion}`}
+                alt=""
+                className="absolute inset-0 size-full object-cover"
+              />
+            ) : (
+              <CoachPhoto photo="portrait" alt="Coach Bouguerra" sizes="(min-width: 1024px) 40vw, 100vw" />
+            )}
             <div className="absolute inset-0 bg-gradient-to-t from-ink-900 via-transparent to-transparent lg:bg-linear-to-r lg:rtl:bg-linear-to-l" />
           </div>
           <div className="flex flex-col p-7 sm:p-10">

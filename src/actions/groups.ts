@@ -32,6 +32,7 @@ import {
   renameGroup,
   updateOfficialGroup,
 } from "@/server/groups";
+import { sendNotification } from "@/server/notifications";
 import { sendPush } from "@/server/push";
 import { allow } from "@/server/rate-limit";
 import { deleteFiles } from "@/server/storage";
@@ -127,10 +128,22 @@ export async function inviteAction(_prev: FormState, fd: FormData): Promise<Form
 
   const result = await inviteMembers(groupId, member.code, codes);
   if (result.invited.length > 0) {
+    // the person invited may use either language, so the message is in both
+    const who = member.fullName?.trim() || `#${member.code}`;
+    // 1. in the bell of the site (the phone push below only reaches people who turned notifications on)
+    await sendNotification({
+      title: access.group.name,
+      body:
+        `${who} vous invite à rejoindre ce groupe. Ouvrez « Groupes » pour accepter ou refuser.\n` +
+        `${who} يدعوك للانضمام إلى هذه المجموعة. افتح «المجموعات» للقبول أو الرفض.`,
+      codes: result.invited,
+      staffId: null,
+      url: "/groupes",
+    });
+    // 2. on phones that agreed to receive notifications
     after(() =>
       sendPush(result.invited, {
         title: access.group.name,
-        // the person invited may use either language
         body: "Invitation à rejoindre un groupe · دعوة للانضمام إلى مجموعة",
         url: "/groupes",
       }),

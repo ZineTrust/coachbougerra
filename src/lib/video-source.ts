@@ -77,6 +77,18 @@ export function embedUrl(source: HostedSource): string {
   return `https://player.vimeo.com/video/${id}?${hash ? `h=${hash}&` : ""}dnt=1&playsinline=1&title=0&byline=0&portrait=0`;
 }
 
+/**
+ * The address of a player that starts by itself, silent and in a loop (the home page's videos). The
+ * visitor can still use the player's own buttons, for instance to turn the sound on.
+ */
+export function showreelEmbedUrl(source: HostedSource): string {
+  if (source.provider === "youtube") {
+    return `https://www.youtube-nocookie.com/embed/${source.ref}?autoplay=1&mute=1&loop=1&playlist=${source.ref}&rel=0&modestbranding=1&playsinline=1`;
+  }
+  const [id, hash] = source.ref.split(":");
+  return `https://player.vimeo.com/video/${id}?${hash ? `h=${hash}&` : ""}autoplay=1&muted=1&loop=1&dnt=1&playsinline=1&title=0&byline=0&portrait=0`;
+}
+
 /** A readable link to show back to staff in the editor ("" for an uploaded file: there is no link). */
 export function sourceToLink(source: VideoSource): string {
   if (source.provider === "file") return "";

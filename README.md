@@ -1,6 +1,6 @@
-# Coach Bougerra
+# Coach Bouguerra
 
-Live-streaming, formations and community platform for Coach Bougerra (Ultimate Health & Beauty),
+Live-streaming, formations and community platform for Coach Bouguerra (Ultimate Health & Beauty),
 in **French and Arabic** (right-to-left).
 
 **Status: accounts, permissions, notifications, groups, formations and PV unlocks are real.** There is **no
@@ -26,7 +26,7 @@ No database to install: locally an embedded Postgres runs and stores its files i
 | --- | --- | --- | --- |
 | **Member** | `/fr/connexion` | e-mail **or member code**, + password | watch content they have access to, read notifications |
 | **Staff** | `/fr/espace/connexion` (not linked publicly) | e-mail + password | whatever the owner ticked for them |
-| **Owner** (Coach Bougerra) | same as staff | e-mail + password | everything, incl. creating staff accounts |
+| **Owner** (Coach Bouguerra) | same as staff | e-mail + password | everything, incl. creating staff accounts |
 
 - **Member codes** start at **101** and go up by one, with no gaps (even after failed sign-ups).
   A member registers once with e-mail, phone, Ultimate consultant code, rank
@@ -193,7 +193,7 @@ Please have a native speaker read through the Arabic before launch.
 
 ## Where to change things
 
-- **Coach Bougerra's story** (`story.*` in both message files) is a **draft written without any personal
+- **Coach Bouguerra's story** (`story.*` in both message files) is a **draft written without any personal
   details**. Replace it with his real story. Photos are in `public/images/`, referenced in
   `src/lib/data.ts` (`BRAND.photos`); captions are also in `story.*`.
 - **Lives and formations** are created in the workspace (tables `lives` / `videos`, `src/server/lives.ts` /
@@ -338,7 +338,7 @@ Optional: `LIVEKIT_MAX_PARTICIPANTS` (a limit of our own per room; 0 or empty = 
 
 A €5–6 server (Hetzner CX-class, Contabo, OVH… 2–4 vCPU, with a very generous traffic allowance) carries a few hundred
 viewers; LiveKit measured about 190 viewers per CPU core for a single speaker. It needs a card or PayPal and a domain
-name (a sub-domain such as `live.coachbougerra.com` pointing to the server). The files are in `deploy/livekit/`:
+name (a sub-domain such as `live.coachbouguerra.com` pointing to the server). The files are in `deploy/livekit/`:
 
 1. Ubuntu server with Docker. Open ports **80, 443, 7881/tcp, 3478/udp, 50000-60000/udp**.
 2. Put the three values of `deploy/livekit/.env.example` in a `.env` file next to `docker-compose.yml`, and your sub-domain in

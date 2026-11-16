@@ -1,10 +1,10 @@
 /*
-  Coach Bougerra service worker.
+  Coach Bouguerra service worker.
   - Shows a friendly page when the phone is offline (pages themselves are never
     cached: they are personal and always fresh).
   - Receives push notifications and opens the site when one is tapped.
 */
-const CACHE = "coach-bougerra-offline-v1";
+const CACHE = "coach-bouguerra-offline-v1";
 const OFFLINE_URL = "/offline.html";
 
 self.addEventListener("install", (event) => {
@@ -39,10 +39,11 @@ self.addEventListener("push", (event) => {
     data = { body: event.data ? event.data.text() : "" };
   }
   event.waitUntil(
-    self.registration.showNotification(data.title || "Coach Bougerra", {
+    self.registration.showNotification(data.title || "Coach Bouguerra", {
       body: data.body || "",
       icon: "/icons/icon-192.png",
       badge: "/icons/icon-192.png",
+      image: data.image || undefined,
       data: { url: data.url || "/" },
     }),
   );

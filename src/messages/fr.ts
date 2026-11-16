@@ -6,13 +6,13 @@
   • <em>…</em> marks the word shown in green italics in headlines.
   • {name} style placeholders are filled in by the code — keep them as they are.
   • The "story" texts are a DRAFT written without details: replace them with
-    Coach Bougerra's real story before launch.
+    Coach Bouguerra's real story before launch.
 */
 export const fr = {
   meta: {
-    title: "Coach Bougerra — Business, réseau & leadership, en direct",
+    title: "Coach Bouguerra — Business, réseau & leadership, en direct",
     description:
-      "Formations vidéo gratuites ou à débloquer avec vos PV Ultimate, coaching et lives interactifs en marketing de réseau et en leadership avec Coach Bougerra, consultant n°1 Ultimate Health & Beauty.",
+      "Formations vidéo gratuites ou à débloquer avec vos PV Ultimate, coaching et lives interactifs en marketing de réseau et en leadership avec Coach Bouguerra, consultant n°1 Ultimate Health & Beauty.",
   },
 
   common: {
@@ -68,7 +68,7 @@ export const fr = {
     ultimate_taken: "Ce code Ultimate est déjà associé à un compte.",
     invalid_credentials: "Identifiants incorrects.",
     too_many_attempts: "Trop de tentatives. Réessayez dans quelques minutes.",
-    suspended: "Ce compte est suspendu. Contactez l'équipe de Coach Bougerra.",
+    suspended: "Ce compte est suspendu. Contactez l'équipe de Coach Bouguerra.",
     forbidden: "Vous n'avez pas la permission de faire cela.",
     wrong_password: "Mot de passe actuel incorrect.",
     unknown_member: "Membre introuvable.",
@@ -98,6 +98,8 @@ export const fr = {
     too_many_invites: "20 codes au maximum à la fois.",
     storage_off: "L'envoi de vidéos n'est pas encore activé sur ce site.",
     video_too_big: "Vidéo trop lourde pour être envoyée.",
+    home_video_too_big: "Vidéo trop lourde pour la page d'accueil : choisissez-en une plus courte ou plus légère.",
+    home_videos_full: "La page d'accueil contient déjà le maximum de vidéos. Retirez-en une pour en ajouter.",
     unsupported_video: "Format non accepté : envoyez une vidéo MP4, MOV ou WebM.",
     upload_failed: "L'envoi a échoué. Réessayez : il reprendra là où il s'est arrêté.",
     upload_incomplete: "Il manque des morceaux de la vidéo. Choisissez de nouveau le même fichier pour finir l'envoi.",
@@ -230,7 +232,7 @@ export const fr = {
   calendar: {
     metaTitle: "Calendrier",
     metaDescription:
-      "Tous les lives et rendez-vous de Coach Bougerra, à l'heure d'Alger, à ajouter à votre agenda.",
+      "Tous les lives et rendez-vous de Coach Bouguerra, à l'heure d'Alger, à ajouter à votre agenda.",
     eyebrow: "Calendrier",
     title: "Tous les <em>rendez-vous</em> du mois.",
     lead: "Lives et événements, à l'heure d'Alger. Ajoutez-les à votre agenda en un clic.",
@@ -268,7 +270,7 @@ export const fr = {
     title: "Sur votre téléphone",
     install: "Installer l'application",
     installHelp:
-      "Ajoutez Coach Bougerra à votre écran d'accueil : il s'ouvre comme une application, sans passer par un magasin.",
+      "Ajoutez Coach Bouguerra à votre écran d'accueil : il s'ouvre comme une application, sans passer par un magasin.",
     installed: "Application installée sur cet appareil.",
     iosHelp: "Sur iPhone : touchez le bouton Partager, puis « Sur l'écran d'accueil ».",
     push: "Notifications sur cet appareil",
@@ -307,7 +309,7 @@ export const fr = {
     whatsapp: "Envoyer sur WhatsApp",
     share: "Partager",
     shareText:
-      "Salut ! Je te recommande Coach Bougerra : des formations en marketing de réseau et en leadership. Crée ton compte gratuit avec mon lien : {url}",
+      "Salut ! Je te recommande Coach Bouguerra : des formations en marketing de réseau et en leadership. Crée ton compte gratuit avec mon lien : {url}",
     qrTitle: "Votre QR code",
     qrHelp: "À montrer à quelqu'un en face de vous : il le scanne avec l'appareil photo de son téléphone.",
     qrDownload: "Télécharger le QR code",
@@ -321,10 +323,10 @@ export const fr = {
     landingMetaText:
       "Des formations en marketing de réseau et en leadership, des lives et une communauté pour avancer ensemble. Inscription gratuite.",
     landingEyebrow: "Invitation",
-    landingTitle: "{name} vous invite à rejoindre <em>Coach Bougerra</em>.",
-    landingTitleGeneric: "Rejoignez <em>Coach Bougerra</em>.",
+    landingTitle: "{name} vous invite à rejoindre <em>Coach Bouguerra</em>.",
+    landingTitleGeneric: "Rejoignez <em>Coach Bouguerra</em>.",
     landingLead:
-      "Des formations en marketing de réseau et en leadership, des lives avec Coach Bougerra et une communauté pour avancer ensemble. Créer un compte est gratuit.",
+      "Des formations en marketing de réseau et en leadership, des lives avec Coach Bouguerra et une communauté pour avancer ensemble. Créer un compte est gratuit.",
     landingInvalid:
       "Ce lien d'invitation n'est plus valable, mais vous pouvez rejoindre la communauté : créer un compte est gratuit.",
     landingCta: "Créer mon compte",
@@ -524,7 +526,7 @@ export const fr = {
     buttonWithReplies:
       "{count, plural, one {Contacter l'équipe, # réponse non lue} other {Contacter l'équipe, # réponses non lues}}",
     title: "Écrire à l'équipe",
-    subtitle: "Coach Bougerra et son équipe vous répondent ici.",
+    subtitle: "Coach Bouguerra et son équipe vous répondent ici.",
     empty:
       "Posez votre question ou laissez-nous un message : nous vous répondons dès que possible.",
     placeholder: "Écrivez votre message…",
@@ -535,7 +537,7 @@ export const fr = {
     loadError: "Impossible de charger la conversation. Réessayez dans un instant.",
     loginTitle: "Une question ? Écrivez-nous.",
     loginText:
-      "Connectez-vous ou créez votre compte gratuit pour envoyer un message à l'équipe de Coach Bougerra.",
+      "Connectez-vous ou créez votre compte gratuit pour envoyer un message à l'équipe de Coach Bouguerra.",
     login: "Se connecter",
     register: "Créer un compte",
   },
@@ -548,6 +550,17 @@ export const fr = {
     loading: "Chargement…",
     loadError: "Impossible de charger les notifications.",
     newBadge: "Nouveau",
+    open: "Ouvrir",
+  },
+
+  showreel: {
+    label: "Vidéos de présentation",
+    previous: "Vidéo précédente",
+    next: "Vidéo suivante",
+    goTo: "Vidéo {n}",
+    soundOn: "Activer le son",
+    soundOff: "Couper le son",
+    play: "Lancer la vidéo",
   },
 
   countdown: {
@@ -578,14 +591,14 @@ export const fr = {
     mobile: "Navigation mobile",
     openMenu: "Ouvrir le menu",
     closeMenu: "Fermer le menu",
-    home: "Coach Bougerra — accueil",
+    home: "Coach Bouguerra — accueil",
     notifications:
       "{count, plural, =0 {Notifications} one {Notifications, # non lue} other {Notifications, # non lues}}",
   },
 
   footer: {
     blurb:
-      "Formations, coaching et lives en marketing de réseau et en leadership, par Coach Bougerra, consultant n°1 Ultimate Health & Beauty.",
+      "Formations, coaching et lives en marketing de réseau et en leadership, par Coach Bouguerra, consultant n°1 Ultimate Health & Beauty.",
     platform: "Plateforme",
     account: "Compte",
     lives: "Lives à venir",
@@ -594,7 +607,7 @@ export const fr = {
     unlock: "Débloquer les formations",
     login: "Se connecter",
     register: "Créer un compte",
-    rights: "© {year} Coach Bougerra. Tous droits réservés.",
+    rights: "© {year} Coach Bouguerra. Tous droits réservés.",
     disclaimer:
       "Les résultats dépendent du travail de chacun : aucun revenu n'est garanti. Les conseils de santé ne remplacent pas l'avis d'un professionnel.",
   },
@@ -604,7 +617,7 @@ export const fr = {
       badge: "Consultant n°1 · Ultimate Health & Beauty",
       line1: "Bâtissez votre business.",
       line2: "Développez votre équipe.",
-      line3: "<em>Réussissez</em> avec Coach Bougerra.",
+      line3: "<em>Réussissez</em> avec Coach Bouguerra.",
       lead: "Formations en marketing de réseau, coaching de leader et lives interactifs : la méthode d'un consultant n°1 Ultimate pour passer de consultant à leader.",
       ctaLive: "Rejoindre le prochain live",
       ctaCourses: "Formations gratuites",
@@ -618,7 +631,7 @@ export const fr = {
       lead: "Les lives, les formations et vos notifications vivent au même endroit, avec un seul compte et un seul code membre.",
       lives: {
         title: "Lives interactifs",
-        text: "Chat, mains levées et partage d'écran : l'expérience d'un appel Zoom, directement dans le navigateur, avec Coach Bougerra.",
+        text: "Chat, mains levées et partage d'écran : l'expérience d'un appel Zoom, directement dans le navigateur, avec Coach Bouguerra.",
       },
       courses: {
         title: "Formations business",
@@ -635,7 +648,7 @@ export const fr = {
     },
     lives: {
       eyebrow: "Prochains lives",
-      title: "Rejoignez Bougerra <em>en direct</em>.",
+      title: "Rejoignez Bouguerra <em>en direct</em>.",
       lead: "Posez vos questions, participez et repartez avec un plan d'action. À l'heure d'Alger.",
       all: "Tous les lives",
       none: "Aucun live n'est planifié pour le moment. Les prochains rendez-vous apparaîtront ici.",
@@ -685,12 +698,12 @@ export const fr = {
   },
 
   mock: {
-    roomTitle: "Questions & réponses avec Bougerra",
+    roomTitle: "Questions & réponses avec Bouguerra",
     chat: "Chat en direct",
     question: "Un conseil pour bien démarrer ?",
     answer: "Excellente question, j'y réponds…",
     asker: "Nadia",
-    host: "Bougerra",
+    host: "Bouguerra",
     hand: "{name} lève la main",
     leave: "Quitter",
     live: "En direct",
@@ -703,10 +716,10 @@ export const fr = {
   livesPage: {
     metaTitle: "Lives",
     metaDescription:
-      "Les prochains lives de Coach Bougerra : questions-réponses, masterclass et coaching business, en direct.",
+      "Les prochains lives de Coach Bouguerra : questions-réponses, masterclass et coaching business, en direct.",
     eyebrow: "Lives",
     title: "Le rendez-vous <em>de la semaine</em>.",
-    lead: "Des lives où Coach Bougerra répond en direct. Heure d'Alger (GMT+1).",
+    lead: "Des lives où Coach Bouguerra répond en direct. Heure d'Alger (GMT+1).",
     next: "Prochain live",
     none: "Aucun live n'est planifié pour le moment. Les prochains rendez-vous apparaîtront ici.",
     details: "Voir le détail",
@@ -728,7 +741,7 @@ export const fr = {
   coursesPage: {
     metaTitle: "Formations",
     metaDescription:
-      "La bibliothèque de Coach Bougerra : formations gratuites ou à débloquer avec vos PV en marketing de réseau, prospection, leadership et mindset.",
+      "La bibliothèque de Coach Bouguerra : formations gratuites ou à débloquer avec vos PV en marketing de réseau, prospection, leadership et mindset.",
     eyebrow: "Bibliothèque",
     title: "Apprenez à votre rythme, <em>quand vous voulez</em>.",
     lead: "Des formations gratuites pour bien démarrer et des programmes avancés à débloquer avec vos PV du mois.",
@@ -784,7 +797,7 @@ export const fr = {
   story: {
     metaTitle: "Mon histoire",
     metaDescription:
-      "Comment Ultimate Health & Beauty a changé la vie de Coach Bougerra, et le chemin parcouru pour devenir consultant n°1.",
+      "Comment Ultimate Health & Beauty a changé la vie de Coach Bouguerra, et le chemin parcouru pour devenir consultant n°1.",
     eyebrow: "Mon histoire",
     title: "Ultimate a changé ma vie.",
     lead: "Le chemin n'a pas été simple. Voici ce qu'il m'a appris, et pourquoi je le partage avec vous.",
@@ -794,7 +807,7 @@ export const fr = {
     pullQuote:
       "Ultimate n'a pas seulement changé mon travail. Ça a changé ma façon de voir les choses, mes habitudes et les personnes qui m'entourent.",
     p4: "Aujourd'hui, je transmets ce que j'aurais aimé recevoir au début : des explications simples, de l'honnêteté et un vrai accompagnement. Si vous êtes prêt à travailler, je suis prêt à vous guider.",
-    signature: "Coach Bougerra",
+    signature: "Coach Bouguerra",
     role: "Consultant n°1 · Ultimate Health & Beauty",
     galleryEyebrow: "Réussites",
     galleryTitle: "Les moments qui comptent",
@@ -802,9 +815,9 @@ export const fr = {
     photoCelebration: "Célébrer la réussite, ensemble",
     photoOffice: "Au travail, au cœur d'Ultimate",
     photoPortrait: "Rester constant, chaque jour",
-    altCelebration: "Coach Bougerra et son équipe célèbrent une réussite Ultimate",
-    altOffice: "Coach Bougerra au travail devant le logo Ultimate Health & Beauty",
-    altPortrait: "Portrait de Coach Bougerra",
+    altCelebration: "Coach Bouguerra et son équipe célèbrent une réussite Ultimate",
+    altOffice: "Coach Bouguerra au travail devant le logo Ultimate Health & Beauty",
+    altPortrait: "Portrait de Coach Bouguerra",
     ctaTitle: "Prêt à écrire <em>votre</em> histoire ?",
     ctaLead: "Apprenez la méthode, pas à pas, avec des formations et des lives pensés pour les leaders de demain.",
     ctaPrimary: "Voir les formations",
@@ -813,7 +826,7 @@ export const fr = {
 
   auth: {
     metaTitle: "Connexion",
-    metaDescription: "Connectez-vous ou créez votre compte Coach Bougerra.",
+    metaDescription: "Connectez-vous ou créez votre compte Coach Bouguerra.",
     tablist: "Connexion ou inscription",
     tabLogin: "Se connecter",
     tabRegister: "Créer un compte",
@@ -827,7 +840,7 @@ export const fr = {
       submit: "Se connecter",
       forgot: "Mot de passe oublié ?",
       forgotHelp:
-        "Contactez Coach Bougerra ou son équipe : ils peuvent vous donner un mot de passe temporaire.",
+        "Contactez Coach Bouguerra ou son équipe : ils peuvent vous donner un mot de passe temporaire.",
       codeHint:
         "Votre code membre vous a été remis à l'inscription : il remplace l'e-mail pour vous connecter.",
     },
@@ -909,7 +922,7 @@ export const fr = {
     signInText: "Le live est en cours. Connectez-vous avec votre compte membre pour entrer dans la salle.",
     signIn: "Se connecter",
     reservedTitle: "Live à accès réservé",
-    reservedText: "Ce live est réservé à certains membres. Écrivez à l'équipe de Coach Bougerra pour obtenir l'accès.",
+    reservedText: "Ce live est réservé à certains membres. Écrivez à l'équipe de Coach Bouguerra pour obtenir l'accès.",
     roomOffPublic: "La salle de live n'est pas encore ouverte sur ce site. Revenez bientôt.",
     openAsHost: "Ouvrir la salle (animateur)",
     prepareAsHost: "Préparer le live (animateur)",
@@ -1014,6 +1027,7 @@ export const fr = {
       notifications: "Notifications",
       lives: "Lives",
       videos: "Formations",
+      showreel: "Vidéos d'accueil",
       groups: "Groupes",
       team: "Équipe",
       assistant: "Assistant IA",
@@ -1024,7 +1038,7 @@ export const fr = {
     login: {
       metaTitle: "Espace du staff",
       title: "Espace du staff",
-      subtitle: "Réservé à l'équipe de Coach Bougerra.",
+      subtitle: "Réservé à l'équipe de Coach Bouguerra.",
       email: "Adresse e-mail",
       password: "Mot de passe",
       submit: "Accéder à l'espace",
@@ -1142,6 +1156,47 @@ export const fr = {
       notify: "Envoyer une notification",
       noMessages: "Aucun message dans cette conversation.",
     },
+    homeVideos: {
+      metaTitle: "Vidéos d'accueil",
+      title: "Vidéos de la page d'accueil",
+      subtitle:
+        "Ces vidéos se lancent toutes seules tout en haut de la page d'accueil, l'une après l'autre. Ajoutez, masquez ou changez l'ordre quand vous voulez.",
+      viewSite: "Voir la page d'accueil",
+      empty: "Aucune vidéo pour le moment : la page d'accueil s'affiche sans bande vidéo.",
+      position: "Vidéo {n}",
+      kindFile: "Fichier envoyé · {size}",
+      kindYoutube: "Lien YouTube",
+      kindVimeo: "Lien Vimeo",
+      shown: "Affichée",
+      hidden: "Masquée",
+      show: "Afficher",
+      hide: "Masquer",
+      moveUp: "Monter",
+      moveDown: "Descendre",
+      remove: "Retirer",
+      removeConfirm: "Retirer cette vidéo de la page d'accueil ?",
+      addTitle: "Ajouter une vidéo",
+      full: "La page d'accueil contient déjà le maximum de vidéos. Retirez-en une pour en ajouter.",
+      uploadChoose: "Envoyer une vidéo",
+      uploadHelp: "MP4, MOV ou WebM, {max} au maximum.",
+      uploadDone: "Vidéo ajoutée à la page d'accueil.",
+      uploadStopped: "L'envoi s'est arrêté. Vérifiez la connexion et réessayez.",
+      storageOff: "L'envoi de fichiers n'est pas encore activé sur ce site. Vous pouvez déjà ajouter un lien YouTube ou Vimeo.",
+      linkLabel: "Ou coller un lien YouTube / Vimeo",
+      linkAdd: "Ajouter le lien",
+      tipsTitle: "Pour que ça reste fluide",
+      tipShort: "Choisissez des vidéos courtes (15 à 60 secondes) : elles passent en boucle.",
+      tipLight: "Choisissez des vidéos légères (10 à 30 Mo) : chaque visiteur les charge, parfois avec ses données mobiles. Filmez en 720p plutôt qu'en 4K.",
+      tipSound: "Elles démarrent sans le son ; le visiteur peut l'activer.",
+    },
+    image: {
+      none: "Aucune image",
+      choose: "Choisir une image",
+      change: "Changer l'image",
+      remove: "Retirer l'image",
+      processing: "Préparation…",
+      unreadable: "Cette image n'a pas pu être lue. Essayez une autre photo.",
+    },
     notifications: {
       metaTitle: "Notifications",
       title: "Notifications",
@@ -1151,6 +1206,8 @@ export const fr = {
       titlePlaceholder: "Ex. : Live ce soir à 20h30",
       bodyLabel: "Message",
       bodyPlaceholder: "Écrivez votre message…",
+      imageLabel: "Image (facultatif)",
+      imageHint: "Elle s'affiche sous le message, dans la cloche et sur le téléphone.",
       audience: "Destinataires",
       everyone: "Tous les membres",
       specific: "Membres précis",
@@ -1557,6 +1614,8 @@ export const fr = {
       fieldTime: "Heure (Alger)",
       fieldLength: "Durée",
       fieldHost: "Animateur",
+      fieldImage: "Image du live (facultatif)",
+      imageHint: "Elle s'affiche sur la carte et la page du live, et accompagne l'annonce envoyée aux membres.",
       minutes: "{count} minutes",
       accessTeam: "Équipe",
       scheduleSubmit: "Planifier",

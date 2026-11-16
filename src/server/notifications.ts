@@ -1,4 +1,5 @@
 import "server-only";
+import { randomBytes } from "node:crypto";
 import { db } from "./db";
 
 export interface MemberNotification {
@@ -7,6 +8,19 @@ export interface MemberNotification {
   body: string;
   createdAt: Date;
   read: boolean;
+  /** where a tap leads (a path inside the site), when there is one */
+  url: string | null;
+  /** the picture's address token (see imagePath), when there is one */
+  imageToken: string | null;
+}
+
+/** The address of a notification's picture. The token cannot be guessed, so the address can be public. */
+export const imagePath = (token: string) => `/api/notification-image/${token}`;
+
+/** Only a path inside the site is kept as a link: never another address. */
+export function safePath(url: string | null | undefined): string | null {
+  const v = (url ?? "").trim();
+  return /^\/(?!\/)[\w\-./?=&%#]{0,200}$/.test(v) ? v : null;
 }
 
 export interface SentNotification {
@@ -19,6 +33,7 @@ export interface SentNotification {
   /** member numbers, for audience "codes" */
   codes: number[];
   readCount: number;
+  imageToken: string | null;
 }
 
 /**
@@ -36,15 +51,27 @@ export async function sendNotification(input: {
   codes: number[] | "all";
   /** the staff member sending it; null for a message the site sends by itself */
   staffId: number | null;
-}): Promise<{ id: number; recipients: number | "all" }> {
+  /** a path inside the site where a tap leads */
+  url?: string | null;
+  /** a picture: a JPEG, base64 */
+  image?: string | null;
+}): Promise<{ id: number; recipients: number | "all"; imageToken: string | null }> {
   const database = await db();
   return database.transaction(async (tx) => {
     const audience = input.codes === "all" ? "all" : "codes";
     const [row] = await tx.query<{ id: number }>(
-      `insert into notifications (title, body, audience, sent_by)
-       values ($1, $2, $3, $4) returning id`,
-      [input.title, input.body, audience, input.staffId],
+      `insert into notifications (title, body, audience, sent_by, url)
+       values ($1, $2, $3, $4, $5) returning id`,
+      [input.title, input.body, audience, input.staffId, safePath(input.url)],
     );
+    let imageToken: string | null = null;
+    if (input.image) {
+      imageToken = randomBytes(12).toString("base64url");
+      await tx.query(
+        `insert into notification_images (notification_id, token, data_b64) values ($1, $2, $3)`,
+        [row.id, imageToken, input.image],
+      );
+    }
     if (input.codes !== "all") {
       await tx.query(
         `insert into notification_targets (notification_id, member_code)
@@ -52,7 +79,7 @@ export async function sendNotification(input: {
         [row.id, JSON.stringify(input.codes)],
       );
     }
-    return { id: row.id, recipients: input.codes === "all" ? "all" : input.codes.length };
+    return { id: row.id, recipients: input.codes === "all" ? "all" : input.codes.length, imageToken };
   });
 }
 
@@ -67,8 +94,10 @@ export async function listSentNotifications(limit = 50): Promise<SentNotificatio
     sender: string | null;
     codes: number[];
     read_count: number;
+    image_token: string | null;
   }>(
     `select n.id, n.title, n.body, n.audience, n.created_at, s.name as sender,
+            (select i.token from notification_images i where i.notification_id = n.id) as image_token,
             coalesce((select array_agg(t.member_code order by t.member_code)
                         from notification_targets t where t.notification_id = n.id), '{}') as codes,
             (select count(*)::int from notification_reads r where r.notification_id = n.id) as read_count
@@ -85,6 +114,7 @@ export async function listSentNotifications(limit = 50): Promise<SentNotificatio
     sender: r.sender,
     codes: r.codes,
     readCount: r.read_count,
+    imageToken: r.image_token,
   }));
 }
 
@@ -96,8 +126,11 @@ export async function notificationsForMember(code: number, limit = 50): Promise<
     body: string;
     created_at: Date;
     read: boolean;
+    url: string | null;
+    image_token: string | null;
   }>(
-    `select n.id, n.title, n.body, n.created_at,
+    `select n.id, n.title, n.body, n.created_at, n.url,
+            (select i.token from notification_images i where i.notification_id = n.id) as image_token,
             exists (select 1 from notification_reads r
                      where r.notification_id = n.id and r.member_code = m.code) as read
        from notifications n
@@ -112,7 +145,20 @@ export async function notificationsForMember(code: number, limit = 50): Promise<
     body: r.body,
     createdAt: r.created_at,
     read: r.read,
+    url: r.url,
+    imageToken: r.image_token,
   }));
+}
+
+/** A notification's picture, by its token (the token is the only key: it is hard to guess). */
+export async function getNotificationImage(token: string): Promise<{ base64: string; createdAt: Date } | null> {
+  if (!/^[\w-]{8,40}$/.test(token)) return null;
+  const database = await db();
+  const [row] = await database.query<{ data_b64: string; created_at: Date }>(
+    "select data_b64, created_at from notification_images where token = $1",
+    [token],
+  );
+  return row ? { base64: row.data_b64, createdAt: row.created_at } : null;
 }
 
 export async function unreadCount(code: number): Promise<number> {

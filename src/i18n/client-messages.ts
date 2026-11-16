@@ -28,6 +28,7 @@ export const PUBLIC_NAMESPACES = [
   "appearance",
   "assistant",
   "liveRoom",
+  "showreel",
 ] as const;
 
 export const WORKSPACE_NAMESPACES = [...PUBLIC_NAMESPACES, "space"] as const;

@@ -128,8 +128,8 @@ export async function removeFromRoom(liveId: string, identity: string): Promise<
 
 /* ---- people sent out of a live stay out of it (kept in memory: enough for one site process) ---- */
 
-const globalForKicked = globalThis as unknown as { __coachBougerraKicked?: Map<string, Set<string>> };
-const kicked = (globalForKicked.__coachBougerraKicked ??= new Map<string, Set<string>>());
+const globalForKicked = globalThis as unknown as { __coachBouguerraKicked?: Map<string, Set<string>> };
+const kicked = (globalForKicked.__coachBouguerraKicked ??= new Map<string, Set<string>>());
 
 export function banFromLive(liveId: string, identity: string) {
   const set = kicked.get(liveId) ?? new Set<string>();

@@ -7,9 +7,9 @@ import "server-only";
 */
 
 const globalForLimit = globalThis as unknown as {
-  __coachBougerraHits?: Map<string, number[]>;
+  __coachBouguerraHits?: Map<string, number[]>;
 };
-const hits = (globalForLimit.__coachBougerraHits ??= new Map<string, number[]>());
+const hits = (globalForLimit.__coachBouguerraHits ??= new Map<string, number[]>());
 
 /** Records an attempt and returns false when `key` exceeded `max` in `windowMs`. */
 export function allow(key: string, max: number, windowMs: number) {

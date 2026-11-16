@@ -22,10 +22,12 @@ interface Row {
   started_at: Date | null;
   ended_at: Date | null;
   replay_slug: string | null;
+  cover_at: Date | null;
 }
 
 const SELECT = `select id, title_fr, title_ar, description_fr, description_ar, host, access, starts_at,
-       length_min, status, started_at, ended_at, replay_slug from lives`;
+       length_min, status, started_at, ended_at, replay_slug,
+       (select c.updated_at from live_covers c where c.live_id = lives.id) as cover_at from lives`;
 
 const both = (fr: string, ar: string): L10n => ({ fr: fr || ar, ar: ar || fr });
 
@@ -39,6 +41,7 @@ const toLive = (r: Row): Live => ({
   length: r.length_min,
   status: r.status,
   replaySlug: r.replay_slug,
+  coverVersion: r.cover_at ? r.cover_at.getTime() : null,
   typed: {
     titleFr: r.title_fr,
     titleAr: r.title_ar,
@@ -252,6 +255,55 @@ export async function deleteLive(id: string | number): Promise<boolean> {
     await tx.query("delete from live_reservations where live_id = $1", [String(n)]);
     return rows.length > 0;
   });
+}
+
+/* --------------------------------- the picture --------------------------------- */
+
+/** Sets (or replaces) the picture of a live: a JPEG, base64. */
+export async function setLiveCover(id: string | number, base64: string): Promise<void> {
+  const n = parseId(id);
+  if (n === null) return;
+  const database = await db();
+  await database.query(
+    `insert into live_covers (live_id, data_b64) values ($1::int, $2)
+     on conflict (live_id) do update set data_b64 = excluded.data_b64, updated_at = now()`,
+    [n, base64],
+  );
+}
+
+export async function removeLiveCover(id: string | number): Promise<void> {
+  const n = parseId(id);
+  if (n === null) return;
+  const database = await db();
+  await database.query("delete from live_covers where live_id = $1::int", [n]);
+}
+
+/** The picture of a live, with what is needed to decide who may see it. */
+export async function getLiveCover(
+  id: string | number,
+): Promise<{ base64: string; updatedAt: Date; access: LiveAccess } | null> {
+  const n = parseId(id);
+  if (n === null) return null;
+  const database = await db();
+  const [row] = await database.query<{ data_b64: string; updated_at: Date; access: LiveAccess }>(
+    `select c.data_b64, c.updated_at, l.access
+       from live_covers c join lives l on l.id = c.live_id where c.live_id = $1::int`,
+    [n],
+  );
+  return row ? { base64: row.data_b64, updatedAt: row.updated_at, access: row.access } : null;
+}
+
+/** A new live that repeats an older one gets the same picture. */
+export async function copyLiveCover(fromId: string | number, toId: string | number): Promise<void> {
+  const from = parseId(fromId);
+  const to = parseId(toId);
+  if (from === null || to === null) return;
+  const database = await db();
+  await database.query(
+    `insert into live_covers (live_id, data_b64) select $2::int, data_b64 from live_covers where live_id = $1::int
+     on conflict (live_id) do nothing`,
+    [from, to],
+  );
 }
 
 /* ----------------------------------- who came ----------------------------------- */

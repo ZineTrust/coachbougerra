@@ -8,12 +8,12 @@ import type { Note } from "../search";
 export const SITE_NOTES: Note[] = [
   {
     id: "site-presentation",
-    title: "Qu'est-ce que la plateforme Coach Bougerra ?",
+    title: "Qu'est-ce que la plateforme Coach Bouguerra ?",
     keywords:
-      "presentation plateforme site application quoi service a quoi sert coach bougerra ultimate " +
+      "presentation plateforme site application quoi service a quoi sert coach bouguerra bougerra ultimate " +
       "ما هي المنصة الموقع التطبيق كوتش بوقرة عن المنصة ماذا تقدم",
     body:
-      "Coach Bougerra est une plateforme en français et en arabe de formations vidéo, de coaching et de lives en marketing de réseau et en leadership, avec Coach Bougerra, présenté comme consultant n°1 Ultimate Health & Beauty. " +
+      "Coach Bouguerra est une plateforme en français et en arabe de formations vidéo, de coaching et de lives en marketing de réseau et en leadership, avec Coach Bouguerra, présenté comme consultant n°1 Ultimate Health & Beauty. " +
       "Les membres y trouvent des formations (gratuites, ou à débloquer avec leurs PV du mois), un parcours avec points et badges, une boîte à outils de messages prêts à envoyer, des groupes de discussion, un calendrier de lives, un objectif du mois et un lien d'invitation personnel. Il n'y a aucun paiement sur le site.",
   },
   {
@@ -33,7 +33,7 @@ export const SITE_NOTES: Note[] = [
       "mot de passe oublie mdp password reinitialiser changer suspendu bloque acces impossible connexion probleme " +
       "نسيت كلمة السر كلمة المرور نسيت تغيير كلمة المرور حسابي موقوف محظور لا استطيع الدخول",
     body:
-      "Il n'y a pas encore de réinitialisation automatique par e-mail : si vous avez oublié votre mot de passe, utilisez le bouton « Contacter l'équipe » ou contactez Coach Bougerra, qui peut vous donner un mot de passe temporaire que vous changerez ensuite dans Mon compte. " +
+      "Il n'y a pas encore de réinitialisation automatique par e-mail : si vous avez oublié votre mot de passe, utilisez le bouton « Contacter l'équipe » ou contactez Coach Bouguerra, qui peut vous donner un mot de passe temporaire que vous changerez ensuite dans Mon compte. " +
       "Pour changer votre mot de passe en étant connecté : Mon compte, carte « Mot de passe ». Si votre compte est suspendu, contactez l'équipe. L'équipe ne vous demande jamais votre mot de passe.",
   },
   {

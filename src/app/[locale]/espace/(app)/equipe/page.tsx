@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/espace/e
   return { title: t("metaTitle") };
 }
 
-/** Only Coach Bougerra opens this page: it creates staff logins and sets their permissions. */
+/** Only Coach Bouguerra opens this page: it creates staff logins and sets their permissions. */
 export default async function TeamPage({ params }: PageProps<"/[locale]/espace/equipe">) {
   const { locale: raw } = await params;
   const locale = raw as Locale;

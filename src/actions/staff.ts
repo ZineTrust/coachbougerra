@@ -18,7 +18,7 @@ import type { FormState } from "./types";
 const permissionsFrom = (fd: FormData): StaffPermission[] =>
   [...new Set(fd.getAll("permission").map(String))].filter(isStaffPermission);
 
-/** Only Coach Bougerra (the owner) can create staff accounts and choose what they may do. */
+/** Only Coach Bouguerra (the owner) can create staff accounts and choose what they may do. */
 export async function createStaffAction(_prev: FormState, fd: FormData): Promise<FormState> {
   if (!(await ownerOnly())) return { errors: { form: "forbidden" } };
 
@@ -49,7 +49,7 @@ export async function createStaffAction(_prev: FormState, fd: FormData): Promise
   if (!created.ok) return { errors: { email: created.error }, values };
 
   revalidatePath("/", "layout");
-  // shown once, so Bougerra can pass the login on to the person
+  // shown once, so Bouguerra can pass the login on to the person
   return { ok: true, info: { email, password } };
 }
 

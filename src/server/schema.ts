@@ -65,6 +65,16 @@ create table if not exists notifications (
   created_at timestamptz not null default now()
 );
 
+-- Where a tap on the notification leads (a path inside the site, e.g. "/groupes"), and an optional picture
+-- (a small JPEG kept in the database; the token in its address cannot be guessed).
+alter table notifications add column if not exists url text;
+create table if not exists notification_images (
+  notification_id integer primary key references notifications(id) on delete cascade,
+  token           text not null unique,
+  data_b64        text not null,
+  created_at      timestamptz not null default now()
+);
+
 create table if not exists notification_targets (
   notification_id integer not null references notifications(id) on delete cascade,
   member_code     integer not null references members(code) on delete cascade,
@@ -146,7 +156,7 @@ create table if not exists lives (
   title_ar       text not null default '',
   description_fr text not null default '',
   description_ar text not null default '',
-  host           text not null default 'Coach Bougerra',
+  host           text not null default 'Coach Bouguerra',
   access         text not null default 'free' check (access in ('free', 'premium', 'team')),
   starts_at      timestamptz not null,
   length_min     integer not null default 60 check (length_min between 5 and 600),
@@ -167,6 +177,25 @@ create table if not exists live_attendance (
   member_code integer not null references members(code) on delete cascade,
   joined_at   timestamptz not null default now(),
   primary key (live_id, member_code)
+);
+
+-- The picture of a live (16:9 JPEG, optional): shown on its page and in the lists, and sent with the announcement.
+create table if not exists live_covers (
+  live_id    integer primary key references lives(id) on delete cascade,
+  data_b64   text not null,
+  updated_at timestamptz not null default now()
+);
+
+-- The videos that play at the top of the home page, in this order (position), when active. A video is a file
+-- sent from a phone (kept in the storage: ref = its key) or a YouTube / Vimeo link (ref = the video id).
+create table if not exists home_videos (
+  id         serial primary key,
+  position   integer not null default 0,
+  provider   text not null check (provider in ('file', 'youtube', 'vimeo')),
+  ref        text not null,
+  file_bytes bigint,
+  active     boolean not null default true,
+  created_at timestamptz not null default now()
 );
 
 -- The formations. Title and description in both languages (at least one title is required;

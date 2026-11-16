@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { currentMember } from "@/server/current";
-import { notificationsForMember, unreadCount } from "@/server/notifications";
+import { imagePath, notificationsForMember, safePath, unreadCount } from "@/server/notifications";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +22,8 @@ export async function GET() {
         body: n.body,
         read: n.read,
         createdAt: n.createdAt.toISOString(),
+        url: safePath(n.url),
+        image: n.imageToken ? imagePath(n.imageToken) : null,
       })),
     },
     { headers: { "Cache-Control": "no-store" } },

@@ -66,7 +66,7 @@ export function MemberAvatar({
   );
 }
 
-/** Which of Coach Bougerra's photos to show, and where to crop it. */
+/** Which of Coach Bouguerra's photos to show, and where to crop it. */
 export type PhotoKey = keyof typeof BRAND.photos;
 
 const FOCUS: Record<PhotoKey, string> = {
@@ -75,7 +75,7 @@ const FOCUS: Record<PhotoKey, string> = {
   celebration: "30% 40%",
 };
 
-/** Fills its (relatively positioned) parent with one of Coach Bougerra's photos. */
+/** Fills its (relatively positioned) parent with one of Coach Bouguerra's photos. */
 export function CoachPhoto({
   photo = "office",
   alt,

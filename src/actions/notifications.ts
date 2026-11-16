@@ -3,9 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { after } from "next/server";
 import { parseCodes } from "@/lib/validation";
+import { prepareImage } from "@/server/images";
 import { currentMember, staffFor } from "@/server/current";
 import { existingCodes } from "@/server/members";
-import { markAllRead, sendNotification } from "@/server/notifications";
+import { imagePath, markAllRead, sendNotification } from "@/server/notifications";
 import { sendPush } from "@/server/push";
 import type { FormState } from "./types";
 
@@ -49,6 +50,10 @@ export async function sendNotificationAction(_prev: FormState, fd: FormData): Pr
     }
   }
 
+  // an optional picture, shown under the message
+  const picture = await prepareImage(fd.get("image"), "free");
+  if (picture && !picture.ok) errors.image = picture.error;
+
   if (Object.keys(errors).length > 0) return { errors, values, info };
 
   const result = await sendNotification({
@@ -56,6 +61,7 @@ export async function sendNotificationAction(_prev: FormState, fd: FormData): Pr
     body,
     codes: audience === "all" ? "all" : codes,
     staffId: staff.id,
+    image: picture?.ok ? picture.base64 : null,
   });
 
   // also reach phones that agreed to push notifications (after the response, so the form isn't slowed down)
@@ -63,6 +69,7 @@ export async function sendNotificationAction(_prev: FormState, fd: FormData): Pr
     sendPush(audience === "all" ? "all" : codes, {
       title,
       body: body.length > 140 ? `${body.slice(0, 137)}…` : body,
+      image: result.imageToken ? imagePath(result.imageToken) : undefined,
     }),
   );
 

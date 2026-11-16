@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
   if (!hasLocale(routing.locales, locale)) return {};
   const t = await getTranslations({ locale, namespace: "meta" });
   return {
-    title: { default: t("title"), template: "%s · Coach Bougerra" },
+    title: { default: t("title"), template: "%s · Coach Bouguerra" },
     description: t("description"),
     alternates: { languages: { fr: "/fr", ar: "/ar" } },
   };

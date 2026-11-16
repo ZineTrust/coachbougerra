@@ -93,7 +93,7 @@ export function InviteShare({
           {canShare && (
             <Button
               variant="outline"
-              onClick={() => void navigator.share({ title: "Coach Bougerra", text: message, url }).catch(() => {})}
+              onClick={() => void navigator.share({ title: "Coach Bouguerra", text: message, url }).catch(() => {})}
             >
               <Share2 className="size-[18px]" aria-hidden /> {t("share")}
             </Button>
@@ -126,7 +126,7 @@ export function InviteShare({
         <Button
           variant="outline"
           className="mt-4 w-full"
-          onClick={() => void downloadQr(qrSvg, "coach-bougerra-invitation.png")}
+          onClick={() => void downloadQr(qrSvg, "coach-bouguerra-invitation.png")}
         >
           <Download className="size-[18px]" aria-hidden /> {t("qrDownload")}
         </Button>

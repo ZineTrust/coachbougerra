@@ -27,7 +27,7 @@ services:
         sync: false
       # The owner account is created from these the very first time the site starts.
       - key: OWNER_NAME
-        value: Coach Bougerra
+        value: Coach Bouguerra
       - key: OWNER_EMAIL
         sync: false
       - key: OWNER_PASSWORD

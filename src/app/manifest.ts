@@ -4,10 +4,10 @@ import type { MetadataRoute } from "next";
 export default function manifest(): MetadataRoute.Manifest {
   return {
     id: "/",
-    name: "Coach Bougerra",
-    short_name: "Bougerra",
+    name: "Coach Bouguerra",
+    short_name: "Bouguerra",
     description:
-      "Formations, lives et communauté de Coach Bougerra · دورات وبثوث مباشرة ومجتمع كوتش بوقرة",
+      "Formations, lives et communauté de Coach Bouguerra · دورات وبثوث مباشرة ومجتمع كوتش بوقرة",
     start_url: "/",
     scope: "/",
     display: "standalone",

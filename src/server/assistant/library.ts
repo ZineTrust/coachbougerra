@@ -13,7 +13,7 @@ import { enabledNotes } from "./store";
 */
 
 const REFRESH_MS = 60_000;
-const globalForIndex = globalThis as unknown as { __coachBougerraKnowledge?: { at: number; index: NoteIndex } };
+const globalForIndex = globalThis as unknown as { __coachBouguerraKnowledge?: { at: number; index: NoteIndex } };
 
 /** The published formations, as one note (titles in both languages and the PV each one asks). */
 async function formationsNote(): Promise<Note | null> {
@@ -43,14 +43,14 @@ async function build(): Promise<NoteIndex> {
 }
 
 export async function knowledgeLibrary(): Promise<NoteIndex> {
-  const cached = globalForIndex.__coachBougerraKnowledge;
+  const cached = globalForIndex.__coachBouguerraKnowledge;
   if (cached && Date.now() - cached.at < REFRESH_MS) return cached.index;
   const index = await build();
-  globalForIndex.__coachBougerraKnowledge = { at: Date.now(), index };
+  globalForIndex.__coachBouguerraKnowledge = { at: Date.now(), index };
   return index;
 }
 
 /** Forget the index (the owner just changed a note). */
 export function forgetKnowledge() {
-  globalForIndex.__coachBougerraKnowledge = undefined;
+  globalForIndex.__coachBouguerraKnowledge = undefined;
 }

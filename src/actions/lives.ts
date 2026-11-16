@@ -5,19 +5,24 @@ import { after } from "next/server";
 import type { Live, LiveAccess } from "@/lib/data";
 import { formatLiveDay, formatLiveTime, parseAlgiersLocal } from "@/lib/utils";
 import { staffFor } from "@/server/current";
+import { prepareImage } from "@/server/images";
 import { closeRoom, openRoom } from "@/server/livekit";
 import {
   cancelLive,
+  copyLiveCover,
   createLive,
   deleteLive,
   endLive,
   getLive,
+  getLiveCover,
+  removeLiveCover,
   reservedCodes,
+  setLiveCover,
   startLive,
   updateLive,
   type LiveInput,
 } from "@/server/lives";
-import { sendNotification } from "@/server/notifications";
+import { imagePath, sendNotification } from "@/server/notifications";
 import { sendPush } from "@/server/push";
 import { allow } from "@/server/rate-limit";
 import { getVideoRecord } from "@/server/videos";
@@ -36,7 +41,7 @@ async function readInput(fd: FormData, creating: boolean) {
   const titleAr = text(fd, "titleAr");
   const descriptionFr = text(fd, "descriptionFr");
   const descriptionAr = text(fd, "descriptionAr");
-  const host = text(fd, "host") || "Coach Bougerra";
+  const host = text(fd, "host") || "Coach Bouguerra";
   const accessRaw = text(fd, "access");
   const date = text(fd, "date");
   const time = text(fd, "time");
@@ -85,11 +90,16 @@ async function readInput(fd: FormData, creating: boolean) {
     else errors.replaySlug = "unknown_video";
   }
 
+  // an optional picture, shown on the live's card and page and in its announcements
+  const picture = await prepareImage(fd.get("image"), "cover");
+  if (picture && !picture.ok) errors.image = picture.error;
+  const removePicture = fd.get("removeImage") === "1";
+
   const input: LiveInput | null =
     Object.keys(errors).length === 0 && access && startsAt
       ? { titleFr, titleAr, descriptionFr, descriptionAr, host, access, startsAt, length, replaySlug }
       : null;
-  return { values, errors, input, notify };
+  return { values, errors, input, notify, picture: picture?.ok ? picture.base64 : null, removePicture };
 }
 
 const both = (fr: string, ar: string) => [fr, ar].filter(Boolean).join(" · ");
@@ -118,8 +128,13 @@ async function announce(
     kind === "started" ? "En direct · مباشر" : kind === "reminder" ? "Rappel · تذكير" : "Nouveau live · بث مباشر جديد";
   const name = both(live.titleFr, live.titleAr);
   const body = kind === "started" ? name : `${name} — ${whenText(live.startsAt)}`;
-  const sent = await sendNotification({ title, body, codes: audience, staffId });
-  after(() => sendPush(audience, { title, body, url: `/lives/${live.id}` }));
+  // the live's picture goes along, and a tap opens the live
+  const cover = await getLiveCover(live.id);
+  const url = `/lives/${live.id}`;
+  const sent = await sendNotification({ title, body, codes: audience, staffId, url, image: cover?.base64 ?? null });
+  after(() =>
+    sendPush(audience, { title, body, url, image: sent.imageToken ? imagePath(sent.imageToken) : undefined }),
+  );
   return sent.recipients;
 }
 
@@ -136,11 +151,12 @@ export async function saveLiveAction(_prev: FormState, fd: FormData): Promise<Fo
   if (!staff) return { errors: { form: "forbidden" } };
 
   const id = text(fd, "id");
-  const { values, errors, input, notify } = await readInput(fd, !id);
+  const { values, errors, input, notify, picture, removePicture } = await readInput(fd, !id);
   if (!input) return { errors, values };
 
   if (!id) {
     const created = await createLive(input, staff.id);
+    if (picture) await setLiveCover(created, picture);
     if (notify) {
       await announce({ id: created, access: input.access, startsAt: input.startsAt, titleFr: input.titleFr, titleAr: input.titleAr }, "planned", staff.id);
     }
@@ -149,6 +165,8 @@ export async function saveLiveAction(_prev: FormState, fd: FormData): Promise<Fo
   }
 
   if (!(await updateLive(id, input))) return { errors: { form: "unknown_live" }, values };
+  if (picture) await setLiveCover(id, picture);
+  else if (removePicture) await removeLiveCover(id);
   refresh();
   return { ok: true, values };
 }
@@ -207,7 +225,7 @@ export async function cancelLiveAction(id: string): Promise<FormState> {
   if (codes.length > 0) {
     const title = "Live annulé · تم إلغاء البث";
     const body = `${both(live.typed.titleFr, live.typed.titleAr)} — ${whenText(live.startsAt)}`;
-    await sendNotification({ title, body, codes, staffId: staff.id });
+    await sendNotification({ title, body, codes, staffId: staff.id, url: "/lives" });
     after(() => sendPush(codes, { title, body, url: "/lives" }));
   }
   refresh();
@@ -248,6 +266,7 @@ export async function duplicateLiveAction(id: string): Promise<FormState> {
     },
     staff.id,
   );
+  await copyLiveCover(live.id, created);
   refresh();
   return { ok: true, info: { id: created } };
 }
@@ -267,7 +286,22 @@ export async function remindLiveAction(id: string): Promise<FormState> {
 
   const title = "Rappel · تذكير";
   const body = `${both(live.typed.titleFr, live.typed.titleAr)} — ${whenText(live.startsAt)}`;
-  await sendNotification({ title, body, codes, staffId: staff.id });
-  after(() => sendPush(codes, { title, body, url: `/lives/${live.id}` }));
+  const cover = await getLiveCover(live.id);
+  const sent = await sendNotification({
+    title,
+    body,
+    codes,
+    staffId: staff.id,
+    url: `/lives/${live.id}`,
+    image: cover?.base64 ?? null,
+  });
+  after(() =>
+    sendPush(codes, {
+      title,
+      body,
+      url: `/lives/${live.id}`,
+      image: sent.imageToken ? imagePath(sent.imageToken) : undefined,
+    }),
+  );
   return { ok: true, info: { warned: codes.length } };
 }

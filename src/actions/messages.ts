@@ -58,7 +58,7 @@ export async function staffReplyAction(_prev: FormState, fd: FormData): Promise<
   const message = await addStaffReply(code, staff.id, body);
   after(() =>
     sendPush([code], {
-      title: "Coach Bougerra",
+      title: "Coach Bouguerra",
       body: body.length > 140 ? `${body.slice(0, 137)}…` : body,
       url: "/compte",
     }),

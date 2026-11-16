@@ -38,10 +38,10 @@ export function LiveRoomMock() {
         {/* stage */}
         <div className="grid grid-cols-[minmax(0,1fr)_4.25rem] gap-2 p-2 sm:grid-cols-[minmax(0,1fr)_7rem]">
           <div className="relative aspect-[4/3] overflow-hidden rounded-2xl sm:aspect-[16/11]">
-            <CoachPhoto photo="office" alt="Coach Bougerra" priority sizes="(min-width: 1024px) 34vw, 90vw" />
+            <CoachPhoto photo="office" alt="Coach Bouguerra" priority sizes="(min-width: 1024px) 34vw, 90vw" />
             <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-ink-950/80 to-transparent" />
             <span className="absolute bottom-3 start-3 inline-flex items-center gap-1.5 rounded-lg bg-ink-950/70 px-2.5 py-1.5 text-xs font-semibold text-white backdrop-blur">
-              <Mic className="size-3.5 text-jade-400" aria-hidden /> Coach Bougerra
+              <Mic className="size-3.5 text-jade-400" aria-hidden /> Coach Bouguerra
             </span>
           </div>
 

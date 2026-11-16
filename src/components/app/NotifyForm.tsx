@@ -5,6 +5,7 @@ import { Send } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { sendNotificationAction } from "@/actions/notifications";
 import { initialState } from "@/actions/types";
+import { ImageField } from "@/components/app/ImageField";
 import { Button } from "@/components/ui/Button";
 import { Field, Notice, Segmented, TextArea, useErrorText } from "@/components/ui/form";
 
@@ -56,6 +57,8 @@ export function NotifyForm({ prefillCode }: { prefillCode?: string }) {
         rows={5}
         required
       />
+
+      <ImageField name="image" label={t("imageLabel")} hint={t("imageHint")} error={err(errors.image)} />
 
       <Segmented
         label={t("audience")}

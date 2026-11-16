@@ -36,8 +36,8 @@ const models = () => {
 export const assistantConfigured = () => API_KEY() !== "";
 
 /** Until when (ms since epoch) each model is left alone after a refusal. Kept across hot reloads. */
-const globalForProvider = globalThis as unknown as { __coachBougerraCooldown?: Map<string, number> };
-const cooldown = (globalForProvider.__coachBougerraCooldown ??= new Map<string, number>());
+const globalForProvider = globalThis as unknown as { __coachBouguerraCooldown?: Map<string, number> };
+const cooldown = (globalForProvider.__coachBouguerraCooldown ??= new Map<string, number>());
 
 const FIRST_TOKEN_TIMEOUT_MS = 25_000;
 const MAX_ANSWER_TOKENS = 600;

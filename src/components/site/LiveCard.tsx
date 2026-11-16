@@ -16,6 +16,15 @@ export function LiveCard({ live, reserve }: { live: UpcomingLive; reserve: Reser
 
   return (
     <article className="flex flex-col rounded-2xl bg-white p-5 shadow-card ring-1 ring-ink-900/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-lift">
+      {live.coverVersion !== null && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={`/api/live-cover/${live.id}?v=${live.coverVersion}`}
+          alt=""
+          loading="lazy"
+          className="-mx-5 -mt-5 mb-4 aspect-video w-[calc(100%+2.5rem)] max-w-none rounded-t-2xl object-cover"
+        />
+      )}
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-[4.5rem] rounded-xl bg-ink-900 px-3.5 py-2.5 text-center text-white">
           <p className="text-[0.625rem] font-bold uppercase tracking-wider text-gold-400">{weekday}</p>

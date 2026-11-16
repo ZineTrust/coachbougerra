@@ -34,7 +34,7 @@ import { requireMember } from "@/server/current";
 import { avatarVersion } from "@/server/engagement";
 import { goalCardProps } from "@/server/goal-card";
 import { getGrants, isProfileComplete } from "@/server/members";
-import { notificationsForMember } from "@/server/notifications";
+import { imagePath, notificationsForMember, safePath } from "@/server/notifications";
 import { requestsThisMonth } from "@/server/unlocks";
 import { videoTitles } from "@/server/videos";
 
@@ -96,6 +96,7 @@ export default async function AccountPage({
     videoTitles(),
     goalCardProps(member.code, locale),
   ]);
+  const tb = await getTranslations("bell");
   const unread = notifications.filter((n) => !n.read).length;
   const firstName = member.fullName?.trim().split(/\s+/)[0] ?? null;
 
@@ -269,6 +270,23 @@ export default async function AccountPage({
                     <p dir="auto" className="mt-1.5 whitespace-pre-line text-[0.9375rem] leading-relaxed text-ink-600">
                       {n.body}
                     </p>
+                    {n.imageToken && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={imagePath(n.imageToken)}
+                        alt=""
+                        loading="lazy"
+                        className="mt-3 max-h-80 w-full rounded-xl object-cover ring-1 ring-ink-900/5 sm:w-auto sm:max-w-md"
+                      />
+                    )}
+                    {safePath(n.url) && (
+                      <Link
+                        href={safePath(n.url)!}
+                        className="mt-3 inline-block text-sm font-bold text-jade-700 hover:underline"
+                      >
+                        {tb("open")}
+                      </Link>
+                    )}
                     <p className="mt-2 text-xs text-ink-400">{formatDateTime(n.createdAt, locale)}</p>
                   </li>
                 ))}

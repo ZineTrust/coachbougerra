@@ -82,6 +82,16 @@ export default async function LivePage({ params }: Props) {
           <ArrowLeft className="flip-rtl size-4" aria-hidden /> {t("allLives")}
         </Link>
 
+        {/* the picture the team chose for this live (the room itself takes its place once on air) */}
+        {live.coverVersion !== null && !onAir && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={`/api/live-cover/${live.id}?v=${live.coverVersion}`}
+            alt=""
+            className="mx-auto mb-8 aspect-video w-full max-w-2xl rounded-3xl object-cover shadow-card ring-1 ring-ink-900/5"
+          />
+        )}
+
         {/* on air */}
         {onAir &&
           (!livekitReady() ? (

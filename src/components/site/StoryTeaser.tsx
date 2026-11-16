@@ -3,7 +3,7 @@ import { useTranslations } from "next-intl";
 import { CoachPhoto } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 
-/** Landing-page teaser for Coach Bougerra's story, with two of his photos. */
+/** Landing-page teaser for Coach Bouguerra's story, with two of his photos. */
 export function StoryTeaser() {
   const t = useTranslations("home.story");
   const s = useTranslations("story");

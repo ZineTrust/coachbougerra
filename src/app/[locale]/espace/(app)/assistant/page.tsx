@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/espace/a
   return { title: t("metaTitle") };
 }
 
-/** Only Coach Bougerra opens this page: what the assistant knows, and where it fell short. */
+/** Only Coach Bouguerra opens this page: what the assistant knows, and where it fell short. */
 export default async function AssistantAdminPage({ params }: PageProps<"/[locale]/espace/assistant">) {
   const { locale: raw } = await params;
   const locale = raw as Locale;

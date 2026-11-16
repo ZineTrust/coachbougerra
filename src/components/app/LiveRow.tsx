@@ -27,6 +27,15 @@ export function LiveRow({
 
   return (
     <div className="flex items-center gap-4">
+      {!compact && live.coverVersion !== null && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={`/api/live-cover/${live.id}?v=${live.coverVersion}`}
+          alt=""
+          loading="lazy"
+          className="hidden aspect-video w-20 shrink-0 rounded-lg object-cover ring-1 ring-ink-900/5 sm:block"
+        />
+      )}
       <div className="w-14 shrink-0 rounded-xl bg-ink-900 py-2 text-center text-white">
         <p className="truncate px-0.5 text-[0.5625rem] font-bold uppercase tracking-wider text-gold-400">
           {weekday}

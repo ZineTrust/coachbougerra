@@ -4,7 +4,7 @@
 
   • <em>…</em> marks the word highlighted in green in headlines.
   • {name}-style placeholders are filled in by the code — keep them as they are.
-  • The "story" texts are a DRAFT: replace them with Coach Bougerra's real story.
+  • The "story" texts are a DRAFT: replace them with Coach Bouguerra's real story.
   • Please have a native speaker review the wording before launch.
 */
 import type { Messages } from "./fr";
@@ -101,6 +101,8 @@ export const ar: Messages = {
     too_many_invites: "20 كودًا كحد أقصى في المرة الواحدة.",
     storage_off: "إرسال الفيديوهات غير مفعّل بعد في هذا الموقع.",
     video_too_big: "الفيديو أثقل من أن يُرسل.",
+    home_video_too_big: "الفيديو ثقيل جدًا للصفحة الرئيسية: اختر فيديو أقصر أو أخف.",
+    home_videos_full: "تحتوي الصفحة الرئيسية بالفعل على الحد الأقصى من الفيديوهات. احذف واحدًا لإضافة غيره.",
     unsupported_video: "صيغة غير مقبولة: أرسل فيديو بصيغة MP4 أو MOV أو WebM.",
     upload_failed: "فشل الإرسال. أعد المحاولة: سيُستأنف من حيث توقّف.",
     upload_incomplete: "ينقص أجزاء من الفيديو. اختر الملف نفسه مرة أخرى لإنهاء الإرسال.",
@@ -549,6 +551,17 @@ export const ar: Messages = {
     loading: "جارٍ التحميل…",
     loadError: "تعذّر تحميل الإشعارات.",
     newBadge: "جديد",
+    open: "فتح",
+  },
+
+  showreel: {
+    label: "فيديوهات تعريفية",
+    previous: "الفيديو السابق",
+    next: "الفيديو التالي",
+    goTo: "الفيديو {n}",
+    soundOn: "تشغيل الصوت",
+    soundOff: "كتم الصوت",
+    play: "تشغيل الفيديو",
   },
 
   countdown: {
@@ -1012,6 +1025,7 @@ export const ar: Messages = {
       notifications: "الإشعارات",
       lives: "البثوث",
       videos: "الدورات",
+      showreel: "فيديوهات الرئيسية",
       groups: "المجموعات",
       team: "الفريق",
       assistant: "المساعد الذكي",
@@ -1146,6 +1160,47 @@ export const ar: Messages = {
       notify: "إرسال إشعار",
       noMessages: "لا توجد رسائل في هذه المحادثة.",
     },
+    homeVideos: {
+      metaTitle: "فيديوهات الرئيسية",
+      title: "فيديوهات الصفحة الرئيسية",
+      subtitle:
+        "تعمل هذه الفيديوهات تلقائيًا في أعلى الصفحة الرئيسية واحدًا بعد الآخر. أضف أو أخفِ أو غيّر الترتيب متى شئت.",
+      viewSite: "عرض الصفحة الرئيسية",
+      empty: "لا توجد فيديوهات حاليًا: تظهر الصفحة الرئيسية بدون شريط فيديو.",
+      position: "الفيديو {n}",
+      kindFile: "ملف مرسل · {size}",
+      kindYoutube: "رابط يوتيوب",
+      kindVimeo: "رابط Vimeo",
+      shown: "ظاهر",
+      hidden: "مخفي",
+      show: "إظهار",
+      hide: "إخفاء",
+      moveUp: "إلى الأعلى",
+      moveDown: "إلى الأسفل",
+      remove: "حذف",
+      removeConfirm: "حذف هذا الفيديو من الصفحة الرئيسية؟",
+      addTitle: "إضافة فيديو",
+      full: "تحتوي الصفحة الرئيسية بالفعل على الحد الأقصى من الفيديوهات. احذف واحدًا لإضافة غيره.",
+      uploadChoose: "إرسال فيديو",
+      uploadHelp: "MP4 أو MOV أو WebM، حتى {max} كحد أقصى.",
+      uploadDone: "تمت إضافة الفيديو إلى الصفحة الرئيسية.",
+      uploadStopped: "توقف الإرسال. تحقق من الاتصال وأعد المحاولة.",
+      storageOff: "إرسال الملفات غير مفعّل بعد في هذا الموقع. يمكنك الآن إضافة رابط يوتيوب أو Vimeo.",
+      linkLabel: "أو الصق رابط يوتيوب / Vimeo",
+      linkAdd: "إضافة الرابط",
+      tipsTitle: "ليبقى التشغيل سلسًا",
+      tipShort: "اختر فيديوهات قصيرة (من 15 إلى 60 ثانية): تُعاد في حلقة.",
+      tipLight: "اختر فيديوهات خفيفة (من 10 إلى 30 ميغابايت): كل زائر يحمّلها، أحيانًا ببيانات الهاتف. صوّر بدقة 720p بدل 4K.",
+      tipSound: "تبدأ بدون صوت، ويمكن للزائر تشغيله.",
+    },
+    image: {
+      none: "لا توجد صورة",
+      choose: "اختر صورة",
+      change: "غيّر الصورة",
+      remove: "احذف الصورة",
+      processing: "جارٍ التحضير…",
+      unreadable: "تعذّرت قراءة هذه الصورة. جرّب صورة أخرى.",
+    },
     notifications: {
       metaTitle: "الإشعارات",
       title: "الإشعارات",
@@ -1155,6 +1210,8 @@ export const ar: Messages = {
       titlePlaceholder: "مثال: بث مباشر الليلة على الساعة 20:30",
       bodyLabel: "الرسالة",
       bodyPlaceholder: "اكتب رسالتك…",
+      imageLabel: "صورة (اختياري)",
+      imageHint: "تظهر تحت الرسالة، في الجرس وعلى الهاتف.",
       audience: "المستلمون",
       everyone: "كل الأعضاء",
       specific: "أعضاء محددون",
@@ -1556,6 +1613,8 @@ export const ar: Messages = {
       fieldTime: "الساعة (الجزائر)",
       fieldLength: "المدة",
       fieldHost: "المنشّط",
+      fieldImage: "صورة البث (اختياري)",
+      imageHint: "تظهر على بطاقة البث وصفحته، وترافق الإعلان المرسل إلى الأعضاء.",
       minutes: "{count} دقيقة",
       accessTeam: "الفريق",
       scheduleSubmit: "جدولة",

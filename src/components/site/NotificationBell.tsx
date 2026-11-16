@@ -14,6 +14,8 @@ interface Item {
   body: string;
   read: boolean;
   createdAt: string;
+  url: string | null;
+  image: string | null;
 }
 
 /**
@@ -158,6 +160,24 @@ export function NotificationBell({ initial }: { initial: number }) {
                         <p dir="auto" className="mt-1 line-clamp-3 whitespace-pre-line text-[0.8125rem] leading-snug text-ink-600">
                           {n.body}
                         </p>
+                        {n.image && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={n.image}
+                            alt=""
+                            loading="lazy"
+                            className="mt-2 max-h-40 w-full rounded-lg object-cover ring-1 ring-ink-900/5"
+                          />
+                        )}
+                        {n.url && (
+                          <Link
+                            href={n.url}
+                            onClick={() => setOpen(false)}
+                            className="mt-1.5 inline-block text-[0.8125rem] font-bold text-jade-700 hover:underline"
+                          >
+                            {b("open")}
+                          </Link>
+                        )}
                         <p className="mt-1.5 text-[0.6875rem] text-ink-400">
                           {formatDateTime(new Date(n.createdAt), locale)}
                         </p>
